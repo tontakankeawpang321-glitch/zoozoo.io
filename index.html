@@ -124,18 +124,21 @@
                 </div>
             </div>
 
-            <!-- Tab Switcher -->
-            <div class="grid grid-cols-4 gap-1 mb-4 relative z-10">
-                <button onclick="switchCategory('poultry')" id="tab-poultry" class="py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-active">
+            <!-- Tab Switcher (Scrollable) -->
+            <div class="flex overflow-x-auto gap-2 mb-4 relative z-10 hide-scroll pb-2">
+                <button onclick="switchCategory('poultry')" id="tab-poultry" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-active flex-shrink-0">
                     <i class="fa-solid fa-dove text-lg mb-1"></i> สัตว์ปีก
                 </button>
-                <button onclick="switchCategory('mammal')" id="tab-mammal" class="py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive">
+                <button onclick="switchCategory('mammal')" id="tab-mammal" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive flex-shrink-0">
                     <i class="fa-solid fa-piggy-bank text-lg mb-1"></i> ปศุสัตว์
                 </button>
-                <button onclick="switchCategory('aquatic')" id="tab-aquatic" class="py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive">
+                <button onclick="switchCategory('aquatic')" id="tab-aquatic" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive flex-shrink-0">
                     <i class="fa-solid fa-fish-fins text-lg mb-1"></i> สัตว์น้ำ
                 </button>
-                <button onclick="switchCategory('other')" id="tab-other" class="py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive">
+                <button onclick="switchCategory('pet')" id="tab-pet" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive flex-shrink-0">
+                    <i class="fa-solid fa-paw text-lg mb-1"></i> สัตว์เลี้ยง
+                </button>
+                <button onclick="switchCategory('other')" id="tab-other" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive flex-shrink-0">
                     <i class="fa-solid fa-bug text-lg mb-1"></i> อื่นๆ
                 </button>
             </div>
@@ -145,7 +148,7 @@
                 <div class="flex gap-2">
                     <div class="relative flex-grow">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="search-input" placeholder="ค้นหา เช่น กุ้ง, ไก่..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm">
+                        <input type="text" id="search-input" placeholder="ค้นหา เช่น กุ้ง, หมา, ไก่..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm">
                     </div>
                 </div>
                 <div class="mt-2 text-xs text-gray-500 flex justify-between">
@@ -525,6 +528,74 @@
                 ]
             },
 
+            // --- Pets (สัตว์เลี้ยงสวยงาม) ---
+            { 
+                id: 601, category: 'pet', name: "สุนัขพันธุ์เล็ก", icon: "🐶", 
+                midDays: 45, endDays: 60, // days to sale
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2000, price2: 8000,
+                temp: "25-30°C (ระบายอากาศดี)", feed: "อาหารเม็ดสูตรลูกสุนัข", 
+                vaccineProgram: [
+                    { day: 45, name: "วัคซีนรวม 5 โรค (เข็มที่ 1)" },
+                    { day: 60, name: "วัคซีนรวม 5 โรค (เข็มที่ 2)" },
+                    { day: 90, name: "พิษสุนัขบ้า" }
+                ]
+            },
+            { 
+                id: 602, category: 'pet', name: "สุนัขพันธุ์ใหญ่", icon: "🐕", 
+                midDays: 45, endDays: 75, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3000, price2: 12000,
+                temp: "พื้นที่กว้าง ไม่ร้อนจัด", feed: "อาหารเม็ด/บาร์ฟ (BARF)", 
+                vaccineProgram: [
+                    { day: 45, name: "วัคซีนรวม 5 โรค (เข็มที่ 1)" },
+                    { day: 60, name: "วัคซีนรวม 5 โรค (เข็มที่ 2)" },
+                    { day: 90, name: "พิษสุนัขบ้า" }
+                ]
+            },
+            { 
+                id: 603, category: 'pet', name: "แมว (พันธุ์ไทย/ผสม)", icon: "🐱", 
+                midDays: 60, endDays: 90, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 500, price2: 2500,
+                temp: "อบอุ่น แห้งสะอาด", feed: "อาหารเปียก/เม็ดลูกแมว", 
+                vaccineProgram: [
+                    { day: 60, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 1)" },
+                    { day: 90, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 2) + พิษสุนัขบ้า" }
+                ]
+            },
+            { 
+                id: 604, category: 'pet', name: "แมว (พันธุ์ต่างประเทศ)", icon: "🐈", 
+                midDays: 60, endDays: 90, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3000, price2: 15000,
+                temp: "22-26°C (แอร์)", feed: "อาหารเกรดพรีเมียม", 
+                vaccineProgram: [
+                    { day: 60, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 1)" },
+                    { day: 90, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 2) + พิษสุนัขบ้า" }
+                ]
+            },
+            { 
+                id: 605, category: 'pet', name: "หนูแฮมสเตอร์", icon: "🐹", 
+                midDays: 21, endDays: 45, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 150,
+                temp: "20-24°C (ห้ามร้อน)", feed: "ธัญพืช/ผักอบแห้ง", 
+                vaccineProgram: [] // No standard vaccine
+            },
+            { 
+                id: 606, category: 'pet', name: "นกหงส์หยก", icon: "🦜", 
+                midDays: 30, endDays: 60, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 80, price2: 200,
+                temp: "อากาศถ่ายเทดี", feed: "เมล็ดมิลเล็ต/ผัก", 
+                vaccineProgram: []
+            },
+            { 
+                id: 607, category: 'pet', name: "ปลากัดสวยงาม", icon: "🐟", 
+                midDays: 60, endDays: 120, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 20, price2: 500,
+                temp: "26-30°C (น้ำนิ่ง)", feed: "ลูกน้ำ/ไรแดง/อาหารเม็ด", 
+                vaccineProgram: [
+                    { day: 60, name: "แยกโหล (กันกัดกัน)" },
+                    { day: 90, name: "หมักใบหูกวาง (เร่งสี/สมานแผล)" }
+                ]
+            },
+
             // --- Aquatic (สัตว์น้ำ) - No Vaccines ---
             { 
                 id: 401, category: 'aquatic', name: "ปลาดุก", icon: "🐟", 
@@ -650,7 +721,7 @@
 
         function switchCategory(cat) {
             currentCategory = cat;
-            ['poultry', 'mammal', 'aquatic', 'other'].forEach(t => {
+            ['poultry', 'mammal', 'aquatic', 'pet', 'other'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
                 if(t === cat) {
                     btn.classList.add('tab-active');
@@ -695,6 +766,7 @@
                 if(item.category === 'mammal') iconBg = 'bg-stone-100 text-stone-600';
                 if(item.category === 'aquatic') iconBg = 'bg-cyan-100 text-cyan-600';
                 if(item.category === 'other') iconBg = 'bg-emerald-100 text-emerald-600';
+                if(item.category === 'pet') iconBg = 'bg-pink-100 text-pink-600';
                 
                 const vacCount = item.vaccineProgram ? item.vaccineProgram.length : 0;
                 
@@ -723,10 +795,15 @@
             currentItem = item;
             document.getElementById('modal-icon').innerText = item.icon;
             document.getElementById('modal-title').innerText = item.name;
-            document.getElementById('modal-category').innerText = item.category === 'poultry' ? 'สัตว์ปีก' : (item.category === 'mammal' ? 'ปศุสัตว์' : (item.category === 'aquatic' ? 'สัตว์น้ำ' : 'อื่นๆ'));
-            document.getElementById('modal-desc').innerText = `ระยะเลี้ยง ~${item.endDays} วัน`;
+            let catName = 'สัตว์';
+            if(item.category === 'poultry') catName = 'สัตว์ปีก';
+            if(item.category === 'mammal') catName = 'ปศุสัตว์';
+            if(item.category === 'aquatic') catName = 'สัตว์น้ำ';
+            if(item.category === 'pet') catName = 'สัตว์เลี้ยง';
+            if(item.category === 'other') catName = 'อื่นๆ';
             
-            // Cleaned up: Removed Info/Vaccine filling here. Only dates.
+            document.getElementById('modal-category').innerText = catName;
+            document.getElementById('modal-desc').innerText = `ระยะเลี้ยง ~${item.endDays} วัน`;
             
             document.getElementById('start-date').valueAsDate = currentSelectedDate;
             calculateDates(); 
@@ -843,6 +920,7 @@
                 if(item.category === 'mammal') barColor = "bg-stone-500";
                 if(item.category === 'aquatic') barColor = "bg-cyan-500";
                 if(item.category === 'other') barColor = "bg-emerald-500";
+                if(item.category === 'pet') barColor = "bg-pink-500";
                 
                 const div = document.createElement('div');
                 div.className = 'bg-white rounded-2xl p-4 shadow-sm border border-gray-100 relative overflow-hidden group cursor-pointer transition hover:shadow-md';
@@ -936,8 +1014,13 @@
                     if(variation > 0.05) trend = 'up'; else if(variation < -0.05) trend = 'down';
                 }
                 let trendHtml = trend === 'up' ? '<span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs font-bold"><i class="fa-solid fa-arrow-up"></i> สูงขึ้น</span>' : (trend === 'down' ? '<span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs font-bold"><i class="fa-solid fa-arrow-down"></i> ลดลง</span>' : '<span class="bg-gray-100 text-gray-400 px-2 py-0.5 rounded text-xs">-</span>');
-                let catTag = item.category === 'poultry' ? 'สัตว์ปีก' : (item.category === 'mammal' ? 'ปศุสัตว์' : (item.category === 'aquatic' ? 'สัตว์น้ำ' : 'อื่นๆ'));
-                let catColor = item.category === 'poultry' ? 'text-orange-600 bg-orange-100' : (item.category === 'mammal' ? 'text-stone-600 bg-stone-100' : (item.category === 'aquatic' ? 'text-cyan-600 bg-cyan-100' : 'text-emerald-600 bg-emerald-100'));
+                let catTag = 'อื่นๆ';
+                let catColor = 'text-emerald-600 bg-emerald-100';
+                
+                if(item.category === 'poultry') { catTag = 'สัตว์ปีก'; catColor = 'text-orange-600 bg-orange-100'; }
+                else if(item.category === 'mammal') { catTag = 'ปศุสัตว์'; catColor = 'text-stone-600 bg-stone-100'; }
+                else if(item.category === 'aquatic') { catTag = 'สัตว์น้ำ'; catColor = 'text-cyan-600 bg-cyan-100'; }
+                else if(item.category === 'pet') { catTag = 'สัตว์เลี้ยง'; catColor = 'text-pink-600 bg-pink-100'; }
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
