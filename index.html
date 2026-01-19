@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>วางแผนเลี้ยงสัตว์ & ปศุสัตว์ 🐔</title>
+    <title>วางแผนเลี้ยงสัตว์ & ปศุสัตว์ (ครบวงจร) 🚜</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
@@ -145,7 +145,7 @@
                 <div class="flex gap-2">
                     <div class="relative flex-grow">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="search-input" placeholder="ค้นหาสัตว์เศรษฐกิจ..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm">
+                        <input type="text" id="search-input" placeholder="ค้นหา เช่น กุ้ง, ไก่..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm">
                     </div>
                 </div>
                 <div class="mt-2 text-xs text-gray-500 flex justify-between">
@@ -169,6 +169,7 @@
                 </button>
             </div>
 
+            <p class="text-xs text-gray-500 mb-2 text-center">* แตะที่รายการเพื่อดูโปรแกรมวัคซีนและข้อมูลการเลี้ยง</p>
             <div id="schedule-list" class="space-y-3"></div>
             
             <div id="empty-schedule" class="hidden flex flex-col items-center justify-center py-16 text-gray-400">
@@ -182,7 +183,7 @@
 
     </div>
 
-    <!-- Modal: Raising Calculator -->
+    <!-- Modal 1: Raising Calculator (Adding) -->
     <div id="calc-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm">
         <div class="bg-white w-full sm:w-[420px] sm:rounded-2xl rounded-t-3xl shadow-2xl animate-slide-up flex flex-col max-h-[95vh]">
             
@@ -205,40 +206,9 @@
                 </button>
             </div>
 
-            <!-- Modal Body -->
+            <!-- Modal Body (Simplified) -->
             <div class="p-5 overflow-y-auto custom-scrollbar">
                 
-                <!-- Vaccine Program Card -->
-                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4 shadow-sm relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-2 opacity-10"><i class="fa-solid fa-syringe text-5xl text-blue-500"></i></div>
-                    <h4 class="text-sm font-bold text-blue-800 mb-2 border-b border-blue-200 pb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-check"></i> โปรแกรมวัคซีน & ยา
-                    </h4>
-                    <div id="vaccine-program-list" class="space-y-2 text-sm text-gray-700 relative z-10">
-                        <!-- Injected via JS -->
-                    </div>
-                </div>
-
-                <!-- Specs Card -->
-                <div class="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-sm">
-                    <div class="grid grid-cols-1 gap-2 text-sm">
-                        <div class="flex items-start gap-3">
-                            <div class="w-6 flex justify-center"><i class="fa-solid fa-temperature-half text-red-500 mt-0.5"></i></div>
-                            <div>
-                                <span class="font-bold text-gray-700 block text-xs uppercase">อุณหภูมิที่ชอบ</span>
-                                <span id="info-temp" class="text-gray-600">-</span>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <div class="w-6 flex justify-center"><i class="fa-solid fa-bowl-food text-amber-600 mt-0.5"></i></div>
-                            <div>
-                                <span class="font-bold text-gray-700 block text-xs uppercase">อาหารแนะนำ</span>
-                                <span id="info-feed" class="text-gray-600">-</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Input Date -->
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-gray-700 mb-2">
@@ -247,39 +217,17 @@
                     <input type="date" id="start-date" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-lg text-center bg-gray-50 text-gray-800 shadow-inner">
                 </div>
 
-                <!-- Timeline Preview -->
-                <div class="relative pl-6 border-l-2 border-dashed border-gray-300 space-y-8 pb-2">
-                    <!-- Start -->
-                    <div class="relative group">
+                <!-- Timeline Preview (Compact) -->
+                <div class="relative pl-6 border-l-2 border-dashed border-gray-300 space-y-6 pb-2">
+                    <div class="relative">
                         <div class="absolute -left-[31px] top-1 bg-green-500 w-4 h-4 rounded-full border-4 border-white shadow-sm"></div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">วันเริ่มเลี้ยง</p>
-                            <p class="font-bold text-gray-800 text-lg" id="preview-start-date">-</p>
-                        </div>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">วันเริ่มเลี้ยง</p>
+                        <p class="font-bold text-gray-800 text-lg" id="preview-start-date">-</p>
                     </div>
-                    
-                    <!-- Mid Step (First Vaccine) -->
-                    <div class="relative group">
-                        <div class="absolute -left-[31px] top-1 bg-blue-400 w-4 h-4 rounded-full border-4 border-white shadow-sm"></div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">เริ่มทำวัคซีนเข็มแรก</p>
-                            <div class="flex items-baseline gap-2">
-                                <p class="font-bold text-blue-700 text-lg" id="preview-mid-date">-</p>
-                                <span class="text-xs text-gray-400 font-mono">(+<span id="days-mid"></span> วัน)</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- End -->
-                    <div class="relative group">
+                    <div class="relative">
                         <div class="absolute -left-[31px] top-1 bg-primary-600 w-4 h-4 rounded-full border-4 border-white shadow-sm"></div>
-                        <div>
-                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">ครบกำหนด/จับขาย</p>
-                            <div class="flex items-baseline gap-2">
-                                <p class="font-bold text-primary-700 text-lg" id="preview-end-date">-</p>
-                                <span class="text-xs text-gray-400 font-mono">(+<span id="days-end"></span> วัน)</span>
-                            </div>
-                        </div>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">จบครอป/จับขาย</p>
+                        <p class="font-bold text-primary-700 text-lg" id="preview-end-date">-</p>
                     </div>
                 </div>
 
@@ -290,6 +238,69 @@
                 <button onclick="saveSchedule()" class="w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-500/30 active:scale-[0.98] transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-check-circle"></i> บันทึกแผนการเลี้ยง
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Detail View (Viewing in My Farm) -->
+    <div id="detail-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm">
+        <div class="bg-white w-full sm:w-[420px] sm:rounded-2xl rounded-t-3xl shadow-2xl animate-slide-up flex flex-col max-h-[95vh]">
+            
+            <!-- Modal Header -->
+            <div class="p-5 bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 rounded-t-3xl flex justify-between items-start">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-3xl text-primary-600" id="detail-icon-container">
+                        <span id="detail-icon">🐔</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-gray-800" id="detail-title">...</h3>
+                        <p class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded inline-block mt-1" id="detail-date-label">เริ่ม: ...</p>
+                    </div>
+                </div>
+                <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body (Rich Info) -->
+            <div class="p-5 overflow-y-auto custom-scrollbar bg-slate-50">
+                
+                <!-- Specs Card -->
+                <div class="bg-white border border-gray-200 rounded-xl p-4 mb-4 shadow-sm">
+                    <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-primary-500"></i> ข้อมูลการเลี้ยง
+                    </h4>
+                    <div class="grid grid-cols-1 gap-3 text-sm">
+                        <div class="flex items-start gap-3 bg-gray-50 p-2 rounded-lg">
+                            <div class="w-6 flex justify-center"><i class="fa-solid fa-temperature-half text-red-500 mt-0.5"></i></div>
+                            <div>
+                                <span class="font-bold text-gray-700 block text-xs uppercase text-red-400">อุณหภูมิ/สภาพแวดล้อม</span>
+                                <span id="detail-temp" class="text-gray-700 font-medium">-</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 bg-gray-50 p-2 rounded-lg">
+                            <div class="w-6 flex justify-center"><i class="fa-solid fa-bowl-food text-amber-600 mt-0.5"></i></div>
+                            <div>
+                                <span class="font-bold text-gray-700 block text-xs uppercase text-amber-500">อาหารแนะนำ</span>
+                                <span id="detail-feed" class="text-gray-700 font-medium">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vaccine Program Card -->
+                <div class="bg-white border border-blue-200 rounded-xl p-0 mb-4 shadow-sm overflow-hidden">
+                    <div class="bg-blue-50 p-3 border-b border-blue-100 flex justify-between items-center">
+                        <h4 class="text-sm font-bold text-blue-800 flex items-center gap-2">
+                            <i class="fa-solid fa-syringe text-blue-500"></i> แผนดูแล/วัคซีน
+                        </h4>
+                        <span class="text-[10px] text-blue-400 font-normal">คำนวณตามวันเริ่ม</span>
+                    </div>
+                    <div id="detail-vaccine-list" class="divide-y divide-gray-100">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -366,9 +377,9 @@
     </div>
 
     <script>
-        // --- ข้อมูลสัตว์เลี้ยงและโปรแกรมวัคซีน (Complete List) ---
+        // --- ข้อมูลสัตว์เลี้ยงและโปรแกรมวัคซีน (Comprehensive List) ---
         const animals = [
-            // --- Poultry ---
+            // --- Poultry (สัตว์ปีก) ---
             { 
                 id: 201, category: 'poultry', name: "ไก่ไข่", icon: "🐔", 
                 midDays: 7, endDays: 140, 
@@ -406,14 +417,53 @@
                 id: 205, category: 'poultry', name: "เป็ดไข่", icon: "🦆", 
                 midDays: 21, endDays: 150, 
                 months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 22, price2: 160,
-                temp: "ถ่ายเทสะดวก", feed: "รำ/หอยเชอรี่", 
+                temp: "ถ่ายเทสะดวก พื้นแห้ง", feed: "รำ/หอยเชอรี่", 
                 vaccineProgram: [
                     { day: 21, name: "กาฬโรคเป็ด (ฉีดเข้ากล้ามเนื้อ)" },
                     { day: 60, name: "อหิวาต์เป็ด (ฉีดเข้ากล้ามเนื้อ)" }
                 ]
             },
+            { 
+                id: 209, category: 'poultry', name: "ไก่งวง", icon: "🦃", 
+                midDays: 30, endDays: 180, 
+                months: [10,11,0,1], price1: 100, price2: 800,
+                temp: "พื้นที่กว้าง ชอบหญ้าสด", feed: "หญ้าขน/อาหารไก่เนื้อ", 
+                vaccineProgram: [
+                    { day: 21, name: "ฝีดาษไก่" },
+                    { day: 45, name: "อหิวาต์ไก่" }
+                ]
+            },
+            { 
+                id: 210, category: 'poultry', name: "เป็ดเทศ", icon: "🦢", 
+                midDays: 20, endDays: 80, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 30, price2: 180,
+                temp: "ทนโรค เลี้ยงง่าย", feed: "เศษผัก/รำข้าว", 
+                vaccineProgram: [
+                    { day: 30, name: "กาฬโรคเป็ด" }
+                ]
+            },
+            { 
+                id: 211, category: 'poultry', name: "ไก่เบตง", icon: "🐔", 
+                midDays: 30, endDays: 150, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 450,
+                temp: "อากาศถ่ายเท (ห้ามชื้น)", feed: "ข้าวโพด/อาหารผสม", 
+                vaccineProgram: [
+                    { day: 14, name: "นิวคาสเซิล" },
+                    { day: 45, name: "ถ่ายพยาธิ" }
+                ]
+            },
+            { 
+                id: 212, category: 'poultry', name: "ไก่ชน", icon: "🥊", 
+                midDays: 60, endDays: 240, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 3000,
+                temp: "ต้องกราดน้ำ/ตากแดด", feed: "ข้าวเปลือก/สมุนไพร", 
+                vaccineProgram: [
+                    { day: 14, name: "นิวคาสเซิล" },
+                    { day: 60, name: "อหิวาต์" }
+                ]
+            },
 
-            // --- Mammal ---
+            // --- Mammal (ปศุสัตว์) ---
             { 
                 id: 301, category: 'mammal', name: "สุกร (หมูขุน)", icon: "🐷", 
                 midDays: 21, endDays: 150, 
@@ -446,39 +496,127 @@
                     { day: 90, name: "ปากและเท้าเปื่อย (FMD)" }
                 ]
             },
+            { 
+                id: 307, category: 'mammal', name: "หมูป่า", icon: "🐗", 
+                midDays: 60, endDays: 240, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1000, price2: 4500,
+                temp: "โรงเรือนโปร่ง ดินแห้ง", feed: "หยวกกล้วย/รำ", 
+                vaccineProgram: [
+                    { day: 45, name: "อหิวาต์สุกร" },
+                    { day: 60, name: "ถ่ายพยาธิ" }
+                ]
+            },
+            { 
+                id: 308, category: 'mammal', name: "กระต่ายเนื้อ", icon: "🐇", 
+                midDays: 30, endDays: 100, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 150, price2: 500,
+                temp: "อากาศเย็น (ไม่เกิน 30°C)", feed: "หญ้าแห้ง/อาหารเม็ด", 
+                vaccineProgram: [
+                    { day: 45, name: "ถ่ายพยาธิภายนอก (ไร)" }
+                ]
+            },
+            { 
+                id: 309, category: 'mammal', name: "แพะนม", icon: "🐐", 
+                midDays: 180, endDays: 365, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3000, price2: 8000,
+                temp: "สะอาด แห้ง", feed: "อาหารข้นโปรตีนสูง/หญ้า", 
+                vaccineProgram: [
+                    { day: 90, name: "FMD + ตรวจโรคแท้ง" }
+                ]
+            },
 
-            // --- Aquatic ---
+            // --- Aquatic (สัตว์น้ำ) - No Vaccines ---
             { 
                 id: 401, category: 'aquatic', name: "ปลาดุก", icon: "🐟", 
                 midDays: 30, endDays: 90, 
                 months: [5,6,7,8,9], price1: 1, price2: 50,
-                temp: "น้ำนิ่ง/บ่อดิน", feed: "อาหารเม็ดลอยน้ำ", 
-                vaccineProgram: [
-                    { day: 30, name: "ผสมวิตามินซีในอาหาร (เสริมภูมิ)" },
-                    { day: 45, name: "ถ่ายน้ำ/ปรับสภาพน้ำ" }
-                ]
+                temp: "น้ำนิ่ง/บ่อดิน", feed: "อาหารเม็ดลอยน้ำ"
             },
             { 
                 id: 402, category: 'aquatic', name: "ปลานิล", icon: "🐠", 
                 midDays: 45, endDays: 180, 
                 months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.5, price2: 65,
-                temp: "25-30°C", feed: "รำละเอียด/พืชน้ำ", 
-                vaccineProgram: [
-                    { day: 45, name: "แช่เกลือแกง (กำจัดปรสิต)" },
-                    { day: 90, name: "ตรวจสอบคุณภาพน้ำ" }
-                ]
+                temp: "25-30°C", feed: "รำละเอียด/พืชน้ำ"
+            },
+            { 
+                id: 408, category: 'aquatic', name: "ปลาตะเพียน", icon: "🐟", 
+                midDays: 60, endDays: 240, 
+                months: [5,6,7], price1: 0.5, price2: 80,
+                temp: "น้ำไหลเวียน", feed: "พืชน้ำ/หญ้าขน"
+            },
+            { 
+                id: 409, category: 'aquatic', name: "ปลาหมอไทย", icon: "🐟", 
+                midDays: 30, endDays: 120, 
+                months: [4,5,6,7], price1: 1, price2: 120,
+                temp: "ทนน้ำน้อยได้", feed: "อาหารเม็ดไฮเกรด"
+            },
+            { 
+                id: 410, category: 'aquatic', name: "ปลาสวาย", icon: "🐋", 
+                midDays: 90, endDays: 300, 
+                months: [5,6,7], price1: 2, price2: 100,
+                temp: "บ่อดินลึก", feed: "เศษอาหาร/รำ"
+            },
+            { 
+                id: 411, category: 'aquatic', name: "ปลาแรด", icon: "🐠", 
+                midDays: 180, endDays: 365, 
+                months: [5,6,7], price1: 5, price2: 250,
+                temp: "น้ำสะอาด มีผักบุ้ง", feed: "ผลไม้สุก/ยอดผัก"
+            },
+            { 
+                id: 412, category: 'aquatic', name: "กุ้งขาว", icon: "🦐", 
+                midDays: 30, endDays: 90, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.2, price2: 180,
+                temp: "ความเค็ม 10-20 ppt", feed: "อาหารเม็ดสำเร็จรูป"
+            },
+            { 
+                id: 413, category: 'aquatic', name: "กุ้งก้ามแดง", icon: "🦞", 
+                midDays: 60, endDays: 150, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 5, price2: 400,
+                temp: "น้ำจืด (มีที่หลบซ่อน)", feed: "สาหร่าย/ไส้เดือน"
+            },
+            { 
+                id: 414, category: 'aquatic', name: "ปลาไหลนา", icon: "🐍", 
+                midDays: 60, endDays: 240, 
+                months: [5,6,7], price1: 5, price2: 200,
+                temp: "บ่อซีเมนต์ใส่โคลน", feed: "ไส้เดือน/หอยเชอรี่"
+            },
+            { 
+                id: 415, category: 'aquatic', name: "ตะพาบน้ำ", icon: "🐢", 
+                midDays: 90, endDays: 365, 
+                months: [4,5,6], price1: 15, price2: 300,
+                temp: "น้ำสะอาด มีแดดส่อง", feed: "ปลาเหยื่อ/โครงไก่"
             },
 
-            // --- Other ---
+            // --- Other (แมลง/สัตว์เศรษฐกิจใหม่) - No Vaccines ---
             { 
                 id: 501, category: 'other', name: "จิ้งหรีด", icon: "🦗", 
                 midDays: 15, endDays: 45, 
                 months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 150,
-                temp: "ร้อนชื้น", feed: "หัวอาหารไก่เล็ก", 
-                vaccineProgram: [
-                    { day: 15, name: "ดูแลความสะอาดแผงไข่" },
-                    { day: 30, name: "พรมน้ำรักษาความชื้น" }
-                ]
+                temp: "ร้อนชื้น", feed: "หัวอาหารไก่เล็ก"
+            },
+            { 
+                id: 505, category: 'other', name: "ด้วงสาคู", icon: "🐛", 
+                midDays: 20, endDays: 40, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2, price2: 250,
+                temp: "ชื้น/มืด", feed: "เปลือกมะพร้าว/สาคู"
+            },
+            { 
+                id: 506, category: 'other', name: "ตั๊กแตน", icon: "🦗", 
+                midDays: 30, endDays: 60, 
+                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 400,
+                temp: "โปร่ง ลมโกรก", feed: "หญ้าหวาน/ใบกล้วย"
+            },
+            { 
+                id: 507, category: 'other', name: "แมงดานา", icon: "🪲", 
+                midDays: 30, endDays: 90, 
+                months: [5,6,7], price1: 5, price2: 20,
+                temp: "เลียนแบบธรรมชาติ", feed: "ลูกอ๊อด/ปลาเล็ก"
+            },
+            { 
+                id: 508, category: 'other', name: "อึ่งปากขวด", icon: "🐸", 
+                midDays: 90, endDays: 270, 
+                months: [4,5,6], price1: 5, price2: 300,
+                temp: "ดินร่วนปนทราย", feed: "ปลวก/แมลงเม่า"
             }
         ];
 
@@ -580,31 +718,16 @@
             });
         }
 
+        // --- Planning Modal (Simplified) ---
         function openCalcModal(item) {
             currentItem = item;
             document.getElementById('modal-icon').innerText = item.icon;
             document.getElementById('modal-title').innerText = item.name;
             document.getElementById('modal-category').innerText = item.category === 'poultry' ? 'สัตว์ปีก' : (item.category === 'mammal' ? 'ปศุสัตว์' : (item.category === 'aquatic' ? 'สัตว์น้ำ' : 'อื่นๆ'));
             document.getElementById('modal-desc').innerText = `ระยะเลี้ยง ~${item.endDays} วัน`;
-            document.getElementById('days-mid').innerText = item.midDays;
-            document.getElementById('days-end').innerText = item.endDays;
-            document.getElementById('info-temp').innerText = item.temp || "-";
-            document.getElementById('info-feed').innerText = item.feed || "-";
-
-            // Populate Vaccine Program
-            const vList = document.getElementById('vaccine-program-list');
-            vList.innerHTML = '';
-            if (item.vaccineProgram && item.vaccineProgram.length > 0) {
-                item.vaccineProgram.forEach(v => {
-                    const row = document.createElement('div');
-                    row.className = 'flex justify-between items-center border-b border-blue-100 pb-1 last:border-0 last:pb-0';
-                    row.innerHTML = `<span class="text-blue-600 font-semibold text-xs whitespace-nowrap w-20">วันที่ ${v.day}:</span> <span class="text-gray-600 text-xs text-right">${v.name}</span>`;
-                    vList.appendChild(row);
-                });
-            } else {
-                vList.innerHTML = '<span class="text-gray-400 text-xs">- ไม่มีข้อมูลวัคซีนพิเศษ -</span>';
-            }
-
+            
+            // Cleaned up: Removed Info/Vaccine filling here. Only dates.
+            
             document.getElementById('start-date').valueAsDate = currentSelectedDate;
             calculateDates(); 
             document.getElementById('calc-modal').classList.remove('hidden');
@@ -615,10 +738,9 @@
         function calculateDates() {
             if(!currentItem) return;
             const start = new Date(document.getElementById('start-date').value);
-            const mid = new Date(start); mid.setDate(start.getDate() + currentItem.midDays);
+            // Mid is just a visual reference now, logic simplified
             const end = new Date(start); end.setDate(start.getDate() + currentItem.endDays);
             document.getElementById('preview-start-date').innerText = formatDate(start);
-            document.getElementById('preview-mid-date').innerText = formatDate(mid);
             document.getElementById('preview-end-date').innerText = formatDate(end);
         }
 
@@ -627,21 +749,74 @@
             const start = new Date(document.getElementById('start-date').value);
             const mid = new Date(start); mid.setDate(start.getDate() + currentItem.midDays);
             const end = new Date(start); end.setDate(start.getDate() + currentItem.endDays);
-            const vacCount = currentItem.vaccineProgram ? currentItem.vaccineProgram.length : 0;
             
+            // Save vaccineProgram from currentItem to the schedule
             const newSchedule = {
                 id: Date.now(),
                 itemId: currentItem.id, category: currentItem.category,
                 name: currentItem.name, icon: currentItem.icon,
                 startDate: start.toISOString(), midDate: mid.toISOString(), endDate: end.toISOString(),
-                vaccineName: `${vacCount} ครั้ง`, // Display count for summary
-                vaccineProgram: currentItem.vaccineProgram
+                vaccineProgram: currentItem.vaccineProgram // Save full program
             };
             mySchedules.unshift(newSchedule); 
             localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
             closeCalcModal();
             renderScheduleList();
             toggleView('schedule'); 
+        }
+
+        // --- Detail Modal (My Farm) ---
+        function openDetailModal(id) {
+            const item = mySchedules.find(s => s.id == id); // loose equality for string/number id
+            if(!item) return;
+
+            // Find static animal data for Temp/Feed (using itemId)
+            const animalData = animals.find(a => a.id == item.itemId);
+            
+            document.getElementById('detail-icon').innerText = item.icon;
+            document.getElementById('detail-title').innerText = item.name;
+            const startDate = new Date(item.startDate);
+            document.getElementById('detail-date-label').innerText = `เริ่มเลี้ยง: ${formatDate(startDate)}`;
+            
+            // Specs
+            document.getElementById('detail-temp').innerText = animalData ? animalData.temp : "-";
+            document.getElementById('detail-feed').innerText = animalData ? animalData.feed : "-";
+
+            // Vaccine Program Calculation
+            const vList = document.getElementById('detail-vaccine-list');
+            vList.innerHTML = '';
+            
+            // Use saved program or fallback to animalData
+            const program = item.vaccineProgram || (animalData ? animalData.vaccineProgram : []);
+
+            if (program && program.length > 0) {
+                program.forEach(v => {
+                    // Calculate actual date
+                    const vacDate = new Date(startDate);
+                    vacDate.setDate(startDate.getDate() + v.day);
+                    
+                    const row = document.createElement('div');
+                    row.className = 'p-3 flex gap-3 items-center hover:bg-gray-50';
+                    row.innerHTML = `
+                        <div class="flex-none w-16 text-center">
+                            <span class="block text-xs font-bold text-gray-400">อายุ ${v.day} วัน</span>
+                            <span class="block text-sm font-bold text-blue-600">${formatDateShort(vacDate)}</span>
+                        </div>
+                        <div class="flex-grow border-l-2 border-blue-100 pl-3">
+                            <p class="text-sm text-gray-800 font-medium">${v.name}</p>
+                        </div>
+                    `;
+                    vList.appendChild(row);
+                });
+            } else {
+                vList.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">- ไม่มีข้อมูลโปรแกรมวัคซีน -</div>';
+            }
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
         }
 
         function renderScheduleList() {
@@ -662,7 +837,6 @@
             
             mySchedules.forEach(item => {
                 const start = new Date(item.startDate);
-                const mid = new Date(item.midDate);
                 const end = new Date(item.endDate);
                 let barColor = "bg-gray-400";
                 if(item.category === 'poultry') barColor = "bg-orange-500";
@@ -670,14 +844,15 @@
                 if(item.category === 'aquatic') barColor = "bg-cyan-500";
                 if(item.category === 'other') barColor = "bg-emerald-500";
                 
-                let vacDetails = '';
-                if(item.vaccineProgram && item.vaccineProgram.length > 0) {
-                    vacDetails = `<div class="text-[9px] text-gray-500 mt-1">แผน: ${item.vaccineProgram.length} เข็ม</div>`;
-                }
-
                 const div = document.createElement('div');
-                div.className = 'bg-white rounded-2xl p-4 shadow-sm border border-gray-100 relative overflow-hidden group';
-                // Note: Fixed ID passing by wrapping in quotes '${item.id}'
+                div.className = 'bg-white rounded-2xl p-4 shadow-sm border border-gray-100 relative overflow-hidden group cursor-pointer transition hover:shadow-md';
+                // Add onclick to open details, but ensure delete button doesn't trigger it
+                div.onclick = (e) => {
+                    // Prevent if click target is the delete button or its child
+                    if (e.target.closest('.delete-btn')) return;
+                    openDetailModal(item.id);
+                };
+
                 div.innerHTML = `
                     <div class="flex justify-between items-start mb-4 pl-2 relative z-20">
                         <div class="flex items-center gap-3">
@@ -687,19 +862,14 @@
                                 <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">#${item.id.toString().substr(-3)}</span>
                             </div>
                         </div>
-                        <button type="button" onclick="deleteSchedule('${item.id}')" class="text-gray-400 hover:text-red-500 w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-50 transition border border-transparent hover:border-red-100 cursor-pointer">
+                        <button type="button" onclick="deleteSchedule('${item.id}'); event.stopPropagation();" class="delete-btn text-gray-400 hover:text-red-500 w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-50 transition border border-transparent hover:border-red-100 z-30">
                             <i class="fa-solid fa-trash-can text-lg"></i>
                         </button>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 text-center text-sm relative z-10">
+                    <div class="grid grid-cols-2 gap-2 text-center text-sm relative z-10">
                         <div class="bg-green-50 rounded-lg p-2 border border-green-100">
                             <p class="text-[10px] font-bold text-green-600 uppercase mb-1">เริ่มเลี้ยง</p>
                             <p class="font-bold text-green-800">${formatDateShort(start)}</p>
-                        </div>
-                        <div class="bg-blue-50 rounded-lg p-2 border border-blue-100">
-                            <p class="text-[10px] font-bold text-blue-600 uppercase mb-1">วัคซีนแรก</p>
-                            <p class="font-bold text-blue-800">${formatDateShort(mid)}</p>
-                            ${vacDetails}
                         </div>
                         <div class="bg-primary-50 rounded-lg p-2 border border-primary-100">
                             <p class="text-[10px] font-bold text-primary-600 uppercase mb-1">จับขาย</p>
