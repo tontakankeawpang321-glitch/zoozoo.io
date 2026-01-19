@@ -172,7 +172,7 @@
                 </button>
             </div>
 
-            <p class="text-xs text-gray-500 mb-2 text-center">* แตะที่รายการเพื่อดูโปรแกรมวัคซีนและข้อมูลการเลี้ยง</p>
+            <p class="text-xs text-gray-500 mb-2 text-center">* แตะที่รายการเพื่อดูรายละเอียด</p>
             <div id="schedule-list" class="space-y-3"></div>
             
             <div id="empty-schedule" class="hidden flex flex-col items-center justify-center py-16 text-gray-400">
@@ -212,6 +212,25 @@
             <!-- Modal Body (Simplified) -->
             <div class="p-5 overflow-y-auto custom-scrollbar">
                 
+                <!-- Image Upload -->
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        <i class="fa-regular fa-image mr-1"></i> เพิ่มรูปสัตว์ (ถ้ามี)
+                    </label>
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden border border-gray-200 relative group cursor-pointer" onclick="document.getElementById('upload-image').click()">
+                            <img id="preview-image" src="" class="w-full h-full object-cover hidden">
+                            <div id="preview-placeholder" class="text-center">
+                                <i class="fa-solid fa-camera text-gray-400 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <input type="file" id="upload-image" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer">
+                            <p class="text-[10px] text-gray-400 mt-1">รองรับไฟล์ภาพ .jpg, .png</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Input Date -->
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-gray-700 mb-2">
@@ -251,16 +270,24 @@
             
             <!-- Modal Header -->
             <div class="p-5 bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 rounded-t-3xl flex justify-between items-start">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-3xl text-primary-600" id="detail-icon-container">
-                        <span id="detail-icon">🐔</span>
+                <div class="flex items-center gap-4 w-full">
+                    <!-- Dynamic Icon Container (Click to edit image) -->
+                    <div id="detail-icon-container" onclick="triggerDetailImageUpload()" class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-3xl text-primary-600 overflow-hidden flex-shrink-0 border border-gray-100 relative cursor-pointer group">
+                        <!-- Content injected via JS -->
+                        <!-- Overlay for edit hint -->
+                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                            <i class="fa-solid fa-camera text-white text-sm"></i>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-xl text-gray-800" id="detail-title">...</h3>
+                    <!-- Hidden input for updating image -->
+                    <input type="file" id="detail-image-upload" accept="image/*" class="hidden" onchange="handleDetailImageUpload(this)">
+                    
+                    <div class="flex-grow">
+                        <h3 class="font-bold text-xl text-gray-800 leading-tight" id="detail-title">...</h3>
                         <p class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded inline-block mt-1" id="detail-date-label">เริ่ม: ...</p>
                     </div>
                 </div>
-                <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition">
+                <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition flex-shrink-0 ml-2">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
@@ -696,6 +723,8 @@
         let currentMonthIndex = currentSelectedDate.getMonth();
         let currentCategory = 'poultry'; 
         let currentItem = null; 
+        let currentUploadImage = null; // Store base64 image
+        let currentDetailId = null; // To track which item is open in detail modal
         let mySchedules = JSON.parse(localStorage.getItem('myLivestockSchedule')) || [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -716,6 +745,21 @@
                 currentSelectedDate = new Date(e.target.value);
                 currentMonthIndex = currentSelectedDate.getMonth();
                 updateHeaderAndSeason();
+            });
+
+            // Image Upload Logic (New)
+            document.getElementById('upload-image').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        currentUploadImage = event.target.result;
+                        document.getElementById('preview-image').src = currentUploadImage;
+                        document.getElementById('preview-image').classList.remove('hidden');
+                        document.getElementById('preview-placeholder').classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
             });
         });
 
@@ -793,6 +837,14 @@
         // --- Planning Modal (Simplified) ---
         function openCalcModal(item) {
             currentItem = item;
+            
+            // Reset Image Upload
+            currentUploadImage = null;
+            document.getElementById('upload-image').value = '';
+            document.getElementById('preview-image').src = '';
+            document.getElementById('preview-image').classList.add('hidden');
+            document.getElementById('preview-placeholder').classList.remove('hidden');
+
             document.getElementById('modal-icon').innerText = item.icon;
             document.getElementById('modal-title').innerText = item.name;
             let catName = 'สัตว์';
@@ -832,6 +884,7 @@
                 id: Date.now(),
                 itemId: currentItem.id, category: currentItem.category,
                 name: currentItem.name, icon: currentItem.icon,
+                image: currentUploadImage || null, // Save image if uploaded
                 startDate: start.toISOString(), midDate: mid.toISOString(), endDate: end.toISOString(),
                 vaccineProgram: currentItem.vaccineProgram // Save full program
             };
@@ -842,15 +895,61 @@
             toggleView('schedule'); 
         }
 
-        // --- Detail Modal (My Farm) ---
+        // --- Detail Modal Functions (Updated) ---
+        function triggerDetailImageUpload() {
+            document.getElementById('detail-image-upload').click();
+        }
+
+        function handleDetailImageUpload(input) {
+            const file = input.files[0];
+            if (file && currentDetailId) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const newImage = event.target.result;
+                    
+                    // Update Data in mySchedules
+                    const itemIndex = mySchedules.findIndex(s => s.id == currentDetailId);
+                    if (itemIndex > -1) {
+                        mySchedules[itemIndex].image = newImage;
+                        localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
+                        
+                        // Update UI immediately (Detail Modal)
+                        const container = document.getElementById('detail-icon-container');
+                        const overlay = `<div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-camera text-white text-sm"></i></div>`;
+                        container.innerHTML = `<img src="${newImage}" class="w-full h-full object-cover">${overlay}`;
+                        container.classList.remove('p-2');
+                        
+                        // Update List View
+                        renderScheduleList();
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+            // Reset input
+            input.value = ''; 
+        }
+
         function openDetailModal(id) {
+            currentDetailId = id; // Store ID for image update
+            
             const item = mySchedules.find(s => s.id == id); // loose equality for string/number id
             if(!item) return;
 
             // Find static animal data for Temp/Feed (using itemId)
             const animalData = animals.find(a => a.id == item.itemId);
             
-            document.getElementById('detail-icon').innerText = item.icon;
+            const container = document.getElementById('detail-icon-container');
+            const overlay = `<div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-camera text-white text-sm"></i></div>`;
+
+            // Handle Icon vs Image in Detail View
+            if (item.image) {
+                container.innerHTML = `<img src="${item.image}" class="w-full h-full object-cover">${overlay}`;
+                container.classList.remove('p-2'); // Remove padding for full image
+            } else {
+                container.innerHTML = `<span id="detail-icon">${item.icon}</span>${overlay}`;
+                container.classList.add('p-2');
+            }
+
             document.getElementById('detail-title').innerText = item.name;
             const startDate = new Date(item.startDate);
             document.getElementById('detail-date-label').innerText = `เริ่มเลี้ยง: ${formatDate(startDate)}`;
@@ -894,6 +993,7 @@
 
         function closeDetailModal() {
             document.getElementById('detail-modal').classList.add('hidden');
+            currentDetailId = null;
         }
 
         function renderScheduleList() {
@@ -922,6 +1022,12 @@
                 if(item.category === 'other') barColor = "bg-emerald-500";
                 if(item.category === 'pet') barColor = "bg-pink-500";
                 
+                // Image or Icon Logic
+                let visualContent = `<span class="text-3xl bg-gray-50 w-12 h-12 flex items-center justify-center rounded-xl shadow-inner">${item.icon}</span>`;
+                if(item.image) {
+                    visualContent = `<img src="${item.image}" class="w-12 h-12 rounded-xl shadow-inner object-cover bg-gray-50">`;
+                }
+
                 const div = document.createElement('div');
                 div.className = 'bg-white rounded-2xl p-4 shadow-sm border border-gray-100 relative overflow-hidden group cursor-pointer transition hover:shadow-md';
                 // Add onclick to open details, but ensure delete button doesn't trigger it
@@ -934,7 +1040,7 @@
                 div.innerHTML = `
                     <div class="flex justify-between items-start mb-4 pl-2 relative z-20">
                         <div class="flex items-center gap-3">
-                            <span class="text-3xl bg-gray-50 w-12 h-12 flex items-center justify-center rounded-xl shadow-inner">${item.icon}</span>
+                            ${visualContent}
                             <div>
                                 <span class="font-bold text-gray-800 text-lg block">${item.name}</span>
                                 <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">#${item.id.toString().substr(-3)}</span>
