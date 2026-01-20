@@ -86,6 +86,17 @@
             z-index: 10;
             background-color: #f1f5f9;
         }
+        
+        /* Calculator Button Styles */
+        .calc-btn {
+            @apply bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg shadow-sm active:bg-gray-300 transition text-lg;
+        }
+        .calc-btn-op {
+            @apply bg-orange-100 hover:bg-orange-200 text-orange-600 font-bold py-3 rounded-lg shadow-sm active:bg-orange-300 transition text-lg;
+        }
+        .calc-btn-eq {
+            @apply bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md active:bg-primary-800 transition text-xl;
+        }
     </style>
 </head>
 <body class="text-gray-700 pb-24">
@@ -97,6 +108,12 @@
                 <i class="fa-solid fa-cow text-yellow-300"></i> ปศุสัตว์แพลนเนอร์
             </h1>
             <div class="flex gap-2">
+                <!-- Calculator Toggle Button -->
+                <button onclick="openCalculator()" class="bg-white/10 active:bg-white/20 w-9 h-9 rounded-lg flex items-center justify-center transition border border-white/20 shadow-sm" title="เครื่องคิดเลข">
+                    <i class="fa-solid fa-calculator text-yellow-300 text-lg"></i>
+                </button>
+
+                <!-- My Farm Button (Reverted) -->
                  <button onclick="toggleView('schedule')" class="bg-white/20 active:bg-white/30 px-3 py-1.5 rounded-lg text-sm transition flex items-center gap-1">
                     <i class="fa-solid fa-clipboard-list"></i> ฟาร์มของฉัน (<span id="schedule-count">0</span>)
                 </button>
@@ -161,7 +178,7 @@
             <div class="grid grid-cols-1 gap-3 pb-8" id="main-list"></div>
         </div>
 
-        <!-- View: My Schedule -->
+        <!-- View: My Schedule (Reverted) -->
         <div id="schedule-view" class="hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
@@ -184,6 +201,44 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Modal: Calculator (New Dialog) -->
+    <div id="calculator-modal" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-[320px] rounded-2xl shadow-2xl animate-pop overflow-hidden">
+            <div class="bg-gray-800 p-4 pb-6 relative">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-400 text-xs font-bold"><i class="fa-solid fa-calculator"></i> CALCULATOR</span>
+                    <button onclick="closeCalculator()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <input type="text" id="calc-display" class="w-full bg-transparent text-right text-3xl font-mono text-white outline-none" readonly value="0">
+            </div>
+            <div class="p-4 bg-gray-50">
+                <div class="grid grid-cols-4 gap-2">
+                    <button onclick="calcClear()" class="col-span-3 bg-red-100 hover:bg-red-200 text-red-600 font-bold py-3 rounded-lg shadow-sm transition">C</button>
+                    <button onclick="calcAppend('/')" class="calc-btn-op"><i class="fa-solid fa-divide"></i></button>
+                    
+                    <button onclick="calcAppend('7')" class="calc-btn">7</button>
+                    <button onclick="calcAppend('8')" class="calc-btn">8</button>
+                    <button onclick="calcAppend('9')" class="calc-btn">9</button>
+                    <button onclick="calcAppend('*')" class="calc-btn-op"><i class="fa-solid fa-xmark"></i></button>
+                    
+                    <button onclick="calcAppend('4')" class="calc-btn">4</button>
+                    <button onclick="calcAppend('5')" class="calc-btn">5</button>
+                    <button onclick="calcAppend('6')" class="calc-btn">6</button>
+                    <button onclick="calcAppend('-')" class="calc-btn-op"><i class="fa-solid fa-minus"></i></button>
+                    
+                    <button onclick="calcAppend('1')" class="calc-btn">1</button>
+                    <button onclick="calcAppend('2')" class="calc-btn">2</button>
+                    <button onclick="calcAppend('3')" class="calc-btn">3</button>
+                    <button onclick="calcAppend('+')" class="calc-btn-op"><i class="fa-solid fa-plus"></i></button>
+                    
+                    <button onclick="calcAppend('0')" class="col-span-2 calc-btn">0</button>
+                    <button onclick="calcAppend('.')" class="calc-btn">.</button>
+                    <button onclick="calcCalculate()" class="calc-btn-eq"><i class="fa-solid fa-equals"></i></button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal 1: Raising Calculator (Adding) -->
@@ -309,7 +364,7 @@
         </div>
     </div>
 
-    <!-- Navigation Bottom Bar -->
+    <!-- Navigation Bottom Bar (Reverted) -->
     <div class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-sm border-t border-gray-200 flex justify-around py-3 pb-safe z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.03)] md:hidden">
         <button onclick="toggleView('planner')" class="flex flex-col items-center gap-1 text-primary-600" id="nav-planner">
             <i class="fa-solid fa-calendar-check text-xl"></i>
@@ -381,6 +436,23 @@
     </div>
 
     <script>
+        // --- Calculator Logic ---
+        let calcVal = "0";
+        function openCalculator() { document.getElementById('calculator-modal').classList.remove('hidden'); calcVal = "0"; updateDisplay(); }
+        function closeCalculator() { document.getElementById('calculator-modal').classList.add('hidden'); }
+        function calcAppend(val) {
+            if (calcVal === "0" && !['+','-','*','/','.'].includes(val)) calcVal = val;
+            else calcVal += val;
+            updateDisplay();
+        }
+        function calcClear() { calcVal = "0"; updateDisplay(); }
+        function calcCalculate() {
+            try { calcVal = eval(calcVal).toString(); } catch (e) { calcVal = "Error"; }
+            updateDisplay();
+        }
+        function updateDisplay() { document.getElementById('calc-display').value = calcVal; }
+
+
         // --- ข้อมูลสัตว์เลี้ยงและโปรแกรมวัคซีน (Comprehensive List) ---
         const animals = [
             // --- Poultry (สัตว์ปีก) ---
