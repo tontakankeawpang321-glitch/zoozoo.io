@@ -41,6 +41,7 @@
                         'pop': 'pop 0.3s ease-out forwards',
                         'slide-up': 'slideUp 0.3s ease-out forwards',
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slow': 'bounce 3s infinite',
                     },
                     keyframes: {
                         pop: {
@@ -96,6 +97,31 @@
         }
         .calc-btn-eq {
             @apply bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md active:bg-primary-800 transition text-xl;
+        }
+
+        /* Chatbot Animations */
+        .chat-open {
+            animation: chatOpen 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .chat-close {
+            animation: chatClose 0.2s ease-in forwards;
+        }
+        @keyframes chatOpen {
+            from { opacity: 0; transform: translateY(20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes chatClose {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(20px) scale(0.9); }
+        }
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
         }
     </style>
 </head>
@@ -435,7 +461,139 @@
         </div>
     </div>
 
+    <!-- Chatbot Floating Button -->
+    <button onclick="toggleChat()" class="fixed bottom-24 right-4 md:bottom-8 md:right-8 w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg text-white flex items-center justify-center text-2xl z-50 hover:scale-110 transition animate-bounce-slow" id="chat-fab">
+        <i class="fa-solid fa-comments"></i>
+    </button>
+
+    <!-- Chatbot Window -->
+    <div id="chat-window" class="fixed bottom-40 right-4 md:bottom-24 md:right-8 w-[85vw] md:w-[320px] h-[50vh] md:h-[450px] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col z-50 hidden origin-bottom-right transition-all duration-300 transform scale-0 opacity-0">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-3 rounded-t-2xl text-white flex justify-between items-center flex-shrink-0">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-robot bg-white/20 p-1.5 rounded-full"></i>
+                <span class="font-bold text-sm">ผู้ช่วย AI ปศุสัตว์</span>
+            </div>
+            <button onclick="toggleChat()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <!-- Messages -->
+        <div id="chat-messages" class="flex-grow overflow-y-auto p-3 space-y-3 bg-slate-50 text-sm">
+            <div class="flex justify-start">
+                <div class="bg-white border border-gray-200 text-gray-700 p-2.5 rounded-2xl rounded-tl-none shadow-sm max-w-[85%] leading-relaxed">
+                    สวัสดีครับ! มีเรื่องการเลี้ยงสัตว์ให้ช่วยไหมครับ? 🐮
+                </div>
+            </div>
+        </div>
+        <!-- Input -->
+        <div class="p-3 border-t border-gray-100 bg-white rounded-b-2xl flex-shrink-0">
+            <form onsubmit="sendChatMessage(event)" class="flex gap-2">
+                <input type="text" id="chat-input" class="flex-grow bg-gray-100 border-0 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ถามมาได้เลย..." autocomplete="off">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white w-9 h-9 rounded-full flex items-center justify-center transition shadow-md flex-shrink-0">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script>
+        // --- Chatbot Logic ---
+        const CHATBOT_API_URL = "https://patitinepuk-zoo.tontakankeawpang321.workers.dev"; // ปรับ URL เป็นตัวเดียวกับ Backend หลัก
+
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            if (win.classList.contains('hidden')) {
+                win.classList.remove('hidden');
+                // Use a small timeout to allow display:block to apply before animating opacity
+                requestAnimationFrame(() => {
+                    win.classList.remove('scale-0', 'opacity-0');
+                    win.classList.add('scale-100', 'opacity-100');
+                    setTimeout(() => document.getElementById('chat-input').focus(), 300);
+                });
+            } else {
+                win.classList.remove('scale-100', 'opacity-100');
+                win.classList.add('scale-0', 'opacity-0');
+                setTimeout(() => win.classList.add('hidden'), 300);
+            }
+        }
+
+        async function sendChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            // 1. Add User Message
+            addMessage(msg, 'user');
+            input.value = '';
+
+            // 2. Add Loading Indicator
+            const loadingId = addLoadingMessage();
+
+            let replyText = "";
+
+            try {
+                // 3. Try Fetch from Worker
+                const response = await fetch(CHATBOT_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                replyText = data.reply || data.message || "ได้รับข้อมูลแล้ว";
+
+            } catch (err) {
+                // 4. Fallback if Fetch Fails (Network Error / Invalid URL)
+                console.warn("Chatbot API unreachable, using fallback.");
+                await new Promise(r => setTimeout(r, 1000)); // Fake delay
+                replyText = "ระบบ AI ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ในขณะนี้ (Demo Mode) \n\nคำแนะนำเบื้องต้น: หากสัตว์มีอาการป่วย ควรแยกออกจากฝูงและปรึกษาสัตวแพทย์ครับ 🐮";
+            } finally {
+                // 5. Remove Loading & Show Response (Real or Fallback)
+                removeMessage(loadingId);
+                addMessage(replyText, 'bot');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            const isUser = sender === 'user';
+            
+            div.className = `flex ${isUser ? 'justify-end' : 'justify-start'} animate-slide-up`;
+            div.innerHTML = `
+                <div class="${isUser ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border border-gray-200 text-gray-700 rounded-tl-none'} p-2.5 rounded-2xl shadow-sm max-w-[85%] text-sm leading-relaxed break-words">
+                    ${text}
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addLoadingMessage() {
+            const id = 'loading-' + Date.now();
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'flex justify-start animate-slide-up';
+            div.innerHTML = `
+                <div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1">
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return id;
+        }
+
+        function removeMessage(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+
         // --- Calculator Logic ---
         let calcVal = "0";
         function openCalculator() { document.getElementById('calculator-modal').classList.remove('hidden'); calcVal = "0"; updateDisplay(); }
