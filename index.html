@@ -139,7 +139,7 @@
                     <i class="fa-solid fa-calculator text-yellow-300 text-lg"></i>
                 </button>
 
-                <!-- My Farm Button (Reverted) -->
+                <!-- My Farm Button -->
                  <button onclick="toggleView('schedule')" class="bg-white/20 active:bg-white/30 px-3 py-1.5 rounded-lg text-sm transition flex items-center gap-1">
                     <i class="fa-solid fa-clipboard-list"></i> ฟาร์มของฉัน (<span id="schedule-count">0</span>)
                 </button>
@@ -204,7 +204,7 @@
             <div class="grid grid-cols-1 gap-3 pb-8" id="main-list"></div>
         </div>
 
-        <!-- View: My Schedule (Reverted) -->
+        <!-- View: My Schedule -->
         <div id="schedule-view" class="hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
@@ -238,13 +238,13 @@
             <h3 class="text-xl font-bold text-gray-800 mb-2">ลบรายการนี้?</h3>
             <p class="text-sm text-gray-500 mb-6 leading-relaxed">ข้อมูลการเลี้ยงและประวัติวัคซีนจะหายไปถาวร</p>
             <div class="flex gap-3">
-                <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition text-sm">เก็บไว้</button>
-                <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 shadow-lg shadow-red-200 transition text-sm">ลบทิ้ง</button>
+                <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition text-sm active:bg-gray-100">เก็บไว้</button>
+                <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 shadow-lg shadow-red-200 transition text-sm active:scale-95">ลบทิ้ง</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Calculator (New Dialog) -->
+    <!-- Modal: Calculator -->
     <div id="calculator-modal" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-white w-full max-w-[320px] rounded-2xl shadow-2xl animate-pop overflow-hidden">
             <div class="bg-gray-800 p-4 pb-6 relative">
@@ -969,6 +969,7 @@
         let currentItem = null; 
         let currentUploadImage = null; // Store base64 image
         let mySchedules = JSON.parse(localStorage.getItem('myLivestockSchedule')) || [];
+        let itemToDeleteId = null; // Store ID for delete modal
 
         document.addEventListener('DOMContentLoaded', () => {
             const datePicker = document.getElementById('global-date-picker');
@@ -1130,6 +1131,13 @@
         function openCalcModal(item) {
             currentItem = item;
             
+            // Reset Image Upload
+            currentUploadImage = null;
+            document.getElementById('upload-image').value = '';
+            document.getElementById('preview-image').src = '';
+            document.getElementById('preview-image').classList.add('hidden');
+            document.getElementById('preview-placeholder').classList.remove('hidden');
+
             document.getElementById('modal-icon').innerText = item.icon;
             document.getElementById('modal-title').innerText = item.name;
             let catName = 'สัตว์';
@@ -1169,7 +1177,7 @@
                 id: Date.now(),
                 itemId: currentItem.id, category: currentItem.category,
                 name: currentItem.name, icon: currentItem.icon,
-                // image property removed
+                image: currentUploadImage || null, // Save image if uploaded
                 startDate: start.toISOString(), midDate: mid.toISOString(), endDate: end.toISOString(),
                 vaccineProgram: currentItem.vaccineProgram // Save full program
             };
@@ -1188,9 +1196,17 @@
             // Find static animal data for Temp/Feed (using itemId)
             const animalData = animals.find(a => a.id == item.itemId);
             
-            // Icon Only Logic
-            document.getElementById('detail-icon-container').innerHTML = `<span id="detail-icon">${item.icon}</span>`;
-            document.getElementById('detail-icon-container').classList.add('p-2');
+            // Store ID for image update
+            document.getElementById('detail-title').dataset.id = item.id;
+
+            // Handle Icon vs Image in Detail View
+            if (item.image) {
+                document.getElementById('detail-icon-container').innerHTML = `<img src="${item.image}" class="w-full h-full object-cover">`;
+                document.getElementById('detail-icon-container').classList.remove('p-2'); // Remove padding for full image
+            } else {
+                document.getElementById('detail-icon-container').innerHTML = `<span id="detail-icon">${item.icon}</span>`;
+                document.getElementById('detail-icon-container').classList.add('p-2');
+            }
 
             document.getElementById('detail-title').innerText = item.name;
             const startDate = new Date(item.startDate);
@@ -1263,8 +1279,11 @@
                 if(item.category === 'other') barColor = "bg-emerald-500";
                 if(item.category === 'pet') barColor = "bg-pink-500";
                 
-                // Icon Only Logic
+                // Image or Icon Logic
                 let visualContent = `<span class="text-3xl bg-gray-50 w-12 h-12 flex items-center justify-center rounded-xl shadow-inner">${item.icon}</span>`;
+                if(item.image) {
+                    visualContent = `<img src="${item.image}" class="w-12 h-12 rounded-xl shadow-inner object-cover bg-gray-50">`;
+                }
 
                 const div = document.createElement('div');
                 div.className = 'bg-white rounded-2xl p-4 shadow-sm border border-gray-100 relative overflow-hidden group cursor-pointer transition hover:shadow-md';
@@ -1284,8 +1303,8 @@
                                 <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">#${item.id.toString().substr(-3)}</span>
                             </div>
                         </div>
-                        <button type="button" onclick="deleteSchedule('${item.id}'); event.stopPropagation();" class="delete-btn text-gray-400 hover:text-red-500 w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-50 transition border border-transparent hover:border-red-100 z-30">
-                            <i class="fa-solid fa-trash-can text-lg"></i>
+                        <button type="button" class="delete-btn bg-red-50 text-red-400 hover:text-white hover:bg-red-500 w-9 h-9 flex items-center justify-center rounded-lg transition shadow-sm border border-red-100 hover:border-red-500 z-30">
+                            <i class="fa-solid fa-trash text-sm"></i>
                         </button>
                     </div>
                     <div class="grid grid-cols-2 gap-2 text-center text-sm relative z-10">
@@ -1300,17 +1319,36 @@
                     </div>
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 ${barColor}"></div>
                 `;
+                
+                // Bind delete event manually to prevent bubbling issues and ensure execution
+                const delBtn = div.querySelector('.delete-btn');
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    openDeleteModal(item.id);
+                };
+
                 list.appendChild(div);
             });
         }
 
-        function deleteSchedule(id) {
-            // Updated delete logic to handle string IDs and force update
-            if(confirm('ยืนยันลบรายการนี้? (ไม่สามารถกู้คืนได้)')) {
+        // --- Delete Modal Functions ---
+        function openDeleteModal(id) {
+            itemToDeleteId = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            itemToDeleteId = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        function confirmDelete() {
+            if (itemToDeleteId) {
                 // Use loose equality (!=) to handle string/number mismatches
-                mySchedules = mySchedules.filter(item => item.id != id);
+                mySchedules = mySchedules.filter(item => item.id != itemToDeleteId);
                 localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
                 renderScheduleList();
+                closeDeleteModal();
             }
         }
 
