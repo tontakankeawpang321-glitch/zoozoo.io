@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Farm Planner 🚜</title>
+    <title>ปฏิทินปลูกผักผลไม้ & ตลาดพันธุ์ไม้ 🚜</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
@@ -19,29 +19,33 @@
                         sans: ['Kanit', 'sans-serif'],
                     },
                     colors: {
-                        primary: {
-                            50: '#fff7ed',
-                            100: '#ffedd5',
-                            500: '#f97316',
-                            600: '#ea580c',
-                            700: '#c2410c',
-                            800: '#9a3412',
+                        leaf: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
                         },
-                        secondary: {
-                            50: '#f0f9ff',
+                        market: {
+                            100: '#e0f2fe',
                             500: '#0ea5e9',
                             600: '#0284c7',
                         },
-                        accent: {
-                            500: '#eab308', 
-                            600: '#ca8a04',
+                        veg: {
+                            500: '#84cc16', // lime-500
+                            600: '#65a30d', // lime-600
+                        },
+                        bot: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
                         }
                     },
                     animation: {
                         'pop': 'pop 0.3s ease-out forwards',
                         'slide-up': 'slideUp 0.3s ease-out forwards',
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'bounce-slow': 'bounce 3s infinite',
+                        'spin-slow': 'spin 3s linear infinite',
+                        'bounce-slow': 'bounce 2s infinite',
                     },
                     keyframes: {
                         pop: {
@@ -59,7 +63,7 @@
     </script>
     <style>
         body {
-            background-color: #fcf6f0;
+            background-color: #f8fafc;
             overscroll-behavior-y: none; 
         }
         .hide-scroll::-webkit-scrollbar {
@@ -69,52 +73,83 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        
-        .tab-active {
-            background-color: #ea580c;
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.3);
-            transform: scale(1.02);
-        }
-        .tab-inactive {
-            background-color: white;
-            color: #64748b;
-            border: 1px solid #f1f5f9;
-        }
+        /* Custom Table Style */
         .market-table th {
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #475569;
+            padding: 12px 8px;
             background-color: #f1f5f9;
         }
+        .market-table td {
+            font-size: 0.85rem;
+            padding: 12px 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .trend-up { color: #22c55e; }
+        .trend-down { color: #ef4444; }
+        .trend-stable { color: #94a3b8; }
         
-        /* Calculator Button Styles */
-        .calc-btn {
-            @apply bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg shadow-sm active:bg-gray-300 transition text-lg;
+        .tab-active {
+            background-color: white;
+            color: #15803d;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .calc-btn-op {
-            @apply bg-orange-100 hover:bg-orange-200 text-orange-600 font-bold py-3 rounded-lg shadow-sm active:bg-orange-300 transition text-lg;
+        .tab-inactive {
+            color: #4b5563;
         }
-        .calc-btn-eq {
-            @apply bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md active:bg-primary-800 transition text-xl;
+        
+        /* Market specific tabs */
+        .market-tab-active {
+            background-color: #0ea5e9;
+            color: white;
+        }
+        .market-tab-inactive {
+            background-color: #e0f2fe;
+            color: #0284c7;
         }
 
-        /* Chatbot Animations */
-        .chat-open {
-            animation: chatOpen 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        /* Modal Tabs */
+        .modal-tab-active {
+            border-bottom: 2px solid #16a34a;
+            color: #16a34a;
+            font-weight: 600;
         }
-        .chat-close {
-            animation: chatClose 0.2s ease-in forwards;
+        .modal-tab-inactive {
+            border-bottom: 2px solid transparent;
+            color: #64748b;
         }
-        @keyframes chatOpen {
-            from { opacity: 0; transform: translateY(20px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+
+        /* Chat Styles */
+        .chat-msg {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            word-wrap: break-word;
         }
-        @keyframes chatClose {
-            from { opacity: 1; transform: translateY(0) scale(1); }
-            to { opacity: 0; transform: translateY(20px) scale(0.9); }
+        .chat-user {
+            background-color: #7c3aed;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bot {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #e5e7eb;
         }
         .typing-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #9ca3af;
+            margin: 0 2px;
             animation: typing 1.4s infinite ease-in-out both;
         }
         .typing-dot:nth-child(1) { animation-delay: -0.32s; }
@@ -125,23 +160,21 @@
         }
     </style>
 </head>
-<body class="text-gray-700 pb-24">
+<body class="text-gray-700 pb-28 relative min-h-screen">
 
-    <!-- Navbar -->
-    <nav class="bg-gradient-to-r from-primary-700 to-primary-600 text-white p-3 shadow-md sticky top-0 z-50">
+    <!-- Navbar (Sticky Top) -->
+    <nav class="bg-leaf-700 text-white p-3 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-lg font-bold flex items-center gap-2">
-                <i class="fa-solid fa-cow text-yellow-300"></i> Smart Farm Planner
+                <i class="fa-solid fa-seedling text-yellow-300"></i> ปฏิทินเกษตรไทย
             </h1>
             <div class="flex gap-2">
-                <!-- Calculator Toggle Button -->
-                <button onclick="openCalculator()" class="bg-white/10 active:bg-white/20 w-9 h-9 rounded-lg flex items-center justify-center transition border border-white/20 shadow-sm" title="เครื่องคิดเลข">
-                    <i class="fa-solid fa-calculator text-yellow-300 text-lg"></i>
+                <!-- ปุ่มเครื่องคิดเลข -->
+                <button onclick="openCalculator()" class="bg-white/20 active:bg-white/30 px-3 py-1.5 rounded-lg text-sm transition flex items-center gap-1 hover:bg-white/30">
+                    <i class="fa-solid fa-calculator"></i> <span class="hidden sm:inline">คิดเลข</span>
                 </button>
-
-                <!-- My Farm Button (Reverted) -->
                  <button onclick="toggleView('schedule')" class="bg-white/20 active:bg-white/30 px-3 py-1.5 rounded-lg text-sm transition flex items-center gap-1">
-                    <i class="fa-solid fa-clipboard-list"></i> ฟาร์มของฉัน (<span id="schedule-count">0</span>)
+                    <i class="fa-solid fa-clipboard-list"></i> แปลงของฉัน (<span id="schedule-count">0</span>)
                 </button>
             </div>
         </div>
@@ -150,1251 +183,1196 @@
     <!-- Main Content -->
     <div class="container mx-auto px-3 py-4 max-w-lg">
         
-        <!-- View: Planning Selection -->
-        <div id="planner-view">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-5 shadow-lg mb-4 text-white relative overflow-hidden transition-all duration-500" id="season-header-bg">
-                <i class="fa-solid fa-temperature-three-quarters text-6xl absolute -right-2 -top-2 opacity-10"></i>
+        <!-- View: Calendar Selection -->
+        <div id="calendar-view">
+            <!-- Header: Date & Season (Interactive) -->
+            <div class="bg-gradient-to-r from-leaf-600 to-leaf-500 rounded-2xl p-5 shadow-lg mb-4 text-white relative overflow-hidden transition-all duration-500" id="season-header-bg">
+                <i class="fa-solid fa-cloud-sun text-6xl absolute -right-2 -top-2 opacity-20" id="season-icon-bg"></i>
                 <div class="relative z-10">
                     <div class="flex items-center gap-2 mb-1">
                         <i class="fa-regular fa-calendar text-white/80"></i>
                         <input type="date" id="global-date-picker" class="bg-white/20 border-0 rounded px-2 py-0.5 text-sm text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-white/50 cursor-pointer">
                     </div>
+                    
                     <h2 class="text-3xl font-bold mt-2 flex items-center gap-3">
-                        <span id="current-season-display">ตรวจสอบฤดูกาล...</span>
+                        <span id="current-season-display">กำลังคำนวณ...</span>
+                        <i class="fa-solid fa-cloud text-2xl opacity-80" id="season-icon-small"></i>
                     </h2>
-                    <p class="text-xs mt-2 text-gray-300">* สภาพอากาศมีผลต่อสุขภาพสัตว์</p>
+                    
+                    <p class="text-xs mt-2 bg-white/20 inline-block px-2 py-1 rounded-lg backdrop-blur-sm">
+                        <i class="fa-solid fa-location-dot"></i> อัพเดทตามวันที่เลือก
+                    </p>
                 </div>
             </div>
 
-            <!-- Tab Switcher (Scrollable) -->
-            <div class="flex overflow-x-auto gap-2 mb-4 relative z-10 hide-scroll pb-2">
-                <button onclick="switchCategory('poultry')" id="tab-poultry" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-active flex-shrink-0">
-                    <i class="fa-solid fa-dove text-lg mb-1"></i> สัตว์ปีก
+            <!-- Tab Switcher (Main View) -->
+            <div class="bg-gray-100 p-1 rounded-xl flex mb-4 relative z-10">
+                <button onclick="switchCategory('fruit')" id="tab-fruit" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 tab-active">
+                    <i class="fa-solid fa-apple-whole"></i> ผลไม้
                 </button>
-                <button onclick="switchCategory('mammal')" id="tab-mammal" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive flex-shrink-0">
-                    <i class="fa-solid fa-piggy-bank text-lg mb-1"></i> ปศุสัตว์
-                </button>
-                <button onclick="switchCategory('aquatic')" id="tab-aquatic" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive flex-shrink-0">
-                    <i class="fa-solid fa-fish-fins text-lg mb-1"></i> สัตว์น้ำ
-                </button>
-                <button onclick="switchCategory('pet')" id="tab-pet" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive flex-shrink-0">
-                    <i class="fa-solid fa-paw text-lg mb-1"></i> สัตว์เลี้ยง
-                </button>
-                <button onclick="switchCategory('other')" id="tab-other" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-inactive flex-shrink-0">
-                    <i class="fa-solid fa-bug text-lg mb-1"></i> อื่นๆ
+                <button onclick="switchCategory('veg')" id="tab-veg" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 tab-inactive">
+                    <i class="fa-solid fa-carrot"></i> ผักสวนครัว
                 </button>
             </div>
 
-            <!-- Search -->
-            <div class="bg-white rounded-xl p-3 shadow-sm mb-4 border border-gray-100 sticky top-[60px] z-40">
-                <div class="flex gap-2">
+            <!-- Search & Filter -->
+            <div class="bg-white rounded-xl p-4 shadow-sm mb-4 border border-gray-100 sticky top-[60px] z-40">
+                <div class="flex gap-2 mb-3">
                     <div class="relative flex-grow">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="search-input" placeholder="ค้นหา เช่น กุ้ง, หมา, ไก่..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm">
+                        <input type="text" id="search-input" placeholder="ค้นหาพืช..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-leaf-500 text-sm">
                     </div>
                 </div>
-                <div class="mt-2 text-xs text-gray-500 flex justify-between">
-                    <span>แสดงผล: <span id="filter-status" class="font-bold">ทั้งหมด</span></span>
-                    <span class="text-primary-600 font-medium cursor-pointer hover:underline" onclick="toggleView('schedule')">ดูฟาร์มของฉัน ></span>
+                
+                <div class="flex items-center justify-between">
+                    <p class="text-xs text-gray-500">แสดงผล: <span id="filter-status" class="font-bold text-gray-700">ทั้งหมด</span></p>
+                    <button onclick="filterCurrentMonth()" class="bg-orange-100 text-orange-600 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm hover:bg-orange-200 transition flex items-center gap-1 animate-pulse-slow">
+                        <i class="fa-solid fa-star"></i> แนะนำเดือนนี้
+                    </button>
                 </div>
             </div>
 
-            <!-- List -->
-            <div class="grid grid-cols-1 gap-3 pb-8" id="main-list"></div>
+            <!-- List of Crops -->
+            <div class="grid grid-cols-1 gap-3" id="fruit-list">
+                <!-- Items will be injected here -->
+            </div>
         </div>
 
-        <!-- View: My Schedule (Reverted) -->
+        <!-- View: My Schedule (ตารางงาน) -->
         <div id="schedule-view" class="hidden">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fa-solid fa-warehouse text-primary-600"></i> ฟาร์มของฉัน
-                </h2>
-                <button onclick="toggleView('planner')" class="text-primary-600 bg-primary-50 px-3 py-1.5 rounded-lg text-sm border border-primary-100 font-bold hover:bg-primary-100 transition">
-                    <i class="fa-solid fa-plus"></i> ลงสัตว์เพิ่ม
+                <h2 class="text-xl font-bold text-gray-800">แปลงปลูกของฉัน 🌱</h2>
+                <button onclick="toggleView('calendar')" class="text-leaf-600 bg-leaf-50 px-3 py-1 rounded-lg text-sm">
+                    <i class="fa-solid fa-plus"></i> เพิ่ม
                 </button>
             </div>
 
-            <p class="text-xs text-gray-500 mb-2 text-center">* แตะที่รายการเพื่อดูโปรแกรมวัคซีนและข้อมูลการเลี้ยง</p>
-            <div id="schedule-list" class="space-y-3"></div>
+            <div id="schedule-list" class="space-y-3">
+                <!-- Schedule Items injected here -->
+            </div>
             
-            <div id="empty-schedule" class="hidden flex flex-col items-center justify-center py-16 text-gray-400">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <i class="fa-solid fa-cow text-3xl opacity-30"></i>
-                </div>
-                <p>ยังไม่มีรายการเลี้ยงสัตว์</p>
-                <button onclick="toggleView('planner')" class="mt-4 text-primary-600 font-bold text-sm hover:underline">เริ่มวางแผนเลี้ยงเลย</button>
+            <div id="empty-schedule" class="hidden flex flex-col items-center justify-center py-10 text-gray-400">
+                <i class="fa-solid fa-clipboard text-5xl mb-3 opacity-30"></i>
+                <p>ยังไม่มีบันทึกการปลูก</p>
+                <button onclick="toggleView('calendar')" class="mt-4 text-leaf-600 underline text-sm">เริ่มวางแผนเลย</button>
             </div>
         </div>
 
     </div>
 
-    <!-- Modal: Delete Confirmation (New Custom Dialog) -->
-    <div id="delete-modal" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white w-full max-w-[300px] rounded-3xl shadow-2xl animate-pop overflow-hidden p-6 text-center">
-            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-trash-can text-red-500 text-2xl"></i>
+    <!-- Floating Chatbot Button -->
+    <button onclick="toggleChat()" class="fixed z-50 bottom-24 right-4 md:bottom-8 md:right-8 bg-bot-600 hover:bg-bot-500 text-white p-4 rounded-full shadow-xl transition-all duration-300 transform hover:scale-110 active:scale-95 flex items-center justify-center w-14 h-14 border-4 border-white">
+        <i class="fa-solid fa-robot text-2xl animate-bounce-slow"></i>
+    </button>
+
+    <!-- Chatbot Window -->
+    <div id="chatbot-window" class="fixed z-[60] bottom-0 right-0 w-full sm:w-[350px] sm:bottom-24 sm:right-4 h-[80vh] sm:h-[500px] bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col transform translate-y-full transition-transform duration-300 border border-gray-200 hidden">
+        
+        <!-- Chat Header -->
+        <div class="bg-bot-600 text-white p-4 rounded-t-2xl flex justify-between items-center shadow-md">
+            <div class="flex items-center gap-2">
+                <div class="bg-white/20 p-2 rounded-full">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm">ผู้ช่วยเกษตร AI</h3>
+                    <p class="text-[10px] text-white/80 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span> ออนไลน์</p>
+                </div>
             </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">ลบรายการนี้?</h3>
-            <p class="text-sm text-gray-500 mb-6 leading-relaxed">ข้อมูลการเลี้ยงและประวัติวัคซีนจะหายไปถาวร</p>
-            <div class="flex gap-3">
-                <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition text-sm">เก็บไว้</button>
-                <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 shadow-lg shadow-red-200 transition text-sm">ลบทิ้ง</button>
+            <button onclick="toggleChat()" class="text-white/80 hover:text-white transition">
+                <i class="fa-solid fa-chevron-down sm:fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto bg-gray-50 flex flex-col gap-2 custom-scrollbar">
+            <div class="chat-msg chat-bot">
+                สวัสดีครับ! 🌾 มีเรื่องการปลูกพืช ราคาตลาด หรือปัญหาโรคพืช สอบถามได้เลยครับ
             </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="p-3 bg-white border-t border-gray-100 flex items-center gap-2">
+            <input type="text" id="chat-input" placeholder="พิมพ์คำถาม..." class="flex-grow bg-gray-100 border-0 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-bot-500 focus:outline-none" onkeypress="handleChatEnter(event)">
+            <button onclick="sendChatMessage()" class="bg-bot-600 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-sm hover:bg-bot-500 transition active:scale-95">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+            </button>
         </div>
     </div>
 
-    <!-- Modal: Calculator (New Dialog) -->
-    <div id="calculator-modal" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white w-full max-w-[320px] rounded-2xl shadow-2xl animate-pop overflow-hidden">
-            <div class="bg-gray-800 p-4 pb-6 relative">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-gray-400 text-xs font-bold"><i class="fa-solid fa-calculator"></i> CALCULATOR</span>
-                    <button onclick="closeCalculator()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <input type="text" id="calc-display" class="w-full bg-transparent text-right text-3xl font-mono text-white outline-none" readonly value="0">
-            </div>
-            <div class="p-4 bg-gray-50">
-                <div class="grid grid-cols-4 gap-2">
-                    <button onclick="calcClear()" class="col-span-3 bg-red-100 hover:bg-red-200 text-red-600 font-bold py-3 rounded-lg shadow-sm transition">C</button>
-                    <button onclick="calcAppend('/')" class="calc-btn-op"><i class="fa-solid fa-divide"></i></button>
-                    
-                    <button onclick="calcAppend('7')" class="calc-btn">7</button>
-                    <button onclick="calcAppend('8')" class="calc-btn">8</button>
-                    <button onclick="calcAppend('9')" class="calc-btn">9</button>
-                    <button onclick="calcAppend('*')" class="calc-btn-op"><i class="fa-solid fa-xmark"></i></button>
-                    
-                    <button onclick="calcAppend('4')" class="calc-btn">4</button>
-                    <button onclick="calcAppend('5')" class="calc-btn">5</button>
-                    <button onclick="calcAppend('6')" class="calc-btn">6</button>
-                    <button onclick="calcAppend('-')" class="calc-btn-op"><i class="fa-solid fa-minus"></i></button>
-                    
-                    <button onclick="calcAppend('1')" class="calc-btn">1</button>
-                    <button onclick="calcAppend('2')" class="calc-btn">2</button>
-                    <button onclick="calcAppend('3')" class="calc-btn">3</button>
-                    <button onclick="calcAppend('+')" class="calc-btn-op"><i class="fa-solid fa-plus"></i></button>
-                    
-                    <button onclick="calcAppend('0')" class="col-span-2 calc-btn">0</button>
-                    <button onclick="calcAppend('.')" class="calc-btn">.</button>
-                    <button onclick="calcCalculate()" class="calc-btn-eq"><i class="fa-solid fa-equals"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal 1: Raising Calculator (Adding) -->
+    <!-- Modal: Planting Calculator & Guide (Dialog) -->
     <div id="calc-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm">
-        <div class="bg-white w-full sm:w-[420px] sm:rounded-2xl rounded-t-3xl shadow-2xl animate-slide-up flex flex-col max-h-[95vh]">
+        <div class="bg-white w-full sm:w-[450px] sm:rounded-2xl rounded-t-2xl shadow-2xl animate-slide-up flex flex-col max-h-[90vh]">
             
             <!-- Modal Header -->
-            <div class="p-5 bg-primary-50 border-b border-primary-100 rounded-t-3xl flex justify-between items-start">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-3xl" id="modal-icon-container">
-                        <span id="modal-icon">🐔</span>
-                    </div>
+            <div class="p-4 bg-leaf-50 border-b border-gray-100 rounded-t-2xl flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span id="modal-icon" class="text-3xl">🥭</span>
                     <div>
-                        <h3 class="font-bold text-xl text-gray-800" id="modal-title">...</h3>
-                        <div class="flex items-center gap-2 mt-1">
-                            <span class="text-xs bg-white px-2 py-0.5 rounded border border-gray-200 text-gray-600" id="modal-category">...</span>
-                            <p class="text-xs text-gray-500" id="modal-desc">...</p>
-                        </div>
+                        <h3 class="font-bold text-lg text-gray-800" id="modal-title">มะม่วง</h3>
+                        <p class="text-xs text-gray-500" id="modal-desc">ระยะเวลาเก็บเกี่ยว ~90 วัน</p>
                     </div>
                 </div>
-                <button onclick="closeCalcModal()" class="w-8 h-8 rounded-full bg-white/50 hover:bg-white text-gray-500 flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <button onclick="closeCalcModal()" class="w-8 h-8 rounded-full bg-white text-gray-500 shadow-sm flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <!-- Modal Body (Simplified) -->
-            <div class="p-5 overflow-y-auto custom-scrollbar">
+            <!-- Modal Tabs -->
+            <div class="flex border-b border-gray-100" id="modal-tabs">
+                <button onclick="switchModalTab('timeline')" id="mtab-timeline" class="flex-1 py-3 text-sm font-medium modal-tab-active transition-colors">
+                    <i class="fa-solid fa-calendar-days mr-1"></i> คำนวณวัน
+                </button>
+                <button onclick="switchModalTab('guide')" id="mtab-guide" class="flex-1 py-3 text-sm font-medium modal-tab-inactive transition-colors">
+                    <i class="fa-solid fa-book-open mr-1"></i> วิธีดูแล
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-5 overflow-y-auto bg-white flex-grow">
                 
-                <!-- Image Upload (Restored) -->
-                <div class="mb-4">
-                    <label class="block text-sm font-bold text-gray-700 mb-2">
-                        <i class="fa-regular fa-image mr-1"></i> เพิ่มรูปแปลง/สัตว์
-                    </label>
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden border border-gray-200 relative group cursor-pointer hover:border-primary-400 transition" onclick="document.getElementById('upload-image').click()">
-                            <img id="preview-image" src="" class="w-full h-full object-cover hidden">
-                            <div id="preview-placeholder" class="text-center">
-                                <i class="fa-solid fa-camera text-gray-400 text-xl group-hover:text-primary-500 transition"></i>
-                            </div>
+                <!-- Content: Timeline -->
+                <div id="modal-content-timeline">
+                    <!-- Input Date -->
+                    <div class="mb-6" id="date-input-container">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">เลือกวันเริ่มปลูก (วันที่ลงดิน)</label>
+                        <input type="date" id="start-date" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-leaf-500 focus:border-leaf-500 outline-none text-lg text-center bg-gray-50 text-gray-800">
+                    </div>
+
+                    <!-- Timeline Preview -->
+                    <div class="relative pl-4 border-l-2 border-gray-200 space-y-6">
+                        <!-- Start -->
+                        <div class="relative">
+                            <div class="absolute -left-[21px] top-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white shadow"></div>
+                            <p class="text-xs text-gray-500">วันเริ่มปลูก</p>
+                            <p class="font-bold text-gray-800 text-lg" id="preview-start-date">-</p>
                         </div>
-                        <div class="flex-1">
-                            <input type="file" id="upload-image" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer">
-                            <p class="text-[10px] text-gray-400 mt-1">รองรับรูปภาพ .jpg, .png</p>
+                        
+                        <!-- Fertilize -->
+                        <div class="relative">
+                            <div class="absolute -left-[21px] top-1 bg-yellow-400 w-3 h-3 rounded-full border-2 border-white shadow"></div>
+                            <p class="text-xs text-gray-500">เริ่มใส่ปุ๋ย (+<span id="days-fertilize"></span> วัน)</p>
+                            <p class="font-bold text-yellow-700 text-lg" id="preview-fertilize-date">-</p>
+                        </div>
+
+                        <!-- Harvest -->
+                        <div class="relative">
+                            <div class="absolute -left-[21px] top-1 bg-orange-500 w-3 h-3 rounded-full border-2 border-white shadow"></div>
+                            <p class="text-xs text-gray-500">ระยะเก็บเกี่ยว (+<span id="days-harvest"></span> วัน)</p>
+                            <p class="font-bold text-orange-700 text-lg" id="preview-harvest-date">-</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Input Date -->
-                <div class="mb-6">
-                    <label class="block text-sm font-bold text-gray-700 mb-2">
-                        <i class="fa-regular fa-calendar-check mr-1"></i> วันที่เริ่มเลี้ยง (ลงสัตว์)
-                    </label>
-                    <input type="date" id="start-date" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-lg text-center bg-gray-50 text-gray-800 shadow-inner">
-                </div>
+                <!-- Content: Guide (New) -->
+                <div id="modal-content-guide" class="hidden space-y-4">
+                    
+                    <!-- Planting -->
+                    <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                        <h4 class="font-bold text-green-800 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-trowel text-green-600"></i> วิธีปลูก
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed" id="guide-plant">...</p>
+                    </div>
 
-                <!-- Timeline Preview (Compact) -->
-                <div class="relative pl-6 border-l-2 border-dashed border-gray-300 space-y-6 pb-2">
-                    <div class="relative">
-                        <div class="absolute -left-[31px] top-1 bg-green-500 w-4 h-4 rounded-full border-4 border-white shadow-sm"></div>
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">วันเริ่มเลี้ยง</p>
-                        <p class="font-bold text-gray-800 text-lg" id="preview-start-date">-</p>
+                    <!-- Watering -->
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <h4 class="font-bold text-blue-800 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-droplet text-blue-500"></i> การรดน้ำ
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed" id="guide-water">...</p>
                     </div>
-                    <div class="relative">
-                        <div class="absolute -left-[31px] top-1 bg-primary-600 w-4 h-4 rounded-full border-4 border-white shadow-sm"></div>
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">จบครอป/จับขาย</p>
-                        <p class="font-bold text-primary-700 text-lg" id="preview-end-date">-</p>
+
+                    <!-- Fertilizer -->
+                    <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100">
+                        <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-poop text-yellow-600"></i> การใส่ปุ๋ย & ความถี่
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed" id="guide-fertilizer">...</p>
                     </div>
+
                 </div>
 
             </div>
 
             <!-- Modal Footer -->
-            <div class="p-4 border-t border-gray-100 bg-gray-50 rounded-b-3xl sm:rounded-b-2xl z-20">
-                <button onclick="saveSchedule()" class="w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-500/30 active:scale-[0.98] transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-check-circle"></i> บันทึกรายการ
+            <div class="p-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl sm:rounded-b-2xl" id="modal-footer-action">
+                <button onclick="saveSchedule()" class="w-full bg-leaf-600 hover:bg-leaf-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-leaf-500/30 active:scale-95 transition" id="save-btn">
+                    <i class="fa-regular fa-floppy-disk mr-2"></i> บันทึกตารางปลูก
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal 2: Detail View (Viewing in My Farm) -->
-    <div id="detail-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm">
-        <div class="bg-white w-full sm:w-[420px] sm:rounded-2xl rounded-t-3xl shadow-2xl animate-slide-up flex flex-col max-h-[95vh]">
-            
-            <!-- Modal Header -->
-            <div class="p-5 bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 rounded-t-3xl flex justify-between items-start">
-                <div class="flex items-center gap-4 w-full">
-                    <!-- Icon Container (Clickable for Image Change) -->
-                    <div id="detail-icon-container" class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-3xl text-primary-600 overflow-hidden flex-shrink-0 border border-gray-100 p-2 cursor-pointer hover:opacity-80 transition relative group" onclick="document.getElementById('detail-image-upload').click()">
-                        <span id="detail-icon">🐔</span>
-                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                            <i class="fa-solid fa-camera text-white text-xs"></i>
-                        </div>
-                    </div>
-                    <!-- Hidden input for changing image -->
-                    <input type="file" id="detail-image-upload" class="hidden" accept="image/*" onchange="updateScheduleImage(this)">
-                    
-                    <div class="flex-grow">
-                        <h3 class="font-bold text-xl text-gray-800 leading-tight" id="detail-title">...</h3>
-                        <p class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded inline-block mt-1" id="detail-date-label">เริ่ม: ...</p>
-                    </div>
-                </div>
-                <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition flex-shrink-0 ml-2">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <!-- Modal Body (Rich Info) -->
-            <div class="p-5 overflow-y-auto custom-scrollbar bg-slate-50">
-                <p class="text-[10px] text-center text-gray-400 mb-2"><i class="fa-regular fa-image"></i> แตะที่รูปด้านบนเพื่อเปลี่ยนรูป</p>
-                <!-- Specs Card -->
-                <div class="bg-white border border-gray-200 rounded-xl p-4 mb-4 shadow-sm">
-                    <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-info text-primary-500"></i> ข้อมูลการเลี้ยง
-                    </h4>
-                    <div class="grid grid-cols-1 gap-3 text-sm">
-                        <div class="flex items-start gap-3 bg-gray-50 p-2 rounded-lg">
-                            <div class="w-6 flex justify-center"><i class="fa-solid fa-temperature-half text-red-500 mt-0.5"></i></div>
-                            <div>
-                                <span class="font-bold text-gray-700 block text-xs uppercase text-red-400">อุณหภูมิ/สภาพแวดล้อม</span>
-                                <span id="detail-temp" class="text-gray-700 font-medium">-</span>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3 bg-gray-50 p-2 rounded-lg">
-                            <div class="w-6 flex justify-center"><i class="fa-solid fa-bowl-food text-amber-600 mt-0.5"></i></div>
-                            <div>
-                                <span class="font-bold text-gray-700 block text-xs uppercase text-amber-500">อาหารแนะนำ</span>
-                                <span id="detail-feed" class="text-gray-700 font-medium">-</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Vaccine Program Card -->
-                <div class="bg-white border border-blue-200 rounded-xl p-0 mb-4 shadow-sm overflow-hidden">
-                    <div class="bg-blue-50 p-3 border-b border-blue-100 flex justify-between items-center">
-                        <h4 class="text-sm font-bold text-blue-800 flex items-center gap-2">
-                            <i class="fa-solid fa-syringe text-blue-500"></i> แผนดูแล/วัคซีน
-                        </h4>
-                        <span class="text-[10px] text-blue-400 font-normal">คำนวณตามวันเริ่ม</span>
-                    </div>
-                    <div id="detail-vaccine-list" class="divide-y divide-gray-100">
-                        <!-- Injected via JS -->
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Navigation Bottom Bar (Reverted) -->
-    <div class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-sm border-t border-gray-200 flex justify-around py-3 pb-safe z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.03)] md:hidden">
-        <button onclick="toggleView('planner')" class="flex flex-col items-center gap-1 text-primary-600" id="nav-planner">
+    <!-- Navigation Bottom Bar (Mobile) -->
+    <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around py-3 pb-safe z-50 shadow-[0_-5px_10px_rgba(0,0,0,0.05)] md:hidden">
+        <button onclick="toggleView('calendar')" class="flex flex-col items-center gap-1 text-leaf-600">
             <i class="fa-solid fa-calendar-check text-xl"></i>
-            <span class="text-[10px] font-medium">วางแผน</span>
+            <span class="text-[10px]">เลือกปลูก</span>
         </button>
-        <button onclick="toggleView('schedule')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-primary-600 transition" id="nav-schedule">
+        <button onclick="toggleView('schedule')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-leaf-600" id="nav-schedule">
             <div class="relative">
-                <i class="fa-solid fa-clipboard-list text-xl"></i>
-                <span id="nav-badge" class="absolute -top-1 -right-2 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden border-2 border-white">0</span>
+                <i class="fa-solid fa-list-check text-xl"></i>
+                <span id="nav-badge" class="absolute -top-1 -right-2 bg-red-500 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full hidden">0</span>
             </div>
-            <span class="text-[10px] font-medium">ฟาร์มฉัน</span>
+            <span class="text-[10px]">รายการปลูก</span>
         </button>
-        <button onclick="openMarketModal()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-secondary-600 transition">
+        <!-- ปุ่ม ตลาดราคาพันธุ์ไม้ -->
+        <button onclick="openMarketModal()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-market-600">
             <i class="fa-solid fa-shop text-xl"></i>
-            <span class="text-[10px] font-medium">ราคาตลาด</span>
+            <span class="text-[10px]">ราคาพันธุ์ไม้</span>
         </button>
     </div>
 
-    <!-- Market Modal -->
+    <!-- Market Modal (ตารางราคา) -->
     <div id="market-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center px-0 sm:px-4 backdrop-blur-sm">
         <div class="bg-white w-full h-full sm:h-[600px] sm:max-w-lg sm:rounded-2xl flex flex-col animate-pop relative overflow-hidden">
             <!-- Header -->
-            <div class="p-4 bg-secondary-600 text-white flex justify-between items-center shadow-md z-10">
-                <div>
-                    <h3 class="text-lg font-bold flex items-center gap-2">
-                        <i class="fa-solid fa-robot"></i> AI Market Update
-                    </h3>
-                    <p class="text-xs text-white/80" id="market-last-update">รอการอัพเดท...</p>
+            <div class="p-4 bg-market-600 text-white shadow-md z-10">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-money-bill-trend-up"></i> ตลาดราคาพันธุ์ไม้
+                        </h3>
+                        <p class="text-xs text-white/80" id="market-last-update">ไม่อัปเดต</p>
+                    </div>
+                    <button onclick="closeMarketModal()" class="w-8 h-8 rounded-full hover:bg-white/20 flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-                <button onclick="closeMarketModal()" class="w-8 h-8 rounded-full hover:bg-white/20 flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <!-- Market Tabs -->
+                <div class="flex gap-2 mt-2">
+                    <button onclick="switchMarketTab('fruit')" id="market-tab-fruit" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-colors market-tab-active border border-white/20">
+                        <i class="fa-solid fa-apple-whole"></i> ผลไม้
+                    </button>
+                    <button onclick="switchMarketTab('veg')" id="market-tab-veg" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-colors market-tab-inactive border border-white/20">
+                        <i class="fa-solid fa-carrot"></i> ผัก
+                    </button>
+                </div>
             </div>
             
             <!-- Table Area -->
-            <div class="flex-grow overflow-y-auto bg-slate-50 relative">
-                <div id="loading-indicator" class="hidden flex flex-col items-center justify-center h-full absolute inset-0 bg-white/80 z-20">
-                    <i class="fa-solid fa-microchip text-4xl animate-bounce mb-2 text-secondary-500"></i>
-                    <p class="animate-pulse font-bold text-secondary-600">AI กำลังวิเคราะห์ราคาตลาด...</p>
-                    <p class="text-xs text-gray-400">Connecting to mute-unit-1629...</p>
-                </div>
-
-                <div id="error-message" class="hidden flex flex-col items-center justify-center h-48 text-red-400 p-4 text-center">
-                    <i class="fa-solid fa-triangle-exclamation text-3xl mb-2"></i>
-                    <p>เชื่อมต่อ AI ไม่สำเร็จ<br><span class="text-xs text-gray-400">แสดงราคาอ้างอิงจากฐานข้อมูลภายใน</span></p>
+            <div class="flex-grow overflow-y-auto bg-slate-50 custom-scrollbar relative">
+                <div id="loading-indicator" class="hidden absolute inset-0 bg-white/80 z-20 flex flex-col items-center justify-center text-gray-400">
+                    <i class="fa-solid fa-circle-notch text-4xl animate-spin-slow mb-2 text-market-500"></i>
+                    <p>กำลังเชื่อมต่อ Backend...</p>
                 </div>
 
                 <table class="w-full market-table bg-white text-left hidden" id="market-table-content">
-                    <thead>
+                    <thead class="sticky top-0 shadow-sm z-10">
                         <tr>
-                            <th class="w-2/5 pl-4">รายการทั้งหมด</th>
-                            <th>ราคาเริ่มต้น<br><span class="text-[10px] font-normal text-gray-400">(บาท)</span></th>
-                            <th>ราคาขาย<br><span class="text-[10px] font-normal text-gray-400">(บาท)</span></th>
-                            <th class="text-center pr-4">แนวโน้ม</th>
+                            <th class="w-1/3">พืช</th>
+                            <th>ต้น<br><span class="text-[10px] font-normal">(บ./ต้น)</span></th>
+                            <th>ราคาผล<br><span class="text-[10px] font-normal">(บ./กก.)</span></th>
+                            <th class="text-center">แนวโน้ม</th>
                         </tr>
                     </thead>
-                    <tbody id="market-tbody"></tbody>
+                    <tbody id="market-tbody">
+                        <!-- JS inject rows -->
+                    </tbody>
                 </table>
             </div>
             
             <!-- Footer Action -->
             <div class="p-4 bg-white border-t border-gray-200">
-                <button onclick="updateMarketData()" class="w-full bg-gradient-to-r from-secondary-600 to-blue-600 hover:from-secondary-700 hover:to-blue-700 text-white py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transition active:scale-95 font-bold relative overflow-hidden group">
-                    <span class="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700 skew-x-12"></span>
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> อัพเดทราคาทุกหมวด (AI)
+                <button onclick="updateMarketData()" class="w-full bg-market-600 hover:bg-market-700 text-white py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transition active:scale-95">
+                    <i class="fa-solid fa-rotate"></i> อัพเดทราคา
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Chatbot Floating Button -->
-    <button onclick="toggleChat()" class="fixed bottom-24 right-4 md:bottom-8 md:right-8 w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg text-white flex items-center justify-center text-2xl z-50 hover:scale-110 transition animate-bounce-slow" id="chat-fab">
-        <i class="fa-solid fa-comments"></i>
-    </button>
-
-    <!-- Chatbot Window -->
-    <div id="chat-window" class="fixed bottom-40 right-4 md:bottom-24 md:right-8 w-[85vw] md:w-[320px] h-[50vh] md:h-[450px] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col z-50 hidden origin-bottom-right transition-all duration-300 transform scale-0 opacity-0">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-3 rounded-t-2xl text-white flex justify-between items-center flex-shrink-0">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-robot bg-white/20 p-1.5 rounded-full"></i>
-                <span class="font-bold text-sm">ผู้ช่วย AI ปศุสัตว์</span>
+    <!-- Calculator Modal -->
+    <div id="calculator-modal" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-xs rounded-2xl shadow-2xl animate-pop overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gray-800 text-white p-3 flex justify-between items-center">
+                <h3 class="font-bold"><i class="fa-solid fa-calculator mr-2"></i>เครื่องคิดเลข</h3>
+                <button onclick="closeCalculator()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <button onclick="toggleChat()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <!-- Messages -->
-        <div id="chat-messages" class="flex-grow overflow-y-auto p-3 space-y-3 bg-slate-50 text-sm">
-            <div class="flex justify-start">
-                <div class="bg-white border border-gray-200 text-gray-700 p-2.5 rounded-2xl rounded-tl-none shadow-sm max-w-[85%] leading-relaxed">
-                    สวัสดีครับ! มีเรื่องการเลี้ยงสัตว์ให้ช่วยไหมครับ? 🐮
-                </div>
+            <!-- Display -->
+            <div class="bg-gray-100 p-4 border-b border-gray-200">
+                <input type="text" id="calc-display" class="w-full bg-transparent text-right text-3xl font-mono outline-none text-gray-800" readonly value="0">
             </div>
-        </div>
-        <!-- Input -->
-        <div class="p-3 border-t border-gray-100 bg-white rounded-b-2xl flex-shrink-0">
-            <form onsubmit="sendChatMessage(event)" class="flex gap-2">
-                <input type="text" id="chat-input" class="flex-grow bg-gray-100 border-0 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ถามมาได้เลย..." autocomplete="off">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white w-9 h-9 rounded-full flex items-center justify-center transition shadow-md flex-shrink-0">
-                    <i class="fa-solid fa-paper-plane text-xs"></i>
-                </button>
-            </form>
+            <!-- Keypad -->
+            <div class="grid grid-cols-4 gap-1 p-2 bg-gray-50">
+                <button onclick="calcClear()" class="col-span-3 bg-red-100 text-red-600 p-3 rounded hover:bg-red-200 font-bold">C</button>
+                <button onclick="calcAppend('/')" class="bg-orange-100 text-orange-600 p-3 rounded hover:bg-orange-200 font-bold">÷</button>
+                
+                <button onclick="calcAppend('7')" class="bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">7</button>
+                <button onclick="calcAppend('8')" class="bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">8</button>
+                <button onclick="calcAppend('9')" class="bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">9</button>
+                <button onclick="calcAppend('*')" class="bg-orange-100 text-orange-600 p-3 rounded hover:bg-orange-200 font-bold">×</button>
+                
+                <button onclick="calcAppend('4')" class="bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">4</button>
+                <button onclick="calcAppend('5')" class="bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">5</button>
+                <button onclick="calcAppend('6')" class="bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">6</button>
+                <button onclick="calcAppend('-')" class="bg-orange-100 text-orange-600 p-3 rounded hover:bg-orange-200 font-bold">-</button>
+                
+                <button onclick="calcAppend('1')" class="bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">1</button>
+                <button onclick="calcAppend('2')" class="bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">2</button>
+                <button onclick="calcAppend('3')" class="bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">3</button>
+                <button onclick="calcAppend('+')" class="bg-orange-100 text-orange-600 p-3 rounded hover:bg-orange-200 font-bold">+</button>
+                
+                <button onclick="calcAppend('0')" class="col-span-2 bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">0</button>
+                <button onclick="calcAppend('.')" class="bg-white shadow-sm p-3 rounded hover:bg-gray-100 font-bold text-lg">.</button>
+                <button onclick="calcEqual()" class="bg-green-500 text-white p-3 rounded hover:bg-green-600 font-bold shadow">=</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- Chatbot Logic ---
-        const CHATBOT_API_URL = "https://patitinepuk-zoo.tontakankeawpang321.workers.dev"; // ปรับ URL เป็นตัวเดียวกับ Backend หลัก
+        // --- Configuration ---
+        const BACKEND_URL = 'https://mute-unit-1629.tontakankeawpang.workers.dev/';
 
-        function toggleChat() {
-            const win = document.getElementById('chat-window');
-            if (win.classList.contains('hidden')) {
-                win.classList.remove('hidden');
-                // Use a small timeout to allow display:block to apply before animating opacity
-                requestAnimationFrame(() => {
-                    win.classList.remove('scale-0', 'opacity-0');
-                    win.classList.add('scale-100', 'opacity-100');
-                    setTimeout(() => document.getElementById('chat-input').focus(), 300);
-                });
-            } else {
-                win.classList.remove('scale-100', 'opacity-100');
-                win.classList.add('scale-0', 'opacity-0');
-                setTimeout(() => win.classList.add('hidden'), 300);
-            }
-        }
+        // --- Data: ข้อมูลพืช ---
+        const allCrops = [
+            // --- ผลไม้ (Fruits) ---
+            { id: 1, type: 'fruit', name: "มะม่วง", icon: "🥭", fertilizeDays: 30, harvestDays: 120, months: [0, 1, 2, 3], seedBase: 15, saplingBase: 40 },
+            { id: 2, type: 'fruit', name: "ทุเรียน", icon: "🍈", fertilizeDays: 45, harvestDays: 150, months: [3, 4, 5], seedBase: 200, saplingBase: 250 },
+            { id: 3, type: 'fruit', name: "มังคุด", icon: "🟣", fertilizeDays: 40, harvestDays: 130, months: [4, 5, 6], seedBase: 10, saplingBase: 80 },
+            { id: 4, type: 'fruit', name: "เงาะ", icon: "🔴", fertilizeDays: 35, harvestDays: 120, months: [4, 5, 6], seedBase: 5, saplingBase: 50 },
+            { id: 5, type: 'fruit', name: "ลำไย", icon: "🟤", fertilizeDays: 40, harvestDays: 140, months: [5, 6, 7], seedBase: 10, saplingBase: 60 },
+            { id: 6, type: 'fruit', name: "สตรอว์เบอร์รี", icon: "🍓", fertilizeDays: 20, harvestDays: 75, months: [9, 10, 11, 0], seedBase: 20, saplingBase: 15 },
+            { id: 7, type: 'fruit', name: "กล้วย", icon: "🍌", fertilizeDays: 60, harvestDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 0, saplingBase: 25 }, 
+            { id: 8, type: 'fruit', name: "มะละกอ", icon: "🥓", fertilizeDays: 45, harvestDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 50, saplingBase: 15 },
+            { id: 9, type: 'fruit', name: "ส้ม", icon: "🍊", fertilizeDays: 50, harvestDays: 200, months: [8, 9, 10, 11], seedBase: 20, saplingBase: 70 },
+            { id: 10, type: 'fruit', name: "แตงโม", icon: "🍉", fertilizeDays: 25, harvestDays: 65, months: [10, 11, 0, 1], seedBase: 45, saplingBase: 10 },
+            { id: 11, type: 'fruit', name: "องุ่น", icon: "🍇", fertilizeDays: 30, harvestDays: 100, months: [10, 11, 0], seedBase: 0, saplingBase: 120 },
+            { id: 12, type: 'fruit', name: "มะพร้าว", icon: "🥥", fertilizeDays: 90, harvestDays: 365, months: [5, 6, 7], seedBase: 50, saplingBase: 80 },
+            { id: 13, type: 'fruit', name: "ฝรั่ง", icon: "🍏", fertilizeDays: 30, harvestDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 10, saplingBase: 40 },
+            { id: 14, type: 'fruit', name: "ขนุน", icon: "🍈", fertilizeDays: 60, harvestDays: 365, months: [3, 4, 5], seedBase: 15, saplingBase: 60 },
+            { id: 15, type: 'fruit', name: "น้อยหน่า", icon: "🍏", fertilizeDays: 45, harvestDays: 150, months: [5, 6, 7], seedBase: 5, saplingBase: 35 },
+            { id: 16, type: 'fruit', name: "แก้วมังกร", icon: "🐲", fertilizeDays: 30, harvestDays: 180, months: [4, 5, 6, 7, 8, 9, 10], seedBase: 0, saplingBase: 20 },
+            { id: 17, type: 'fruit', name: "สับปะรด", icon: "🍍", fertilizeDays: 60, harvestDays: 540, months: [3, 4, 5, 10, 11], seedBase: 0, saplingBase: 10 },
+            { id: 18, type: 'fruit', name: "ชมพู่", icon: "🍎", fertilizeDays: 30, harvestDays: 120, months: [0, 1, 2, 11], seedBase: 10, saplingBase: 80 },
+            { id: 19, type: 'fruit', name: "ส้มโอ", icon: "🟢", fertilizeDays: 60, harvestDays: 240, months: [7, 8, 9], seedBase: 20, saplingBase: 150 },
+            { id: 20, type: 'fruit', name: "มะนาว", icon: "🍋", fertilizeDays: 30, harvestDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 5, saplingBase: 30 },
+            { id: 21, type: 'fruit', name: "เสาวรส", icon: "🟣", fertilizeDays: 45, harvestDays: 180, months: [5, 6, 7, 8], seedBase: 10, saplingBase: 25 },
+            { id: 22, type: 'fruit', name: "ลิ้นจี่", icon: "🍒", fertilizeDays: 40, harvestDays: 120, months: [3, 4, 5], seedBase: 15, saplingBase: 80 },
+            { id: 23, type: 'fruit', name: "ลองกอง", icon: "🍇", fertilizeDays: 60, harvestDays: 180, months: [7, 8, 9], seedBase: 0, saplingBase: 60 },
+            { id: 24, type: 'fruit', name: "มะยงชิด", icon: "🟠", fertilizeDays: 45, harvestDays: 100, months: [1, 2, 3], seedBase: 0, saplingBase: 250 },
+            { id: 25, type: 'fruit', name: "ละมุด", icon: "🥔", fertilizeDays: 40, harvestDays: 200, months: [8, 9, 10, 11], seedBase: 10, saplingBase: 50 },
+            { id: 26, type: 'fruit', name: "กระท้อน", icon: "🍑", fertilizeDays: 50, harvestDays: 150, months: [4, 5, 6], seedBase: 10, saplingBase: 40 },
+            { id: 27, type: 'fruit', name: "พุทรา", icon: "🟢", fertilizeDays: 30, harvestDays: 210, months: [7, 8, 9, 10], seedBase: 5, saplingBase: 35 },
+            { id: 28, type: 'fruit', name: "อะโวคาโด", icon: "🥑", fertilizeDays: 60, harvestDays: 300, months: [8, 9, 10, 11], seedBase: 40, saplingBase: 120 },
+            { id: 29, type: 'fruit', name: "ทับทิม", icon: "🔴", fertilizeDays: 45, harvestDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 20, saplingBase: 50 },
+            { id: 30, type: 'fruit', name: "มะเฟือง", icon: "⭐", fertilizeDays: 30, harvestDays: 150, months: [5, 6, 7, 8], seedBase: 10, saplingBase: 40 },
+            { id: 31, type: 'fruit', name: "แคนตาลูป", icon: "🍈", fertilizeDays: 25, harvestDays: 75, months: [0, 1, 2, 10, 11], seedBase: 50, saplingBase: 15 },
+            { id: 32, type: 'fruit', name: "เมล่อน", icon: "🍈", fertilizeDays: 30, harvestDays: 80, months: [0, 1, 2, 9, 10, 11], seedBase: 60, saplingBase: 20 },
 
-        async function sendChatMessage(e) {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const msg = input.value.trim();
-            if (!msg) return;
-
-            // 1. Add User Message
-            addMessage(msg, 'user');
-            input.value = '';
-
-            // 2. Add Loading Indicator
-            const loadingId = addLoadingMessage();
-
-            let replyText = "";
-
-            try {
-                // 3. Try Fetch from Worker
-                const response = await fetch(CHATBOT_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: msg })
-                });
-                
-                if (!response.ok) throw new Error('Network response was not ok');
-                const data = await response.json();
-                replyText = data.reply || data.message || "ได้รับข้อมูลแล้ว";
-
-            } catch (err) {
-                // 4. Fallback if Fetch Fails (Network Error / Invalid URL)
-                console.warn("Chatbot API unreachable, using fallback.");
-                await new Promise(r => setTimeout(r, 1000)); // Fake delay
-                replyText = "ระบบ AI ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ในขณะนี้ (Demo Mode) \n\nคำแนะนำเบื้องต้น: หากสัตว์มีอาการป่วย ควรแยกออกจากฝูงและปรึกษาสัตวแพทย์ครับ 🐮";
-            } finally {
-                // 5. Remove Loading & Show Response (Real or Fallback)
-                removeMessage(loadingId);
-                addMessage(replyText, 'bot');
-            }
-        }
-
-        function addMessage(text, sender) {
-            const container = document.getElementById('chat-messages');
-            const div = document.createElement('div');
-            const isUser = sender === 'user';
-            
-            div.className = `flex ${isUser ? 'justify-end' : 'justify-start'} animate-slide-up`;
-            div.innerHTML = `
-                <div class="${isUser ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border border-gray-200 text-gray-700 rounded-tl-none'} p-2.5 rounded-2xl shadow-sm max-w-[85%] text-sm leading-relaxed break-words">
-                    ${text}
-                </div>
-            `;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function addLoadingMessage() {
-            const id = 'loading-' + Date.now();
-            const container = document.getElementById('chat-messages');
-            const div = document.createElement('div');
-            div.id = id;
-            div.className = 'flex justify-start animate-slide-up';
-            div.innerHTML = `
-                <div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1">
-                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
-                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
-                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
-                </div>
-            `;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            return id;
-        }
-
-        function removeMessage(id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        }
-
-
-        // --- Calculator Logic ---
-        let calcVal = "0";
-        function openCalculator() { document.getElementById('calculator-modal').classList.remove('hidden'); calcVal = "0"; updateDisplay(); }
-        function closeCalculator() { document.getElementById('calculator-modal').classList.add('hidden'); }
-        function calcAppend(val) {
-            if (calcVal === "0" && !['+','-','*','/','.'].includes(val)) calcVal = val;
-            else calcVal += val;
-            updateDisplay();
-        }
-        function calcClear() { calcVal = "0"; updateDisplay(); }
-        function calcCalculate() {
-            try { calcVal = eval(calcVal).toString(); } catch (e) { calcVal = "Error"; }
-            updateDisplay();
-        }
-        function updateDisplay() { document.getElementById('calc-display').value = calcVal; }
-
-
-        // --- ข้อมูลสัตว์เลี้ยงและโปรแกรมวัคซีน (Comprehensive List) ---
-        const animals = [
-            // --- Poultry (สัตว์ปีก) ---
-            { 
-                id: 201, category: 'poultry', name: "ไก่ไข่", icon: "🐔", 
-                midDays: 7, endDays: 140, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 28, price2: 190, 
-                temp: "25-33°C", feed: "อาหารไก่ไข่ (โปรตีน 16%)", 
-                vaccineProgram: [
-                    { day: 7, name: "นิวคาสเซิล + หลอดลมอักเสบ (ตา/จมูก)" },
-                    { day: 14, name: "กัมโบโร (ครั้งที่ 1)" },
-                    { day: 21, name: "นิวคาสเซิล (ซ้ำ) + ฝีดาษ" },
-                    { day: 28, name: "กัมโบโร (ครั้งที่ 2)" }
-                ]
-            },
-            { 
-                id: 202, category: 'poultry', name: "ไก่เนื้อ", icon: "🍗", 
-                midDays: 7, endDays: 45, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 18, price2: 95,
-                temp: "28-32°C (กกไฟ 7 วัน)", feed: "อาหารขุนระยะสั้น", 
-                vaccineProgram: [
-                    { day: 7, name: "นิวคาสเซิล + หลอดลมอักเสบ" },
-                    { day: 14, name: "กัมโบโร (น้ำดื่ม)" },
-                    { day: 21, name: "นิวคาสเซิล (ซ้ำ)" }
-                ]
-            },
-            { 
-                id: 203, category: 'poultry', name: "ไก่พื้นเมือง", icon: "🐓", 
-                midDays: 21, endDays: 120, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 25, price2: 150,
-                temp: "ทนร้อนได้ดี", feed: "รำ/ปลายข้าว/เศษอาหาร", 
-                vaccineProgram: [
-                    { day: 21, name: "นิวคาสเซิล (หยอดจมูก)" },
-                    { day: 60, name: "อหิวาต์ไก่ (ฉีดกล้ามเนื้อ)" }
-                ]
-            },
-            { 
-                id: 205, category: 'poultry', name: "เป็ดไข่", icon: "🦆", 
-                midDays: 21, endDays: 150, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 22, price2: 160,
-                temp: "ถ่ายเทสะดวก พื้นแห้ง", feed: "รำ/หอยเชอรี่", 
-                vaccineProgram: [
-                    { day: 21, name: "กาฬโรคเป็ด (ฉีดเข้ากล้ามเนื้อ)" },
-                    { day: 60, name: "อหิวาต์เป็ด (ฉีดเข้ากล้ามเนื้อ)" }
-                ]
-            },
-            { 
-                id: 209, category: 'poultry', name: "ไก่งวง", icon: "🦃", 
-                midDays: 30, endDays: 180, 
-                months: [10,11,0,1], price1: 100, price2: 800,
-                temp: "พื้นที่กว้าง ชอบหญ้าสด", feed: "หญ้าขน/อาหารไก่เนื้อ", 
-                vaccineProgram: [
-                    { day: 21, name: "ฝีดาษไก่" },
-                    { day: 45, name: "อหิวาต์ไก่" }
-                ]
-            },
-            { 
-                id: 210, category: 'poultry', name: "เป็ดเทศ", icon: "🦢", 
-                midDays: 20, endDays: 80, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 30, price2: 180,
-                temp: "ทนโรค เลี้ยงง่าย", feed: "เศษผัก/รำข้าว", 
-                vaccineProgram: [
-                    { day: 30, name: "กาฬโรคเป็ด" }
-                ]
-            },
-            { 
-                id: 211, category: 'poultry', name: "ไก่เบตง", icon: "🐔", 
-                midDays: 30, endDays: 150, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 450,
-                temp: "อากาศถ่ายเท (ห้ามชื้น)", feed: "ข้าวโพด/อาหารผสม", 
-                vaccineProgram: [
-                    { day: 14, name: "นิวคาสเซิล" },
-                    { day: 45, name: "ถ่ายพยาธิ" }
-                ]
-            },
-            { 
-                id: 212, category: 'poultry', name: "ไก่ชน", icon: "🥊", 
-                midDays: 60, endDays: 240, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 3000,
-                temp: "ต้องกราดน้ำ/ตากแดด", feed: "ข้าวเปลือก/สมุนไพร", 
-                vaccineProgram: [
-                    { day: 14, name: "นิวคาสเซิล" },
-                    { day: 60, name: "อหิวาต์" }
-                ]
-            },
-
-            // --- Mammal (ปศุสัตว์) ---
-            { 
-                id: 301, category: 'mammal', name: "สุกร (หมูขุน)", icon: "🐷", 
-                midDays: 21, endDays: 150, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1800, price2: 7000,
-                temp: "22-28°C", feed: "อาหารหมูขุน", 
-                vaccineProgram: [
-                    { day: 21, name: "อหิวาต์สุกร (ครั้งที่ 1)" },
-                    { day: 45, name: "ปากและเท้าเปื่อย (FMD)" },
-                    { day: 60, name: "อหิวาต์สุกร (ซ้ำ)" }
-                ]
-            },
-            { 
-                id: 302, category: 'mammal', name: "โคเนื้อ", icon: "🐂", 
-                midDays: 120, endDays: 365, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 18000, price2: 48000,
-                temp: "ทนร้อน", feed: "หญ้า/ฟาง", 
-                vaccineProgram: [
-                    { day: 120, name: "ปากและเท้าเปื่อย (ทุก 6 เดือน)" },
-                    { day: 150, name: "คอบวม (ปีละ 1 ครั้ง)" },
-                    { day: 180, name: "ถ่ายพยาธิ" }
-                ]
-            },
-            { 
-                id: 305, category: 'mammal', name: "แพะ", icon: "🐐", 
-                midDays: 60, endDays: 240, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2500, price2: 5500,
-                temp: "คอกยกสูง แห้ง", feed: "ใบกระถิน/หญ้า", 
-                vaccineProgram: [
-                    { day: 60, name: "ถ่ายพยาธิ (ทุก 3 เดือน)" },
-                    { day: 90, name: "ปากและเท้าเปื่อย (FMD)" }
-                ]
-            },
-            { 
-                id: 307, category: 'mammal', name: "หมูป่า", icon: "🐗", 
-                midDays: 60, endDays: 240, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1000, price2: 4500,
-                temp: "โรงเรือนโปร่ง ดินแห้ง", feed: "หยวกกล้วย/รำ", 
-                vaccineProgram: [
-                    { day: 45, name: "อหิวาต์สุกร" },
-                    { day: 60, name: "ถ่ายพยาธิ" }
-                ]
-            },
-            { 
-                id: 308, category: 'mammal', name: "กระต่ายเนื้อ", icon: "🐇", 
-                midDays: 30, endDays: 100, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 150, price2: 500,
-                temp: "อากาศเย็น (ไม่เกิน 30°C)", feed: "หญ้าแห้ง/อาหารเม็ด", 
-                vaccineProgram: [
-                    { day: 45, name: "ถ่ายพยาธิภายนอก (ไร)" }
-                ]
-            },
-            { 
-                id: 309, category: 'mammal', name: "แพะนม", icon: "🐐", 
-                midDays: 180, endDays: 365, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3000, price2: 8000,
-                temp: "สะอาด แห้ง", feed: "อาหารข้นโปรตีนสูง/หญ้า", 
-                vaccineProgram: [
-                    { day: 90, name: "FMD + ตรวจโรคแท้ง" }
-                ]
-            },
-
-            // --- Pets (สัตว์เลี้ยงสวยงาม) ---
-            { 
-                id: 601, category: 'pet', name: "สุนัขพันธุ์เล็ก", icon: "🐶", 
-                midDays: 45, endDays: 60, // days to sale
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2000, price2: 8000,
-                temp: "25-30°C (ระบายอากาศดี)", feed: "อาหารเม็ดสูตรลูกสุนัข", 
-                vaccineProgram: [
-                    { day: 45, name: "วัคซีนรวม 5 โรค (เข็มที่ 1)" },
-                    { day: 60, name: "วัคซีนรวม 5 โรค (เข็มที่ 2)" },
-                    { day: 90, name: "พิษสุนัขบ้า" }
-                ]
-            },
-            { 
-                id: 602, category: 'pet', name: "สุนัขพันธุ์ใหญ่", icon: "🐕", 
-                midDays: 45, endDays: 75, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3000, price2: 12000,
-                temp: "พื้นที่กว้าง ไม่ร้อนจัด", feed: "อาหารเม็ด/บาร์ฟ (BARF)", 
-                vaccineProgram: [
-                    { day: 45, name: "วัคซีนรวม 5 โรค (เข็มที่ 1)" },
-                    { day: 60, name: "วัคซีนรวม 5 โรค (เข็มที่ 2)" },
-                    { day: 90, name: "พิษสุนัขบ้า" }
-                ]
-            },
-            { 
-                id: 603, category: 'pet', name: "แมว (พันธุ์ไทย/ผสม)", icon: "🐱", 
-                midDays: 60, endDays: 90, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 500, price2: 2500,
-                temp: "อบอุ่น แห้งสะอาด", feed: "อาหารเปียก/เม็ดลูกแมว", 
-                vaccineProgram: [
-                    { day: 60, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 1)" },
-                    { day: 90, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 2) + พิษสุนัขบ้า" }
-                ]
-            },
-            { 
-                id: 604, category: 'pet', name: "แมว (พันธุ์ต่างประเทศ)", icon: "🐈", 
-                midDays: 60, endDays: 90, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3000, price2: 15000,
-                temp: "22-26°C (แอร์)", feed: "อาหารเกรดพรีเมียม", 
-                vaccineProgram: [
-                    { day: 60, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 1)" },
-                    { day: 90, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 2) + พิษสุนัขบ้า" }
-                ]
-            },
-            { 
-                id: 605, category: 'pet', name: "หนูแฮมสเตอร์", icon: "🐹", 
-                midDays: 21, endDays: 45, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 150,
-                temp: "20-24°C (ห้ามร้อน)", feed: "ธัญพืช/ผักอบแห้ง", 
-                vaccineProgram: [] // No standard vaccine
-            },
-            { 
-                id: 606, category: 'pet', name: "นกหงส์หยก", icon: "🦜", 
-                midDays: 30, endDays: 60, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 80, price2: 200,
-                temp: "อากาศถ่ายเทดี", feed: "เมล็ดมิลเล็ต/ผัก", 
-                vaccineProgram: []
-            },
-            { 
-                id: 607, category: 'pet', name: "ปลากัดสวยงาม", icon: "🐟", 
-                midDays: 60, endDays: 120, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 20, price2: 500,
-                temp: "26-30°C (น้ำนิ่ง)", feed: "ลูกน้ำ/ไรแดง/อาหารเม็ด", 
-                vaccineProgram: [
-                    { day: 60, name: "แยกโหล (กันกัดกัน)" },
-                    { day: 90, name: "หมักใบหูกวาง (เร่งสี/สมานแผล)" }
-                ]
-            },
-
-            // --- Aquatic (สัตว์น้ำ) - No Vaccines ---
-            { 
-                id: 401, category: 'aquatic', name: "ปลาดุก", icon: "🐟", 
-                midDays: 30, endDays: 90, 
-                months: [5,6,7,8,9], price1: 1, price2: 50,
-                temp: "น้ำนิ่ง/บ่อดิน", feed: "อาหารเม็ดลอยน้ำ"
-            },
-            { 
-                id: 402, category: 'aquatic', name: "ปลานิล", icon: "🐠", 
-                midDays: 45, endDays: 180, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.5, price2: 65,
-                temp: "25-30°C", feed: "รำละเอียด/พืชน้ำ"
-            },
-            { 
-                id: 408, category: 'aquatic', name: "ปลาตะเพียน", icon: "🐟", 
-                midDays: 60, endDays: 240, 
-                months: [5,6,7], price1: 0.5, price2: 80,
-                temp: "น้ำไหลเวียน", feed: "พืชน้ำ/หญ้าขน"
-            },
-            { 
-                id: 409, category: 'aquatic', name: "ปลาหมอไทย", icon: "🐟", 
-                midDays: 30, endDays: 120, 
-                months: [4,5,6,7], price1: 1, price2: 120,
-                temp: "ทนน้ำน้อยได้", feed: "อาหารเม็ดไฮเกรด"
-            },
-            { 
-                id: 410, category: 'aquatic', name: "ปลาสวาย", icon: "🐋", 
-                midDays: 90, endDays: 300, 
-                months: [5,6,7], price1: 2, price2: 100,
-                temp: "บ่อดินลึก", feed: "เศษอาหาร/รำ"
-            },
-            { 
-                id: 411, category: 'aquatic', name: "ปลาแรด", icon: "🐠", 
-                midDays: 180, endDays: 365, 
-                months: [5,6,7], price1: 5, price2: 250,
-                temp: "น้ำสะอาด มีผักบุ้ง", feed: "ผลไม้สุก/ยอดผัก"
-            },
-            { 
-                id: 412, category: 'aquatic', name: "กุ้งขาว", icon: "🦐", 
-                midDays: 30, endDays: 90, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.2, price2: 180,
-                temp: "ความเค็ม 10-20 ppt", feed: "อาหารเม็ดสำเร็จรูป"
-            },
-            { 
-                id: 413, category: 'aquatic', name: "กุ้งก้ามแดง", icon: "🦞", 
-                midDays: 60, endDays: 150, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 5, price2: 400,
-                temp: "น้ำจืด (มีที่หลบซ่อน)", feed: "สาหร่าย/ไส้เดือน"
-            },
-            { 
-                id: 414, category: 'aquatic', name: "ปลาไหลนา", icon: "🐍", 
-                midDays: 60, endDays: 240, 
-                months: [5,6,7], price1: 5, price2: 200,
-                temp: "บ่อซีเมนต์ใส่โคลน", feed: "ไส้เดือน/หอยเชอรี่"
-            },
-            { 
-                id: 415, category: 'aquatic', name: "ตะพาบน้ำ", icon: "🐢", 
-                midDays: 90, endDays: 365, 
-                months: [4,5,6], price1: 15, price2: 300,
-                temp: "น้ำสะอาด มีแดดส่อง", feed: "ปลาเหยื่อ/โครงไก่"
-            },
-
-            // --- Other (แมลง/สัตว์เศรษฐกิจใหม่) - No Vaccines ---
-            { 
-                id: 501, category: 'other', name: "จิ้งหรีด", icon: "🦗", 
-                midDays: 15, endDays: 45, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 150,
-                temp: "ร้อนชื้น", feed: "หัวอาหารไก่เล็ก"
-            },
-            { 
-                id: 505, category: 'other', name: "ด้วงสาคู", icon: "🐛", 
-                midDays: 20, endDays: 40, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2, price2: 250,
-                temp: "ชื้น/มืด", feed: "เปลือกมะพร้าว/สาคู"
-            },
-            { 
-                id: 506, category: 'other', name: "ตั๊กแตน", icon: "🦗", 
-                midDays: 30, endDays: 60, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 400,
-                temp: "โปร่ง ลมโกรก", feed: "หญ้าหวาน/ใบกล้วย"
-            },
-            { 
-                id: 507, category: 'other', name: "แมงดานา", icon: "🪲", 
-                midDays: 30, endDays: 90, 
-                months: [5,6,7], price1: 5, price2: 20,
-                temp: "เลียนแบบธรรมชาติ", feed: "ลูกอ๊อด/ปลาเล็ก"
-            },
-            { 
-                id: 508, category: 'other', name: "อึ่งปากขวด", icon: "🐸", 
-                midDays: 90, endDays: 270, 
-                months: [4,5,6], price1: 5, price2: 300,
-                temp: "ดินร่วนปนทราย", feed: "ปลวก/แมลงเม่า"
-            }
+            // --- ผักสวนครัว (Vegetables) ---
+            { id: 101, type: 'veg', name: "ข้าวโพด", icon: "🌽", fertilizeDays: 20, harvestDays: 70, months: [9, 10, 11, 0, 1], seedBase: 30, saplingBase: 5 },
+            { id: 102, type: 'veg', name: "พริก", icon: "🌶️", fertilizeDays: 30, harvestDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 25, saplingBase: 5 },
+            { id: 103, type: 'veg', name: "มะเขือเทศ", icon: "🍅", fertilizeDays: 25, harvestDays: 60, months: [9, 10, 11, 0], seedBase: 30, saplingBase: 5 },
+            { id: 104, type: 'veg', name: "ผักบุ้ง", icon: "🌿", fertilizeDays: 10, harvestDays: 25, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 10, saplingBase: 0 },
+            { id: 105, type: 'veg', name: "คะน้า", icon: "🥬", fertilizeDays: 20, harvestDays: 45, months: [9, 10, 11, 0, 1], seedBase: 15, saplingBase: 2 },
+            { id: 106, type: 'veg', name: "กวางตุ้ง", icon: "🥬", fertilizeDays: 15, harvestDays: 35, months: [9, 10, 11, 0, 1], seedBase: 15, saplingBase: 2 },
+            { id: 107, type: 'veg', name: "กะหล่ำปลี", icon: "🥗", fertilizeDays: 30, harvestDays: 90, months: [10, 11, 0], seedBase: 20, saplingBase: 5 },
+            { id: 108, type: 'veg', name: "ถั่วฝักยาว", icon: "🥒", fertilizeDays: 20, harvestDays: 55, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 20, saplingBase: 0 },
+            { id: 109, type: 'veg', name: "แตงกวา", icon: "🥒", fertilizeDays: 15, harvestDays: 35, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 15, saplingBase: 0 },
+            { id: 110, type: 'veg', name: "มะเขือเปราะ", icon: "🍆", fertilizeDays: 30, harvestDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 20, saplingBase: 5 },
+            { id: 111, type: 'veg', name: "มะเขือยาว", icon: "🍆", fertilizeDays: 30, harvestDays: 70, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 20, saplingBase: 5 },
+            { id: 112, type: 'veg', name: "กะเพรา", icon: "🍃", fertilizeDays: 20, harvestDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 10, saplingBase: 10 },
+            { id: 113, type: 'veg', name: "โหระพา", icon: "🍃", fertilizeDays: 20, harvestDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 10, saplingBase: 10 },
+            { id: 114, type: 'veg', name: "ผักชี", icon: "🌿", fertilizeDays: 20, harvestDays: 45, months: [9, 10, 11, 0], seedBase: 30, saplingBase: 0 },
+            { id: 115, type: 'veg', name: "ต้นหอม", icon: "🌱", fertilizeDays: 20, harvestDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 40, saplingBase: 0 },
+            { id: 116, type: 'veg', name: "ขึ้นฉ่าย", icon: "🌿", fertilizeDays: 30, harvestDays: 60, months: [9, 10, 11, 0], seedBase: 25, saplingBase: 0 },
+            { id: 117, type: 'veg', name: "ตะไคร้", icon: "🌾", fertilizeDays: 45, harvestDays: 120, months: [4, 5, 6], seedBase: 0, saplingBase: 5 },
+            { id: 118, type: 'veg', name: "ข่า", icon: "🥔", fertilizeDays: 60, harvestDays: 240, months: [4, 5, 6], seedBase: 0, saplingBase: 10 },
+            { id: 119, type: 'veg', name: "ฟักทอง", icon: "🎃", fertilizeDays: 30, harvestDays: 90, months: [9, 10, 11, 0], seedBase: 20, saplingBase: 5 },
+            { id: 120, type: 'veg', name: "ฟักเขียว", icon: "🍈", fertilizeDays: 30, harvestDays: 70, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 15, saplingBase: 5 },
+            { id: 121, type: 'veg', name: "บวบ", icon: "🥒", fertilizeDays: 20, harvestDays: 50, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 15, saplingBase: 0 },
+            { id: 122, type: 'veg', name: "มะระ", icon: "🥒", fertilizeDays: 25, harvestDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 20, saplingBase: 5 },
+            { id: 123, type: 'veg', name: "ตำลึง", icon: "🍃", fertilizeDays: 30, harvestDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 10, saplingBase: 5 },
+            { id: 124, type: 'veg', name: "ชะอม", icon: "🌿", fertilizeDays: 30, harvestDays: 90, months: [4, 5, 6], seedBase: 10, saplingBase: 15 },
+            { id: 125, type: 'veg', name: "กระเจี๊ยบเขียว", icon: "🌶️", fertilizeDays: 25, harvestDays: 55, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 15, saplingBase: 0 },
+            { id: 126, type: 'veg', name: "ผักกาดหอม", icon: "🥗", fertilizeDays: 20, harvestDays: 45, months: [9, 10, 11, 0, 1], seedBase: 20, saplingBase: 2 },
+            { id: 127, type: 'veg', name: "บรอกโคลี", icon: "🥦", fertilizeDays: 30, harvestDays: 75, months: [10, 11, 0], seedBase: 40, saplingBase: 5 },
+            { id: 128, type: 'veg', name: "กะหล่ำดอก", icon: "🥦", fertilizeDays: 30, harvestDays: 80, months: [10, 11, 0], seedBase: 35, saplingBase: 5 },
+            { id: 129, type: 'veg', name: "ผักโขม", icon: "🍃", fertilizeDays: 15, harvestDays: 35, months: [9, 10, 11, 0, 1], seedBase: 15, saplingBase: 0 },
+            { id: 130, type: 'veg', name: "หน่อไม้ฝรั่ง", icon: "🎋", fertilizeDays: 90, harvestDays: 240, months: [0, 1, 10, 11], seedBase: 50, saplingBase: 20 },
+            { id: 131, type: 'veg', name: "แครอท", icon: "🥕", fertilizeDays: 30, harvestDays: 90, months: [10, 11, 0], seedBase: 25, saplingBase: 0 },
+            { id: 132, type: 'veg', name: "หัวไชเท้า", icon: "🐇", fertilizeDays: 20, harvestDays: 50, months: [10, 11, 0], seedBase: 15, saplingBase: 0 },
+            { id: 133, type: 'veg', name: "หอมแดง", icon: "🧅", fertilizeDays: 30, harvestDays: 70, months: [10, 11, 0], seedBase: 40, saplingBase: 0 },
+            { id: 134, type: 'veg', name: "กระเทียม", icon: "🧄", fertilizeDays: 30, harvestDays: 100, months: [10, 11, 0], seedBase: 50, saplingBase: 0 },
+            { id: 135, type: 'veg', name: "ขิง", icon: "🍠", fertilizeDays: 60, harvestDays: 240, months: [3, 4, 5], seedBase: 30, saplingBase: 0 },
+            { id: 136, type: 'veg', name: "ขมิ้น", icon: "🟨", fertilizeDays: 60, harvestDays: 240, months: [4, 5, 6], seedBase: 20, saplingBase: 0 },
+            { id: 137, type: 'veg', name: "กระชาย", icon: "🥔", fertilizeDays: 60, harvestDays: 240, months: [4, 5, 6], seedBase: 20, saplingBase: 0 },
+            { id: 138, type: 'veg', name: "มะกรูด", icon: "🍋", fertilizeDays: 90, harvestDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 20, saplingBase: 50 },
+            { id: 139, type: 'veg', name: "สะระแหน่", icon: "🌿", fertilizeDays: 15, harvestDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 0, saplingBase: 10 },
+            { id: 140, type: 'veg', name: "มันเทศ", icon: "🍠", fertilizeDays: 30, harvestDays: 100, months: [9, 10, 11, 0, 1], seedBase: 10, saplingBase: 5 },
+            { id: 141, type: 'veg', name: "เผือก", icon: "🥔", fertilizeDays: 60, harvestDays: 200, months: [4, 5, 6], seedBase: 20, saplingBase: 10 },
+            { id: 142, type: 'veg', name: "ถั่วพู", icon: "🥒", fertilizeDays: 30, harvestDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 15, saplingBase: 0 },
+            { id: 143, type: 'veg', name: "ถั่วลิสง", icon: "🥜", fertilizeDays: 30, harvestDays: 100, months: [0, 1, 5, 6, 9, 10], seedBase: 25, saplingBase: 0 },
+            { id: 144, type: 'veg', name: "น้ำเต้า", icon: "🍐", fertilizeDays: 30, harvestDays: 70, months: [9, 10, 11, 0], seedBase: 15, saplingBase: 5 },
+            { id: 145, type: 'veg', name: "ดอกแค", icon: "🌼", fertilizeDays: 60, harvestDays: 120, months: [5, 6, 7], seedBase: 10, saplingBase: 20 },
+            { id: 146, type: 'veg', name: "สะเดา", icon: "🌿", fertilizeDays: 90, harvestDays: 365, months: [5, 6, 7], seedBase: 15, saplingBase: 40 },
+            { id: 147, type: 'veg', name: "ผักกระเฉด", icon: "🌿", fertilizeDays: 15, harvestDays: 40, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 0, saplingBase: 10 },
+            { id: 148, type: 'veg', name: "กุยช่าย", icon: "🥬", fertilizeDays: 30, harvestDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 20, saplingBase: 5 },
+            { id: 149, type: 'veg', name: "ผักชีฝรั่ง", icon: "🌿", fertilizeDays: 30, harvestDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 25, saplingBase: 5 },
+            { id: 150, type: 'veg', name: "ผักชีลาว", icon: "🌿", fertilizeDays: 20, harvestDays: 50, months: [9, 10, 11, 0], seedBase: 20, saplingBase: 0 },
+            { id: 151, type: 'veg', name: "แมงลัก", icon: "🍃", fertilizeDays: 20, harvestDays: 50, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 10, saplingBase: 0 },
+            { id: 152, type: 'veg', name: "ใบบัวบก", icon: "🍀", fertilizeDays: 20, harvestDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 0, saplingBase: 10 },
+            { id: 153, type: 'veg', name: "เตยหอม", icon: "🌿", fertilizeDays: 60, harvestDays: 180, months: [5, 6, 7], seedBase: 0, saplingBase: 15 },
+            { id: 154, type: 'veg', name: "กระเจี๊ยบแดง", icon: "🌺", fertilizeDays: 30, harvestDays: 120, months: [8, 9, 10], seedBase: 10, saplingBase: 0 },
+            { id: 155, type: 'veg', name: "อัญชัน", icon: "🌸", fertilizeDays: 30, harvestDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 10, saplingBase: 15 },
+            { id: 156, type: 'veg', name: "ผักกาดขาว", icon: "🥬", fertilizeDays: 20, harvestDays: 50, months: [10, 11, 0, 1], seedBase: 20, saplingBase: 0 },
+            { id: 157, type: 'veg', name: "กวางตุ้งฮ่องเต้", icon: "🥬", fertilizeDays: 20, harvestDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 20, saplingBase: 0 },
+            { id: 158, type: 'veg', name: "กรีนโอ๊ค", icon: "🥗", fertilizeDays: 20, harvestDays: 45, months: [10, 11, 0, 1], seedBase: 25, saplingBase: 5 },
+            { id: 159, type: 'veg', name: "เรดโอ๊ค", icon: "🥗", fertilizeDays: 20, harvestDays: 45, months: [10, 11, 0, 1], seedBase: 25, saplingBase: 5 },
+            { id: 160, type: 'veg', name: "ผักคอส", icon: "🥗", fertilizeDays: 20, harvestDays: 45, months: [10, 11, 0, 1], seedBase: 25, saplingBase: 5 },
+            { id: 161, type: 'veg', name: "ผักปลัง", icon: "🌿", fertilizeDays: 20, harvestDays: 50, months: [5, 6, 7], seedBase: 10, saplingBase: 5 },
+            { id: 162, type: 'veg', name: "ฟักข้าว", icon: "🟠", fertilizeDays: 60, harvestDays: 240, months: [5, 6, 7], seedBase: 20, saplingBase: 50 },
+            { id: 163, type: 'veg', name: "บวบงู", icon: "🐍", fertilizeDays: 30, harvestDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 15, saplingBase: 0 },
+            { id: 164, type: 'veg', name: "ถั่วลันเตา", icon: "🥜", fertilizeDays: 30, harvestDays: 70, months: [10, 11, 0], seedBase: 30, saplingBase: 0 },
+            { id: 165, type: 'veg', name: "หอมหัวใหญ่", icon: "🧅", fertilizeDays: 40, harvestDays: 120, months: [10, 11, 0], seedBase: 50, saplingBase: 0 },
+            { id: 166, type: 'veg', name: "มันฝรั่ง", icon: "🥔", fertilizeDays: 40, harvestDays: 100, months: [10, 11, 0], seedBase: 30, saplingBase: 0 },
+            { id: 167, type: 'veg', name: "ผักหวานป่า", icon: "🌿", fertilizeDays: 120, harvestDays: 730, months: [5, 6], seedBase: 50, saplingBase: 100 },
+            { id: 168, type: 'veg', name: "ผักกูด", icon: "🌿", fertilizeDays: 30, harvestDays: 90, months: [5, 6, 7, 8], seedBase: 0, saplingBase: 20 },
+            { id: 169, type: 'veg', name: "ยี่หร่า", icon: "🍃", fertilizeDays: 30, harvestDays: 70, months: [0,1,2,3,4,5,6,7,8,9,10,11], seedBase: 15, saplingBase: 10 },
+            { id: 170, type: 'veg', name: "พริกไทย", icon: "⚫", fertilizeDays: 90, harvestDays: 365, months: [5, 6, 7], seedBase: 0, saplingBase: 50 }
         ];
 
         const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+        
+        // --- Global State ---
         let currentSelectedDate = new Date();
         let currentMonthIndex = currentSelectedDate.getMonth();
-        let currentCategory = 'poultry'; 
-        let currentItem = null; 
-        let currentUploadImage = null; // Store base64 image
-        let mySchedules = JSON.parse(localStorage.getItem('myLivestockSchedule')) || [];
+        let currentCategory = 'fruit'; // 'fruit' or 'veg'
+        let currentMarketCategory = 'fruit'; // 'fruit' or 'veg' for market view
+        let currentPlanting = null; 
+        let mySchedules = JSON.parse(localStorage.getItem('myPlantingSchedule')) || [];
 
+        // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             const datePicker = document.getElementById('global-date-picker');
             datePicker.valueAsDate = currentSelectedDate;
+            
             updateHeaderAndSeason();
-            renderList(); 
+            renderCrops();
             renderScheduleList();
+            
             document.getElementById('start-date').valueAsDate = new Date();
             document.getElementById('start-date').addEventListener('change', calculateDates);
+
             document.getElementById('search-input').addEventListener('input', (e) => {
                 const keyword = e.target.value.toLowerCase();
-                const filtered = animals.filter(f => f.name.toLowerCase().includes(keyword) && f.category === currentCategory);
-                renderFilteredItems(filtered);
+                const filtered = allCrops.filter(f => 
+                    f.name.toLowerCase().includes(keyword) && f.type === currentCategory
+                );
+                renderFilteredCrops(filtered);
                 document.getElementById('filter-status').innerText = keyword ? `ค้นหา "${keyword}"` : "ทั้งหมด";
             });
+
             datePicker.addEventListener('change', (e) => {
                 currentSelectedDate = new Date(e.target.value);
                 currentMonthIndex = currentSelectedDate.getMonth();
                 updateHeaderAndSeason();
             });
 
-            // Image Upload Logic
-            document.getElementById('upload-image').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    resizeImage(file, function(result) {
-                        currentUploadImage = result;
-                        document.getElementById('preview-image').src = currentUploadImage;
-                        document.getElementById('preview-image').classList.remove('hidden');
-                        document.getElementById('preview-placeholder').classList.add('hidden');
-                    });
-                }
-            });
+            renderMarketTable(false); 
         });
 
-        // Helper to resize image
-        function resizeImage(file, callback) {
+        // --- Logic: Category Switching (Main View) ---
+        function switchCategory(type) {
+            currentCategory = type;
+            const btnFruit = document.getElementById('tab-fruit');
+            const btnVeg = document.getElementById('tab-veg');
+            
+            if(type === 'fruit') {
+                btnFruit.classList.add('tab-active');
+                btnFruit.classList.remove('tab-inactive');
+                btnVeg.classList.add('tab-inactive');
+                btnVeg.classList.remove('tab-active');
+            } else {
+                btnVeg.classList.add('tab-active');
+                btnVeg.classList.remove('tab-inactive');
+                btnFruit.classList.add('tab-inactive');
+                btnFruit.classList.remove('tab-active');
+            }
+            
+            document.getElementById('search-input').value = "";
+            document.getElementById('filter-status').innerText = "ทั้งหมด";
+            renderCrops();
+        }
+
+        // --- Logic: Market Category Switching ---
+        function switchMarketTab(type) {
+            currentMarketCategory = type;
+            const btnFruit = document.getElementById('market-tab-fruit');
+            const btnVeg = document.getElementById('market-tab-veg');
+            
+            if(type === 'fruit') {
+                btnFruit.classList.add('market-tab-active');
+                btnFruit.classList.remove('market-tab-inactive');
+                btnVeg.classList.add('market-tab-inactive');
+                btnVeg.classList.remove('market-tab-active');
+            } else {
+                btnVeg.classList.add('market-tab-active');
+                btnVeg.classList.remove('market-tab-inactive');
+                btnFruit.classList.add('market-tab-inactive');
+                btnFruit.classList.remove('market-tab-active');
+            }
+            renderMarketTable(false); 
+        }
+
+        // --- Logic: Modal Tab Switching ---
+        function switchModalTab(tab) {
+            const btnTimeline = document.getElementById('mtab-timeline');
+            const btnGuide = document.getElementById('mtab-guide');
+            const contentTimeline = document.getElementById('modal-content-timeline');
+            const contentGuide = document.getElementById('modal-content-guide');
+            
+            if (tab === 'timeline') {
+                btnTimeline.classList.add('modal-tab-active');
+                btnTimeline.classList.remove('modal-tab-inactive');
+                btnGuide.classList.add('modal-tab-inactive');
+                btnGuide.classList.remove('modal-tab-active');
+                
+                contentTimeline.classList.remove('hidden');
+                contentGuide.classList.add('hidden');
+            } else {
+                btnGuide.classList.add('modal-tab-active');
+                btnGuide.classList.remove('modal-tab-inactive');
+                btnTimeline.classList.add('modal-tab-inactive');
+                btnTimeline.classList.remove('modal-tab-active');
+                
+                contentGuide.classList.remove('hidden');
+                contentTimeline.classList.add('hidden');
+            }
+        }
+
+        function updateHeaderAndSeason() {
+            const month = currentSelectedDate.getMonth(); 
+            let season = "";
+            let icon = "";
+            let gradientClass = "";
+
+            if (month >= 1 && month <= 4) { 
+                season = "ฤดูร้อน"; 
+                icon = "fa-sun";
+                gradientClass = "from-orange-500 to-red-500";
+            } else if (month >= 5 && month <= 9) { 
+                season = "ฤดูฝน"; 
+                icon = "fa-cloud-showers-heavy";
+                gradientClass = "from-blue-500 to-teal-500";
+            } else { 
+                season = "ฤดูหนาว"; 
+                icon = "fa-snowflake";
+                gradientClass = "from-indigo-500 to-purple-500";
+            }
+            
+            document.getElementById('current-season-display').innerText = season;
+            
+            const seasonIcon = document.getElementById('season-icon-small');
+            const bgIcon = document.getElementById('season-icon-bg');
+            const headerBg = document.getElementById('season-header-bg');
+
+            seasonIcon.className = `fa-solid ${icon} text-2xl opacity-80`;
+            bgIcon.className = `fa-solid ${icon} text-6xl absolute -right-2 -top-2 opacity-20`;
+            headerBg.className = `rounded-2xl p-5 shadow-lg mb-4 text-white relative overflow-hidden transition-all duration-500 bg-gradient-to-r ${gradientClass}`;
+        }
+
+        function filterCurrentMonth() {
+            const currentMonthList = allCrops.filter(f => f.type === currentCategory && f.months.includes(currentMonthIndex));
+            renderFilteredCrops(currentMonthList);
+            document.getElementById('filter-status').innerText = `แนะนำเดือน ${monthNames[currentMonthIndex]}`;
+            document.getElementById('search-input').value = "";
+        }
+
+        // --- Market Logic ---
+        function openMarketModal() {
+            switchMarketTab(currentCategory);
+            document.getElementById('market-modal').classList.remove('hidden');
+        }
+
+        function closeMarketModal() {
+            document.getElementById('market-modal').classList.add('hidden');
+        }
+
+        async function updateMarketData() {
+            const loading = document.getElementById('loading-indicator');
+            const table = document.getElementById('market-table-content');
+            
+            table.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        action: 'get_prices', 
+                        date: currentSelectedDate.toISOString(),
+                        category: currentMarketCategory
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Backend reached:", data);
+                    await new Promise(r => setTimeout(r, 800));
+                } else {
+                    throw new Error("Backend error");
+                }
+                
+                renderMarketTable(true); 
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                document.getElementById('market-last-update').innerText = `ข้อมูลล่าสุด (Online): วันนี้ เวลา ${timeStr}`;
+
+            } catch (e) {
+                console.warn("Backend unavailable, using simulation.", e);
+                await new Promise(r => setTimeout(r, 1000));
+                renderMarketTable(true);
+                
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                document.getElementById('market-last-update').innerText = `ข้อมูลจำลอง: วันนี้ เวลา ${timeStr}`;
+            } finally {
+                loading.classList.add('hidden');
+                table.classList.remove('hidden');
+            }
+        }
+
+        function renderMarketTable(randomize) {
+            const tbody = document.getElementById('market-tbody');
+            tbody.innerHTML = '';
+            const table = document.getElementById('market-table-content');
+            table.classList.remove('hidden');
+
+            const displayedCrops = allCrops.filter(c => c.type === currentMarketCategory);
+
+            displayedCrops.forEach(crop => {
+                let seedPrice = crop.seedBase;
+                let saplingPrice = crop.saplingBase;
+                let trend = 'stable';
+
+                if (randomize) {
+                    const variation = (Math.random() * 0.4) - 0.2; 
+                    seedPrice = Math.round(seedPrice * (1 + variation));
+                    saplingPrice = Math.round(saplingPrice * (1 + variation));
+                    
+                    if(variation > 0.05) trend = 'up';
+                    else if(variation < -0.05) trend = 'down';
+                }
+                
+                let trendHtml = '<i class="fa-solid fa-minus trend-stable"></i>';
+                if(trend === 'up') trendHtml = '<i class="fa-solid fa-arrow-trend-up trend-up"></i>';
+                else if(trend === 'down') trendHtml = '<i class="fa-solid fa-arrow-trend-down trend-down"></i>';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">${crop.icon}</span>
+                            <span class="font-medium text-gray-700">${crop.name}</span>
+                        </div>
+                    </td>
+                    <td class="font-mono text-gray-600">${seedPrice > 0 ? seedPrice : '-'}</td>
+                    <td class="font-mono text-gray-600">${saplingPrice > 0 ? saplingPrice : '-'}</td>
+                    <td class="text-center">${trendHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- Render Lists ---
+        function renderCrops() {
+            const list = allCrops.filter(c => c.type === currentCategory);
+            renderFilteredCrops(list);
+        }
+
+        function renderFilteredCrops(listToRender) {
+            const container = document.getElementById('fruit-list');
+            container.innerHTML = '';
+            
+            if(listToRender.length === 0) {
+                const icon = currentCategory === 'fruit' ? 'fa-apple-whole' : 'fa-carrot';
+                container.innerHTML = `<div class="p-8 text-center text-gray-400 bg-white rounded-xl border border-dashed"><i class="fa-solid ${icon} text-3xl mb-2"></i><br>ไม่พบข้อมูล</div>`;
+                return;
+            }
+
+            listToRender.forEach(crop => {
+                const isRecommended = crop.months.includes(currentMonthIndex);
+                const recommendBadge = isRecommended ? `<span class="bg-orange-100 text-orange-600 text-[10px] px-1.5 py-0.5 rounded ml-2">แนะนำ</span>` : '';
+                
+                const btnColor = crop.type === 'fruit' ? 'bg-leaf-500' : 'bg-veg-600';
+                const iconBg = crop.type === 'fruit' ? 'bg-leaf-50' : 'bg-lime-50';
+
+                const item = document.createElement('div');
+                item.className = 'bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between active:scale-[0.98] transition cursor-pointer';
+                item.onclick = () => openCalcModal(crop);
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 ${iconBg} rounded-full flex items-center justify-center text-2xl">${crop.icon}</div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 flex items-center">${crop.name} ${recommendBadge}</h4>
+                            <p class="text-xs text-gray-500">เก็บเกี่ยว: ${crop.harvestDays} วัน</p>
+                        </div>
+                    </div>
+                    <button class="${btnColor} text-white w-8 h-8 rounded-full shadow-sm flex items-center justify-center">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // --- Image Upload Logic (Optimized) ---
+        function triggerUpload(id) {
+            document.getElementById(`file-${id}`).click();
+        }
+
+        function handleImageUpload(event, id) {
+            const file = event.target.files[0];
+            if (!file) return;
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
+                    
+                    // Resize to max 500x500 to save space
+                    const MAX_WIDTH = 500;
+                    const MAX_HEIGHT = 500;
                     let width = img.width;
                     let height = img.height;
-                    const maxWidth = 800; // Resize to max 800px width
-                    
-                    if (width > maxWidth) {
-                        height = Math.round(height * (maxWidth / width));
-                        width = maxWidth;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
                     }
-                    
+
                     canvas.width = width;
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
-                    callback(canvas.toDataURL('image/jpeg', 0.8)); // Compress quality
+                    
+                    // Compress to JPEG 70% quality
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+                    const index = mySchedules.findIndex(item => item.id === id);
+                    if (index !== -1) {
+                        mySchedules[index].image = dataUrl;
+                        try {
+                            localStorage.setItem('myPlantingSchedule', JSON.stringify(mySchedules));
+                            renderScheduleList();
+                        } catch (err) {
+                            alert("รูปภาพมีขนาดใหญ่เกินไปสำหรับพื้นที่จัดเก็บในเครื่อง");
+                            console.error("Storage failed: ", err);
+                        }
+                    }
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // Update image in Detail Modal
-        function updateScheduleImage(input) {
-            const file = input.files[0];
-            const currentDetailId = document.getElementById('detail-title').dataset.id;
-            
-            if (file && currentDetailId) {
-                resizeImage(file, function(result) {
-                    // Update in array
-                    const index = mySchedules.findIndex(s => s.id == currentDetailId);
-                    if(index !== -1) {
-                        mySchedules[index].image = result;
-                        localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
-                        
-                        // Update UI immediately
-                        document.getElementById('detail-icon-container').innerHTML = `<img src="${result}" class="w-full h-full object-cover">`;
-                        document.getElementById('detail-icon-container').classList.remove('p-2');
-                        
-                        // Refresh list view behind modal
-                        renderScheduleList();
-                    }
-                });
-            }
-        }
+        // --- Helper for Care Instructions ---
+        function getCropCare(crop) {
+            let care = { plant: "", water: "", fertilizer: "" };
 
-        function switchCategory(cat) {
-            currentCategory = cat;
-            ['poultry', 'mammal', 'aquatic', 'pet', 'other'].forEach(t => {
-                const btn = document.getElementById(`tab-${t}`);
-                if(t === cat) {
-                    btn.classList.add('tab-active');
-                    btn.classList.remove('tab-inactive');
+            if (crop.type === 'fruit') {
+                if (crop.name.includes("ทุเรียน")) {
+                    care.plant = "ขุดหลุมกว้าง 1 เมตร ลึก 50 ซม. รองก้นหลุมด้วยปุ๋ยคอก ปลูกแบบนั่งแท่น";
+                    care.water = "รดน้ำทุกวันในช่วงแรก ขาดน้ำไม่ได้ ติดสปริงเกอร์ช่วย";
+                    care.fertilizer = "ใส่ปุ๋ยสูตรเสมอ (15-15-15) ปีละ 2-3 ครั้งตามระยะการเติบโต";
+                } else if (crop.name.includes("มะม่วง")) {
+                    care.plant = "ขุดหลุม 50x50x50 ซม. ผสมดินกับปุ๋ยคอก";
+                    care.water = "รดน้ำ 2-3 วันครั้ง ทนแล้งได้ดี";
+                    care.fertilizer = "ใส่ปุ๋ยปีละ 2 ครั้ง (ต้นฝนและปลายฝน) เร่งดอกใช้ 8-24-24";
+                } else if (crop.name.includes("กล้วย")) {
+                    care.plant = "ขุดหลุมลึก 50 ซม. วางหน่อกล้วย กลบดินให้แน่น";
+                    care.water = "ชอบน้ำมาก รดให้ชุ่มแต่ห้ามแฉะ";
+                    care.fertilizer = "ใส่ปุ๋ยคอกเดือนละ 1 ครั้ง หรือเคมีสูตรเสมอทุก 2-3 เดือน";
+                } else if (crop.name.includes("มะนาว") || crop.name.includes("ส้ม")) {
+                    care.plant = "ปลูกในวงบ่อซีเมนต์หรือยกร่องสวน";
+                    care.water = "รดน้ำวันเว้นวัน สม่ำเสมอ";
+                    care.fertilizer = "ใส่ปุ๋ยทุก 1-2 เดือน เน้นสูตรเสมอสลับกับปุ๋ยคอก";
                 } else {
-                    btn.classList.remove('tab-active');
-                    btn.classList.add('tab-inactive');
+                    care.plant = "ขุดหลุมพอประมาณ รองก้นหลุมด้วยปุ๋ยหมัก กลบดินให้แน่น";
+                    care.water = "รดน้ำวันเว้นวันในช่วงแรก เมื่อรากเดินดีแล้วลดเหลือสัปดาห์ละ 2-3 ครั้ง";
+                    care.fertilizer = "ใส่ปุ๋ยอินทรีย์หรือเคมีสูตรเสมอ ปีละ 2-3 ครั้ง";
                 }
-            });
-            document.getElementById('search-input').value = "";
-            renderList();
-        }
-
-        function updateHeaderAndSeason() {
-            const month = currentSelectedDate.getMonth(); 
-            let season = "";
-            let colorClass = "";
-            if (month >= 1 && month <= 4) { season = "ฤดูร้อน (Summer)"; colorClass = "from-orange-500 to-red-600"; }
-            else if (month >= 5 && month <= 9) { season = "ฤดูฝน (Rainy)"; colorClass = "from-teal-600 to-blue-600"; }
-            else { season = "ฤดูหนาว (Winter)"; colorClass = "from-indigo-600 to-purple-600"; }
-            document.getElementById('current-season-display').innerText = season;
-            document.getElementById('season-header-bg').className = `rounded-2xl p-5 shadow-lg mb-4 text-white relative overflow-hidden transition-all duration-500 bg-gradient-to-r ${colorClass}`;
-        }
-
-        function filterCurrentMonth() {
-            renderFilteredItems(animals.filter(f => f.category === currentCategory && f.months.includes(currentMonthIndex)));
-            document.getElementById('filter-status').innerText = `แนะนำเดือน ${monthNames[currentMonthIndex]}`;
-        }
-
-        function renderList() { renderFilteredItems(animals.filter(c => c.category === currentCategory)); }
-
-        function renderFilteredItems(listToRender) {
-            const container = document.getElementById('main-list');
-            container.innerHTML = '';
-            if(listToRender.length === 0) {
-                container.innerHTML = `<div class="p-8 text-center text-gray-400 bg-white rounded-xl border-2 border-dashed border-gray-200"><i class="fa-solid fa-paw text-3xl mb-2 opacity-50"></i><br>ไม่พบข้อมูล</div>`;
-                return;
+            } else { // Vegetable
+                if (crop.name.includes("พริก") || crop.name.includes("มะเขือ")) {
+                    care.plant = "เพาะกล้าก่อน 30 วัน ย้ายลงแปลง ระยะห่าง 50 ซม.";
+                    care.water = "รดน้ำเช้า-เย็น อย่าให้ดินแห้ง";
+                    care.fertilizer = "ใส่ปุ๋ยทุก 15 วัน หลังย้ายกล้า 7 วันเริ่มใส่ครั้งแรก";
+                } else if (crop.name.includes("ผักบุ้ง") || crop.name.includes("คะน้า") || crop.name.includes("ผักกาด")) {
+                    care.plant = "หว่านเมล็ดลงแปลง หรือโรยเป็นแถว กลบดินบางๆ";
+                    care.water = "รดน้ำวันละ 2 ครั้ง เช้า-เย็น ชอบความชื้น";
+                    care.fertilizer = "ใส่ปุ๋ยยูเรียหรือสูตรเสมอทุก 7-10 วัน (ใส่ประมาณ 2-3 ครั้งตลอดรอบ)";
+                } else if (crop.name.includes("แตง") || crop.name.includes("ถั่ว") || crop.name.includes("บวบ")) {
+                    care.plant = "หยอดหลุมละ 3-4 เมล็ด ทำค้างให้เลื้อย";
+                    care.water = "รดน้ำสม่ำเสมอ ระวังอย่าให้โดนใบมากอาจเป็นรา";
+                    care.fertilizer = "ใส่ปุ๋ยทุก 15-20 วัน เริ่มใส่เมื่อมีใบจริง 4-5 ใบ";
+                } else if (crop.name.includes("หอม") || crop.name.includes("กระเทียม")) {
+                    care.plant = "เตรียมดินร่วนซุย ปักหัวพันธุ์ลงดิน";
+                    care.water = "รดน้ำพอชุ่ม วันละ 1 ครั้ง";
+                    care.fertilizer = "ใส่ปุ๋ยทุก 15 วัน (ประมาณ 2-3 ครั้ง)";
+                } else {
+                    care.plant = "เตรียมดินให้ร่วนซุย หยอดเมล็ดหรือย้ายกล้าลงแปลง";
+                    care.water = "รดน้ำให้ชุ่มเช้า-เย็น";
+                    care.fertilizer = "ใส่ปุ๋ยทุก 10-15 วัน จนเก็บเกี่ยว";
+                }
             }
-            listToRender.forEach(item => {
-                let iconBg = 'bg-gray-100';
-                if(item.category === 'poultry') iconBg = 'bg-orange-100 text-orange-600';
-                if(item.category === 'mammal') iconBg = 'bg-stone-100 text-stone-600';
-                if(item.category === 'aquatic') iconBg = 'bg-cyan-100 text-cyan-600';
-                if(item.category === 'other') iconBg = 'bg-emerald-100 text-emerald-600';
-                if(item.category === 'pet') iconBg = 'bg-pink-100 text-pink-600';
-                
-                const vacCount = item.vaccineProgram ? item.vaccineProgram.length : 0;
-                
-                const div = document.createElement('div');
-                div.className = 'bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between active:scale-[0.99] transition cursor-pointer hover:shadow-md hover:border-primary-200';
-                div.onclick = () => openCalcModal(item);
-                div.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 ${iconBg} rounded-2xl flex items-center justify-center text-3xl shadow-inner">${item.icon}</div>
-                        <div>
-                            <h4 class="font-bold text-gray-800 flex items-center text-base gap-1">${item.name}</h4>
-                            <div class="flex items-center gap-2 mt-1.5">
-                                <span class="text-xs text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100"><i class="fa-regular fa-clock"></i> ${item.endDays} วัน</span>
-                                <span class="text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100"><i class="fa-solid fa-syringe"></i> ${vacCount} เข็ม</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="bg-primary-500 hover:bg-primary-600 text-white w-9 h-9 rounded-full shadow-lg shadow-primary-200 flex items-center justify-center transition"><i class="fa-solid fa-plus"></i></button>
-                `;
-                container.appendChild(div);
-            });
+            return care;
         }
 
-        // --- Planning Modal (Simplified - No Image) ---
-        function openCalcModal(item) {
-            currentItem = item;
+        // --- Calculator Modal ---
+        function openCalcModal(crop, existingDate = null) {
+            currentPlanting = crop;
             
-            document.getElementById('modal-icon').innerText = item.icon;
-            document.getElementById('modal-title').innerText = item.name;
-            let catName = 'สัตว์';
-            if(item.category === 'poultry') catName = 'สัตว์ปีก';
-            if(item.category === 'mammal') catName = 'ปศุสัตว์';
-            if(item.category === 'aquatic') catName = 'สัตว์น้ำ';
-            if(item.category === 'pet') catName = 'สัตว์เลี้ยง';
-            if(item.category === 'other') catName = 'อื่นๆ';
+            document.getElementById('modal-icon').innerText = crop.icon;
+            document.getElementById('modal-title').innerText = crop.name;
+            document.getElementById('modal-desc').innerText = `ระยะเก็บเกี่ยวโดยประมาณ ${crop.harvestDays} วัน`;
+            document.getElementById('days-fertilize').innerText = crop.fertilizeDays;
+            document.getElementById('days-harvest').innerText = crop.harvestDays;
             
-            document.getElementById('modal-category').innerText = catName;
-            document.getElementById('modal-desc').innerText = `ระยะเลี้ยง ~${item.endDays} วัน`;
+            // Get Guide Text
+            const care = getCropCare(crop);
+            document.getElementById('guide-plant').innerText = care.plant;
+            document.getElementById('guide-water').innerText = care.water;
+            document.getElementById('guide-fertilizer').innerText = care.fertilizer;
+
+            const dateInputContainer = document.getElementById('date-input-container');
+            const saveBtn = document.getElementById('save-btn');
+            const tabTimeline = document.getElementById('mtab-timeline');
+            const tabGuide = document.getElementById('mtab-guide');
+
+            // Date logic
+            const dateInput = document.getElementById('start-date');
             
-            document.getElementById('start-date').valueAsDate = currentSelectedDate;
-            calculateDates(); 
+            if (existingDate) {
+                // Viewing Mode
+                dateInput.valueAsDate = existingDate;
+                dateInputContainer.classList.add('hidden'); // Hide date input
+                saveBtn.classList.add('hidden'); // Hide save button
+                
+                // Show guide tab primarily
+                tabGuide.classList.remove('hidden');
+                
+                // Switch to Guide Tab by default
+                switchModalTab('guide');
+            } else {
+                // Adding Mode
+                dateInput.valueAsDate = currentSelectedDate;
+                dateInputContainer.classList.remove('hidden'); // Show date input
+                saveBtn.classList.remove('hidden'); // Show save button
+                
+                // Hide Guide Tab in selection mode
+                tabGuide.classList.add('hidden');
+                
+                // Switch to Timeline Tab
+                switchModalTab('timeline');
+            }
+            
+            calculateDates();
             document.getElementById('calc-modal').classList.remove('hidden');
         }
 
-        function closeCalcModal() { document.getElementById('calc-modal').classList.add('hidden'); }
+        function closeCalcModal() {
+            document.getElementById('calc-modal').classList.add('hidden');
+        }
 
         function calculateDates() {
-            if(!currentItem) return;
-            const start = new Date(document.getElementById('start-date').value);
-            // Mid is just a visual reference now, logic simplified
-            const end = new Date(start); end.setDate(start.getDate() + currentItem.endDays);
+            if(!currentPlanting) return;
+
+            const startDateInput = document.getElementById('start-date').value;
+            if(!startDateInput) return;
+
+            const start = new Date(startDateInput);
+            
+            const fertilize = new Date(start);
+            fertilize.setDate(start.getDate() + currentPlanting.fertilizeDays);
+
+            const harvest = new Date(start);
+            harvest.setDate(start.getDate() + currentPlanting.harvestDays);
+
             document.getElementById('preview-start-date').innerText = formatDate(start);
-            document.getElementById('preview-end-date').innerText = formatDate(end);
+            document.getElementById('preview-fertilize-date').innerText = formatDate(fertilize);
+            document.getElementById('preview-harvest-date').innerText = formatDate(harvest);
         }
 
         function saveSchedule() {
-            if(!currentItem) return;
-            const start = new Date(document.getElementById('start-date').value);
-            const mid = new Date(start); mid.setDate(start.getDate() + currentItem.midDays);
-            const end = new Date(start); end.setDate(start.getDate() + currentItem.endDays);
+            if(!currentPlanting) return;
+            const startDateInput = document.getElementById('start-date').value;
+            const start = new Date(startDateInput);
             
-            // Save vaccineProgram from currentItem to the schedule
+            const fertilize = new Date(start);
+            fertilize.setDate(start.getDate() + currentPlanting.fertilizeDays);
+
+            const harvest = new Date(start);
+            harvest.setDate(start.getDate() + currentPlanting.harvestDays);
+
             const newSchedule = {
                 id: Date.now(),
-                itemId: currentItem.id, category: currentItem.category,
-                name: currentItem.name, icon: currentItem.icon,
-                // image property removed
-                startDate: start.toISOString(), midDate: mid.toISOString(), endDate: end.toISOString(),
-                vaccineProgram: currentItem.vaccineProgram // Save full program
+                fruitId: currentPlanting.id,
+                name: currentPlanting.name,
+                icon: currentPlanting.icon,
+                startDate: start.toISOString(),
+                fertilizeDate: fertilize.toISOString(),
+                harvestDate: harvest.toISOString(),
+                image: "" // Initialize with empty image
             };
+
             mySchedules.unshift(newSchedule); 
-            localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
+            localStorage.setItem('myPlantingSchedule', JSON.stringify(mySchedules));
+            
             closeCalcModal();
             renderScheduleList();
             toggleView('schedule'); 
         }
 
-        // --- Detail Modal (My Farm) ---
-        function openDetailModal(id) {
-            const item = mySchedules.find(s => s.id == id); // loose equality for string/number id
-            if(!item) return;
-
-            // Find static animal data for Temp/Feed (using itemId)
-            const animalData = animals.find(a => a.id == item.itemId);
-            
-            // Icon Only Logic
-            document.getElementById('detail-icon-container').innerHTML = `<span id="detail-icon">${item.icon}</span>`;
-            document.getElementById('detail-icon-container').classList.add('p-2');
-
-            document.getElementById('detail-title').innerText = item.name;
-            const startDate = new Date(item.startDate);
-            document.getElementById('detail-date-label').innerText = `เริ่มเลี้ยง: ${formatDate(startDate)}`;
-            
-            // Specs
-            document.getElementById('detail-temp').innerText = animalData ? animalData.temp : "-";
-            document.getElementById('detail-feed').innerText = animalData ? animalData.feed : "-";
-
-            // Vaccine Program Calculation
-            const vList = document.getElementById('detail-vaccine-list');
-            vList.innerHTML = '';
-            
-            // Use saved program or fallback to animalData
-            const program = item.vaccineProgram || (animalData ? animalData.vaccineProgram : []);
-
-            if (program && program.length > 0) {
-                program.forEach(v => {
-                    // Calculate actual date
-                    const vacDate = new Date(startDate);
-                    vacDate.setDate(startDate.getDate() + v.day);
-                    
-                    const row = document.createElement('div');
-                    row.className = 'p-3 flex gap-3 items-center hover:bg-gray-50';
-                    row.innerHTML = `
-                        <div class="flex-none w-16 text-center">
-                            <span class="block text-xs font-bold text-gray-400">อายุ ${v.day} วัน</span>
-                            <span class="block text-sm font-bold text-blue-600">${formatDateShort(vacDate)}</span>
-                        </div>
-                        <div class="flex-grow border-l-2 border-blue-100 pl-3">
-                            <p class="text-sm text-gray-800 font-medium">${v.name}</p>
-                        </div>
-                    `;
-                    vList.appendChild(row);
-                });
-            } else {
-                vList.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">- ไม่มีข้อมูลโปรแกรมวัคซีน -</div>';
-            }
-
-            document.getElementById('detail-modal').classList.remove('hidden');
-        }
-
-        function closeDetailModal() {
-            document.getElementById('detail-modal').classList.add('hidden');
-        }
-
+        // --- Schedule View ---
         function renderScheduleList() {
             const list = document.getElementById('schedule-list');
             const emptyState = document.getElementById('empty-schedule');
-            document.querySelectorAll('#schedule-count, #nav-badge').forEach(el => {
+            const countBadges = document.querySelectorAll('#schedule-count, #nav-badge');
+            
+            countBadges.forEach(el => {
                 el.innerText = mySchedules.length;
                 if(el.id === 'nav-badge') el.classList.toggle('hidden', mySchedules.length === 0);
             });
-            
+
             if(mySchedules.length === 0) {
                 list.innerHTML = '';
                 emptyState.classList.remove('hidden');
                 return;
             }
+
             emptyState.classList.add('hidden');
             list.innerHTML = '';
-            
+
             mySchedules.forEach(item => {
                 const start = new Date(item.startDate);
-                const end = new Date(item.endDate);
-                let barColor = "bg-gray-400";
-                if(item.category === 'poultry') barColor = "bg-orange-500";
-                if(item.category === 'mammal') barColor = "bg-stone-500";
-                if(item.category === 'aquatic') barColor = "bg-cyan-500";
-                if(item.category === 'other') barColor = "bg-emerald-500";
-                if(item.category === 'pet') barColor = "bg-pink-500";
-                
-                // Icon Only Logic
-                let visualContent = `<span class="text-3xl bg-gray-50 w-12 h-12 flex items-center justify-center rounded-xl shadow-inner">${item.icon}</span>`;
+                const fertilize = new Date(item.fertilizeDate);
+                const harvest = new Date(item.harvestDate);
+
+                // Image Handling
+                const hasImage = item.image && item.image.length > 0;
+                const imageDisplay = hasImage 
+                    ? `<img src="${item.image}" class="w-full h-full object-cover" alt="${item.name}">`
+                    : `<div class="w-full h-full flex items-center justify-center text-4xl bg-gray-100 text-gray-400">${item.icon}</div>`;
 
                 const div = document.createElement('div');
-                div.className = 'bg-white rounded-2xl p-4 shadow-sm border border-gray-100 relative overflow-hidden group cursor-pointer transition hover:shadow-md';
-                // Add onclick to open details, but ensure delete button doesn't trigger it
-                div.onclick = (e) => {
-                    // Prevent if click target is the delete button or its child
-                    if (e.target.closest('.delete-btn')) return;
-                    openDetailModal(item.id);
-                };
-
+                div.className = 'bg-white rounded-xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-all';
+                
                 div.innerHTML = `
-                    <div class="flex justify-between items-start mb-4 pl-2 relative z-20">
-                        <div class="flex items-center gap-3">
-                            ${visualContent}
-                            <div>
-                                <span class="font-bold text-gray-800 text-lg block">${item.name}</span>
-                                <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">#${item.id.toString().substr(-3)}</span>
+                    <div class="flex p-4 gap-4">
+                        <!-- Image Area (Click to Upload) -->
+                        <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 relative cursor-pointer border border-gray-200 group-image" onclick="triggerUpload(${item.id})">
+                            ${imageDisplay}
+                            <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <i class="fa-solid fa-camera text-white"></i>
+                            </div>
+                            <input type="file" id="file-${item.id}" class="hidden" accept="image/*" onchange="handleImageUpload(event, ${item.id})">
+                        </div>
+
+                        <!-- Content Area (Click to Details) -->
+                        <div class="flex-grow cursor-pointer" onclick="openScheduleDetails(${item.id})">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-bold text-gray-800 text-lg">${item.name}</h3>
+                            </div>
+                            <div class="grid grid-cols-3 gap-1 text-center text-[10px] mt-2">
+                                <div class="bg-gray-50 rounded p-1">
+                                    <div class="text-gray-500">เริ่มปลูก</div>
+                                    <div class="font-semibold text-gray-700">${formatDateShort(start)}</div>
+                                </div>
+                                <div class="bg-yellow-50 rounded p-1 border border-yellow-100">
+                                    <div class="text-yellow-600">ใส่ปุ๋ย</div>
+                                    <div class="font-semibold text-yellow-700">${formatDateShort(fertilize)}</div>
+                                </div>
+                                <div class="bg-orange-50 rounded p-1 border border-orange-100">
+                                    <div class="text-orange-600">เก็บเกี่ยว</div>
+                                    <div class="font-semibold text-orange-700">${formatDateShort(harvest)}</div>
+                                </div>
                             </div>
                         </div>
-                        <button type="button" onclick="deleteSchedule('${item.id}'); event.stopPropagation();" class="delete-btn text-gray-400 hover:text-red-500 w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-50 transition border border-transparent hover:border-red-100 z-30">
-                            <i class="fa-solid fa-trash-can text-lg"></i>
-                        </button>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 text-center text-sm relative z-10">
-                        <div class="bg-green-50 rounded-lg p-2 border border-green-100">
-                            <p class="text-[10px] font-bold text-green-600 uppercase mb-1">เริ่มเลี้ยง</p>
-                            <p class="font-bold text-green-800">${formatDateShort(start)}</p>
-                        </div>
-                        <div class="bg-primary-50 rounded-lg p-2 border border-primary-100">
-                            <p class="text-[10px] font-bold text-primary-600 uppercase mb-1">จับขาย</p>
-                            <p class="font-bold text-primary-800">${formatDateShort(end)}</p>
-                        </div>
-                    </div>
-                    <div class="absolute left-0 top-0 bottom-0 w-1.5 ${barColor}"></div>
+                    
+                    <!-- Beautiful Delete Button (Top Right) -->
+                    <button onclick="deleteSchedule(event, ${item.id})" class="absolute top-2 right-2 w-8 h-8 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full shadow-sm flex items-center justify-center transition-all border border-gray-100 z-10">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                    
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-leaf-500"></div>
                 `;
                 list.appendChild(div);
             });
         }
 
-        function deleteSchedule(id) {
-            // Updated delete logic to handle string IDs and force update
-            if(confirm('ยืนยันลบรายการนี้? (ไม่สามารถกู้คืนได้)')) {
-                // Use loose equality (!=) to handle string/number mismatches
-                mySchedules = mySchedules.filter(item => item.id != id);
-                localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
+        // Function to open details from schedule list
+        function openScheduleDetails(id) {
+            const item = mySchedules.find(s => s.id === id);
+            if (!item) return;
+            
+            const crop = allCrops.find(c => c.id === item.fruitId);
+            if (!crop) return;
+
+            // Open modal with saved date
+            openCalcModal(crop, new Date(item.startDate));
+        }
+
+        function deleteSchedule(event, id) {
+            event.stopPropagation(); // Prevent opening the modal
+            if(confirm('ต้องการลบรายการนี้หรือไม่?')) {
+                mySchedules = mySchedules.filter(item => item.id !== id);
+                localStorage.setItem('myPlantingSchedule', JSON.stringify(mySchedules));
                 renderScheduleList();
             }
         }
 
-        // --- Market Logic ---
-        function openMarketModal() { document.getElementById('market-modal').classList.remove('hidden'); }
-        function closeMarketModal() { 
-            document.getElementById('market-modal').classList.add('hidden'); 
-            document.getElementById('market-table-content').classList.add('hidden');
-            document.getElementById('error-message').classList.add('hidden');
-        }
-
-        async function updateMarketData() {
-            const loading = document.getElementById('loading-indicator');
-            const table = document.getElementById('market-table-content');
-            table.classList.add('hidden'); document.getElementById('error-message').classList.add('hidden'); loading.classList.remove('hidden');
-            const backendUrl = 'https://mute-unit-1629.tontakankeawp';
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000);
-                const response = await fetch(backendUrl + '/api/market-prices', { 
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ category: 'all', items: animals.map(a => a.name) }),
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                if (!response.ok) throw new Error('Backend Error');
-                renderMarketTable(true);
-            } catch (error) { setTimeout(() => { renderMarketTable(true); }, 1500); } 
-            finally {
-                setTimeout(() => {
-                    loading.classList.add('hidden'); table.classList.remove('hidden');
-                    const now = new Date();
-                    document.getElementById('market-last-update').innerText = `อัพเดท (AI): วันนี้ ${now.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'})}`;
-                }, 1500);
-            }
-        }
-
-        function renderMarketTable(randomize) {
-            const tbody = document.getElementById('market-tbody'); tbody.innerHTML = '';
-            animals.forEach(item => {
-                let p1 = item.price1, p2 = item.price2, trend = 'stable';
-                if (randomize) {
-                    const variation = (Math.random() * 0.2) - 0.1; 
-                    p1 = Math.round(p1 * (1 + variation)); p2 = Math.round(p2 * (1 + variation));
-                    if(variation > 0.05) trend = 'up'; else if(variation < -0.05) trend = 'down';
-                }
-                let trendHtml = trend === 'up' ? '<span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs font-bold"><i class="fa-solid fa-arrow-up"></i> สูงขึ้น</span>' : (trend === 'down' ? '<span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs font-bold"><i class="fa-solid fa-arrow-down"></i> ลดลง</span>' : '<span class="bg-gray-100 text-gray-400 px-2 py-0.5 rounded text-xs">-</span>');
-                let catTag = 'อื่นๆ';
-                let catColor = 'text-emerald-600 bg-emerald-100';
-                
-                if(item.category === 'poultry') { catTag = 'สัตว์ปีก'; catColor = 'text-orange-600 bg-orange-100'; }
-                else if(item.category === 'mammal') { catTag = 'ปศุสัตว์'; catColor = 'text-stone-600 bg-stone-100'; }
-                else if(item.category === 'aquatic') { catTag = 'สัตว์น้ำ'; catColor = 'text-cyan-600 bg-cyan-100'; }
-                else if(item.category === 'pet') { catTag = 'สัตว์เลี้ยง'; catColor = 'text-pink-600 bg-pink-100'; }
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="pl-4">
-                        <div class="flex flex-col justify-center">
-                            <div class="flex items-center gap-2"><span class="text-lg">${item.icon}</span><span class="font-bold text-gray-700 text-sm">${item.name}</span></div>
-                            <div class="mt-0.5 ml-7"><span class="text-[9px] ${catColor} px-1 rounded ml-1">${catTag}</span></div>
-                        </div>
-                    </td>
-                    <td class="font-mono text-gray-600 align-top pt-3">${p1 > 0 ? p1 : '-'}</td>
-                    <td class="font-mono text-gray-600 font-bold align-top pt-3">${p2 > 0 ? p2 : '-'}</td>
-                    <td class="text-center pr-4 align-top pt-3">${trendHtml}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
+        // --- Helper Functions ---
         function toggleView(view) {
-            const planner = document.getElementById('planner-view'), schedule = document.getElementById('schedule-view');
-            const navP = document.getElementById('nav-planner'), navS = document.getElementById('nav-schedule');
+            const calendarView = document.getElementById('calendar-view');
+            const scheduleView = document.getElementById('schedule-view');
+            const navSchedule = document.getElementById('nav-schedule');
+            
             if(view === 'schedule') {
-                planner.classList.add('hidden'); schedule.classList.remove('hidden');
-                navS.classList.replace('text-gray-400', 'text-primary-600'); navP.classList.replace('text-primary-600', 'text-gray-400');
+                calendarView.classList.add('hidden');
+                scheduleView.classList.remove('hidden');
+                if(navSchedule) navSchedule.classList.add('text-leaf-600');
             } else {
-                schedule.classList.add('hidden'); planner.classList.remove('hidden');
-                navP.classList.replace('text-gray-400', 'text-primary-600'); navS.classList.replace('text-primary-600', 'text-gray-400');
+                scheduleView.classList.add('hidden');
+                calendarView.classList.remove('hidden');
+                if(navSchedule) navSchedule.classList.remove('text-leaf-600');
             }
         }
-        function formatDate(date) { return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' }); }
-        function formatDateShort(date) { return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }); }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+        
+        function formatDateShort(date) {
+            return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+        }
+
+        // --- Chat Functions ---
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatbot-window');
+            if (chatWindow.classList.contains('hidden')) {
+                chatWindow.classList.remove('hidden');
+                // Allow a tiny delay for transition to work if not hidden immediately
+                setTimeout(() => {
+                    chatWindow.classList.remove('translate-y-full');
+                }, 10);
+            } else {
+                chatWindow.classList.add('translate-y-full');
+                setTimeout(() => {
+                    chatWindow.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function handleChatEnter(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function appendMessage(text, isUser) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `chat-msg ${isUser ? 'chat-user' : 'chat-bot'} animate-pop`;
+            div.innerHTML = text;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.id = 'typing-indicator';
+            div.className = `chat-msg chat-bot`;
+            div.innerHTML = `<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // 1. Show User Message
+            appendMessage(text, true);
+            input.value = '';
+
+            // 2. Show Typing
+            showTypingIndicator();
+
+            // 3. Call Backend
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'chat', message: text })
+                });
+
+                let reply = "ขออภัยครับ ระบบมีปัญหาเล็กน้อย";
+                if (response.ok) {
+                    const data = await response.json();
+                    reply = data.reply || "ไม่ได้รับคำตอบจากระบบ";
+                } else {
+                    // Fallback simulation if backend fails (common in demos)
+                    await new Promise(r => setTimeout(r, 1000));
+                    if (text.includes('ราคา')) reply = "ราคาผันผวนตามตลาดกลางครับ แนะนำให้ตรวจสอบที่หน้าตลาดพันธุ์ไม้เพื่อข้อมูลล่าสุดครับ";
+                    else if (text.includes('ปลูก')) reply = "การปลูกพืชแต่ละชนิดมีเคล็ดลับต่างกันครับ คุณสนใจพืชชนิดไหนเป็นพิเศษไหมครับ?";
+                    else reply = "ผมเป็น AI ผู้ช่วยเกษตร ยินดีให้คำปรึกษาครับ";
+                }
+
+                removeTypingIndicator();
+                appendMessage(reply, false);
+
+            } catch (error) {
+                removeTypingIndicator();
+                appendMessage("เกิดข้อผิดพลาดในการเชื่อมต่อครับ", false);
+                console.error(error);
+            }
+        }
+
+        // --- Calculator Logic ---
+        function openCalculator() {
+            document.getElementById('calculator-modal').classList.remove('hidden');
+        }
+        function closeCalculator() {
+            document.getElementById('calculator-modal').classList.add('hidden');
+        }
+        function calcAppend(val) {
+            const display = document.getElementById('calc-display');
+            if(display.value === '0' && val !== '.') display.value = '';
+            display.value += val;
+        }
+        function calcClear() {
+            document.getElementById('calc-display').value = '0';
+        }
+        function calcEqual() {
+            const display = document.getElementById('calc-display');
+            try {
+                display.value = eval(display.value) || '0';
+            } catch {
+                display.value = 'Error';
+                setTimeout(calcClear, 1000);
+            }
+        }
+
     </script>
 </body>
 </html>
