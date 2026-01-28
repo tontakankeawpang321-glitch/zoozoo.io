@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>วางแผนเลี้ยงสัตว์ & ปศุสัตว์ (Lite) 🚜</title>
+    <title>Smart Farm Planner 🚜</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
@@ -131,7 +131,7 @@
     <nav class="bg-gradient-to-r from-primary-700 to-primary-600 text-white p-3 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-lg font-bold flex items-center gap-2">
-                <i class="fa-solid fa-cow text-yellow-300"></i> ปศุสัตว์แพลนเนอร์
+                <i class="fa-solid fa-cow text-yellow-300"></i> Smart Farm Planner
             </h1>
             <div class="flex gap-2">
                 <!-- Calculator Toggle Button -->
@@ -229,6 +229,21 @@
 
     </div>
 
+    <!-- Modal: Delete Confirmation (New Custom Dialog) -->
+    <div id="delete-modal" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-[300px] rounded-3xl shadow-2xl animate-pop overflow-hidden p-6 text-center">
+            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-trash-can text-red-500 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">ลบรายการนี้?</h3>
+            <p class="text-sm text-gray-500 mb-6 leading-relaxed">ข้อมูลการเลี้ยงและประวัติวัคซีนจะหายไปถาวร</p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition text-sm">เก็บไว้</button>
+                <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 shadow-lg shadow-red-200 transition text-sm">ลบทิ้ง</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Calculator (New Dialog) -->
     <div id="calculator-modal" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-white w-full max-w-[320px] rounded-2xl shadow-2xl animate-pop overflow-hidden">
@@ -290,9 +305,28 @@
                 </button>
             </div>
 
-            <!-- Modal Body (Simplified - NO IMAGE UPLOAD) -->
+            <!-- Modal Body (Simplified) -->
             <div class="p-5 overflow-y-auto custom-scrollbar">
                 
+                <!-- Image Upload (Restored) -->
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        <i class="fa-regular fa-image mr-1"></i> เพิ่มรูปแปลง/สัตว์
+                    </label>
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden border border-gray-200 relative group cursor-pointer hover:border-primary-400 transition" onclick="document.getElementById('upload-image').click()">
+                            <img id="preview-image" src="" class="w-full h-full object-cover hidden">
+                            <div id="preview-placeholder" class="text-center">
+                                <i class="fa-solid fa-camera text-gray-400 text-xl group-hover:text-primary-500 transition"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <input type="file" id="upload-image" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer">
+                            <p class="text-[10px] text-gray-400 mt-1">รองรับรูปภาพ .jpg, .png</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Input Date -->
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-gray-700 mb-2">
@@ -320,7 +354,7 @@
             <!-- Modal Footer -->
             <div class="p-4 border-t border-gray-100 bg-gray-50 rounded-b-3xl sm:rounded-b-2xl z-20">
                 <button onclick="saveSchedule()" class="w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-500/30 active:scale-[0.98] transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-check-circle"></i> บันทึกแผนการเลี้ยง
+                    <i class="fa-solid fa-check-circle"></i> บันทึกรายการ
                 </button>
             </div>
         </div>
@@ -333,10 +367,16 @@
             <!-- Modal Header -->
             <div class="p-5 bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 rounded-t-3xl flex justify-between items-start">
                 <div class="flex items-center gap-4 w-full">
-                    <!-- Icon Container (Icon Only) -->
-                    <div id="detail-icon-container" class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-3xl text-primary-600 overflow-hidden flex-shrink-0 border border-gray-100 p-2">
+                    <!-- Icon Container (Clickable for Image Change) -->
+                    <div id="detail-icon-container" class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-3xl text-primary-600 overflow-hidden flex-shrink-0 border border-gray-100 p-2 cursor-pointer hover:opacity-80 transition relative group" onclick="document.getElementById('detail-image-upload').click()">
                         <span id="detail-icon">🐔</span>
+                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                            <i class="fa-solid fa-camera text-white text-xs"></i>
+                        </div>
                     </div>
+                    <!-- Hidden input for changing image -->
+                    <input type="file" id="detail-image-upload" class="hidden" accept="image/*" onchange="updateScheduleImage(this)">
+                    
                     <div class="flex-grow">
                         <h3 class="font-bold text-xl text-gray-800 leading-tight" id="detail-title">...</h3>
                         <p class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded inline-block mt-1" id="detail-date-label">เริ่ม: ...</p>
@@ -349,7 +389,7 @@
 
             <!-- Modal Body (Rich Info) -->
             <div class="p-5 overflow-y-auto custom-scrollbar bg-slate-50">
-                
+                <p class="text-[10px] text-center text-gray-400 mb-2"><i class="fa-regular fa-image"></i> แตะที่รูปด้านบนเพื่อเปลี่ยนรูป</p>
                 <!-- Specs Card -->
                 <div class="bg-white border border-gray-200 rounded-xl p-4 mb-4 shadow-sm">
                     <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
@@ -927,6 +967,7 @@
         let currentMonthIndex = currentSelectedDate.getMonth();
         let currentCategory = 'poultry'; 
         let currentItem = null; 
+        let currentUploadImage = null; // Store base64 image
         let mySchedules = JSON.parse(localStorage.getItem('myLivestockSchedule')) || [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -948,7 +989,71 @@
                 currentMonthIndex = currentSelectedDate.getMonth();
                 updateHeaderAndSeason();
             });
+
+            // Image Upload Logic
+            document.getElementById('upload-image').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    resizeImage(file, function(result) {
+                        currentUploadImage = result;
+                        document.getElementById('preview-image').src = currentUploadImage;
+                        document.getElementById('preview-image').classList.remove('hidden');
+                        document.getElementById('preview-placeholder').classList.add('hidden');
+                    });
+                }
+            });
         });
+
+        // Helper to resize image
+        function resizeImage(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxWidth = 800; // Resize to max 800px width
+                    
+                    if (width > maxWidth) {
+                        height = Math.round(height * (maxWidth / width));
+                        width = maxWidth;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.8)); // Compress quality
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Update image in Detail Modal
+        function updateScheduleImage(input) {
+            const file = input.files[0];
+            const currentDetailId = document.getElementById('detail-title').dataset.id;
+            
+            if (file && currentDetailId) {
+                resizeImage(file, function(result) {
+                    // Update in array
+                    const index = mySchedules.findIndex(s => s.id == currentDetailId);
+                    if(index !== -1) {
+                        mySchedules[index].image = result;
+                        localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
+                        
+                        // Update UI immediately
+                        document.getElementById('detail-icon-container').innerHTML = `<img src="${result}" class="w-full h-full object-cover">`;
+                        document.getElementById('detail-icon-container').classList.remove('p-2');
+                        
+                        // Refresh list view behind modal
+                        renderScheduleList();
+                    }
+                });
+            }
+        }
 
         function switchCategory(cat) {
             currentCategory = cat;
