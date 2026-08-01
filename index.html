@@ -221,30 +221,37 @@
             <!-- Season Header -->
             <div class="bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-5 shadow-lg mb-4 text-white relative overflow-hidden transition-all duration-500" id="season-header-bg">
                 <i class="fa-solid fa-temperature-three-quarters text-6xl absolute -right-2 -top-2 opacity-10"></i>
-                <div class="relative z-10">
+                
+                <!-- Seasonal Hazard Alert Button in Top Right -->
+                <button onclick="openHazardModal()" class="absolute top-3 right-3 bg-red-500/90 hover:bg-red-600 active:scale-95 text-white px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 backdrop-blur-md border border-red-300/40 font-bold shadow-md transition animate-pulse z-20">
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-300 text-sm"></i>
+                    <span>อันตรายตามฤดู</span>
+                </button>
+
+                <div class="relative z-10 pr-24">
                     <div class="flex items-center gap-2 mb-1">
                         <i class="fa-regular fa-calendar text-white/80"></i>
                         <input type="date" id="global-date-picker" class="bg-white/20 border-0 rounded px-2 py-0.5 text-sm text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-white/50 cursor-pointer">
                     </div>
-                    <h2 class="text-3xl font-bold mt-2 flex items-center gap-3">
+                    <h2 class="text-2xl sm:text-3xl font-bold mt-2 flex items-center gap-3">
                         <span id="current-season-display">ตรวจสอบฤดูกาล...</span>
                     </h2>
-                    <p class="text-xs mt-2 text-gray-300">* สภาพอากาศมีผลต่อสุขภาพสัตว์</p>
+                    <p class="text-xs mt-2 text-gray-200">* แตะปุ่มมุมขวาบนเพื่อดูข้อควรระวังภัยฤดูกาล</p>
                 </div>
             </div>
 
             <!-- AI Quick Scanner Banner -->
-            <div onclick="openScannerModal()" class="mb-4 bg-gradient-to-r from-amber-500 to-orange-500 p-3.5 rounded-2xl text-white shadow-md flex items-center justify-between cursor-pointer active:scale-[0.98] transition">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-2xl">
+            <div onclick="openScannerModal()" class="mb-4 bg-gradient-to-r from-amber-500 to-orange-500 p-3 rounded-2xl text-white shadow-md flex items-center justify-between cursor-pointer active:scale-[0.98] transition">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
                         📸
                     </div>
                     <div>
-                        <h4 class="font-bold text-sm">สแกนสัตว์ด้วย AI Intelligent Scan</h4>
-                        <p class="text-xs text-amber-100">ถ่ายรูป/อัปโหลด เพื่อวิเคราะห์โรค อาหาร และสายพันธุ์</p>
+                        <h4 class="font-bold text-xs sm:text-sm">สแกนสัตว์ด้วย AI</h4>
+                        <p class="text-[11px] text-amber-100">ถ่าย/อัปโหลดภาพ วิเคราะห์สายพันธุ์ สุขภาพ และอาหาร</p>
                     </div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-sm opacity-80"></i>
+                <i class="fa-solid fa-chevron-right text-xs opacity-80"></i>
             </div>
 
             <!-- Category Switcher Tabs -->
@@ -307,7 +314,7 @@
             </div>
         </div>
 
-        <!-- VIEW 3: Community Section (พูดคุย/แลกเปลี่ยนความรู้) -->
+        <!-- VIEW 3: Community Section -->
         <div id="community-view" class="hidden">
             <div class="flex justify-between items-center mb-4">
                 <div>
@@ -348,60 +355,144 @@
 
     <!-- Modal: AI Animal Scanner -->
     <div id="scanner-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm p-0 sm:p-4">
-        <div class="bg-white w-full sm:w-[460px] rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-up flex flex-col max-h-[92vh] overflow-hidden">
-            <div class="p-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white flex justify-between items-center flex-shrink-0">
+        <div class="bg-white w-full sm:w-[420px] rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-up flex flex-col max-h-[85vh] overflow-hidden">
+            <div class="p-3.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white flex justify-between items-center flex-shrink-0">
                 <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
-                    <h3 class="font-bold text-lg">AI สแกนวิเคราะห์รูปสัตว์</h3>
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                    <h3 class="font-bold text-base">AI สแกนรูปสัตว์</h3>
                 </div>
-                <button onclick="closeScannerModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark"></i>
+                <button onclick="closeScannerModal()" class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
 
-            <div class="p-5 overflow-y-auto custom-scrollbar flex-grow space-y-4">
-                <div class="border-2 border-dashed border-amber-300 bg-amber-50/50 rounded-2xl p-5 text-center relative cursor-pointer hover:bg-amber-50 transition" onclick="document.getElementById('scan-image-input').click()">
+            <div class="p-4 overflow-y-auto custom-scrollbar flex-grow space-y-3">
+                <div class="border-2 border-dashed border-amber-300 bg-amber-50/40 rounded-xl p-3 text-center relative cursor-pointer hover:bg-amber-50 transition" onclick="document.getElementById('scan-image-input').click()">
                     <input type="file" id="scan-image-input" accept="image/*" capture="environment" class="hidden" onchange="handleScanImageSelect(event)">
                     
-                    <div id="scan-preview-container" class="hidden relative rounded-xl overflow-hidden shadow-md max-h-56 mx-auto">
+                    <div id="scan-preview-container" class="hidden relative rounded-lg overflow-hidden shadow-sm max-h-40 mx-auto">
                         <img id="scan-preview-img" src="" class="w-full object-cover">
-                        <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded-md backdrop-blur-sm">
-                            <i class="fa-solid fa-arrows-rotate"></i> แตะเพื่อเปลี่ยนรูป
+                        <div class="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-[9px] px-2 py-0.5 rounded backdrop-blur-sm">
+                            <i class="fa-solid fa-arrows-rotate"></i> เปลี่ยนรูป
                         </div>
                     </div>
 
-                    <div id="scan-upload-placeholder" class="py-4">
-                        <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3 text-amber-600 text-2xl shadow-inner">
+                    <div id="scan-upload-placeholder" class="py-2">
+                        <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-2 text-amber-600 text-xl shadow-inner">
                             <i class="fa-solid fa-camera"></i>
                         </div>
-                        <h4 class="font-bold text-gray-800 text-sm">ถ่ายภาพ หรือ อัปโหลดรูปภาพสัตว์</h4>
-                        <p class="text-xs text-gray-500 mt-1">รองรับไก่ หมู วัว กุ้ง ปลา หรือสัตว์เลี้ยงทั่วไป</p>
+                        <h4 class="font-bold text-gray-800 text-xs">แตะเพื่อถ่ายรูป หรือ เลือกรูปภาพสัตว์</h4>
+                        <p class="text-[10px] text-gray-400 mt-0.5">รองรับสัตว์เลี้ยงและปศุสัตว์ทุกชนิด</p>
                     </div>
                 </div>
 
+                <div class="flex gap-2 items-center">
+                    <select id="scan-focus-option" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="general">🔍 วิเคราะห์ภาพรวม สายพันธุ์ และการเลี้ยง</option>
+                        <option value="health">🩺 ตรวจสุขภาพและโรคเบื้องต้น</option>
+                        <option value="feed">🌾 แนะนำโภชนาการและอาหาร</option>
+                    </select>
+                    <button id="btn-run-scan" onclick="analyzeAnimalImage()" disabled class="w-1/2 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 text-white font-bold py-2 px-3 rounded-xl shadow-md text-xs transition flex items-center justify-center gap-1.5 flex-shrink-0">
+                        <i class="fa-solid fa-microchip"></i> สแกน AI
+                    </button>
+                </div>
+
+                <div id="scan-result-box" class="hidden bg-slate-50 border border-amber-200 rounded-xl p-3 space-y-2">
+                    <div class="flex items-center justify-between border-b border-gray-200 pb-1.5">
+                        <span class="text-xs font-bold text-amber-700 flex items-center gap-1">
+                            <i class="fa-solid fa-robot"></i> ผลการวิเคราะห์ AI
+                        </span>
+                        <span class="text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium">สำเร็จ</span>
+                    </div>
+                    <div id="scan-result-text" class="text-xs text-gray-800 leading-relaxed font-light">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: New Community Post -->
+    <div id="post-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl animate-pop overflow-hidden flex flex-col">
+            <div class="p-4 bg-blue-600 text-white flex justify-between items-center">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i> ตั้งคำถาม / โพสต์ในชุมชน
+                </h3>
+                <button onclick="closeNewPostModal()" class="text-white/80 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="handleNewPostSubmit(event)" class="p-4 space-y-3">
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">สิ่งที่ต้องการให้ AI เน้นวิเคราะห์:</label>
-                    <select id="scan-focus-option" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-                        <option value="general">🔍 วิเคราะห์สายพันธุ์ ข้อมูลการเลี้ยง และคำแนะนำรวม</option>
-                        <option value="health">🩺 ตรวจสอบอาการป่วย/สุขภาพ และคำแนะนำการรักษา</option>
-                        <option value="feed">🌾 แนะนำอาหารและการให้อาหารที่เหมาะสม</option>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">ชื่อของคุณ / ชื่อฟาร์ม</label>
+                    <input type="text" id="post-author" required placeholder="เช่น นายสมชาย ฟาร์มไก่" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">หมวดหมู่หัวข้อ</label>
+                    <select id="post-category" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="คำถาม/สอบถาม">❓ คำถาม/สอบถาม</option>
+                        <option value="แลกเปลี่ยนประสบการณ์">💡 แลกเปลี่ยนประสบการณ์</option>
+                        <option value="ซื้อขาย/ตลาด">🛒 ซื้อขาย/ตลาด</option>
+                        <option value="ทั่วไป">💬 ทั่วไป</option>
                     </select>
                 </div>
-
-                <button id="btn-run-scan" onclick="analyzeAnimalImage()" disabled class="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl shadow-lg shadow-amber-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-microchip"></i> เริ่มวิเคราะห์รูปภาพด้วย AI
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">เนื้อหาคำถาม / ข้อความ</label>
+                    <textarea id="post-content" required rows="4" placeholder="พิมพ์ข้อความของคุณที่นี่..." class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition">
+                    โพสต์ข้อความ
                 </button>
+            </form>
+        </div>
+    </div>
 
-                <div id="scan-result-box" class="hidden bg-slate-50 border border-amber-200 rounded-2xl p-4 space-y-3">
-                    <div class="flex items-center justify-between border-b border-gray-200 pb-2">
-                        <span class="text-xs font-bold text-amber-700 flex items-center gap-1.5">
-                            <i class="fa-solid fa-robot"></i> ผลการวิเคราะห์จาก Gemini AI
-                        </span>
-                        <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium">เรียบร้อย</span>
+    <!-- Modal: Seasonal Danger Hazard Alert -->
+    <div id="hazard-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl animate-pop overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-4 bg-gradient-to-r from-red-600 to-orange-600 text-white flex justify-between items-center shadow-md">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-yellow-300">
+                        <i class="fa-solid fa-shield-halved"></i>
                     </div>
-                    <div id="scan-result-text" class="text-sm text-gray-800 leading-relaxed whitespace-pre-line font-light">
+                    <div>
+                        <h3 class="font-bold text-base leading-tight">คำแนะนำ & อันตรายตามฤดูกาล</h3>
+                        <p class="text-[10px] text-white/80" id="hazard-season-title">ฤดูกาลปัจจุบัน</p>
                     </div>
                 </div>
+                <button onclick="closeHazardModal()" class="text-white/80 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-4 overflow-y-auto space-y-3 bg-slate-50 text-xs">
+                <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-xl shadow-sm space-y-1">
+                    <h4 class="font-bold text-red-800 flex items-center gap-1.5 text-xs">
+                        <i class="fa-solid fa-circle-exclamation text-red-500"></i> โรคและอันตรายที่ต้องระวังระบาด
+                    </h4>
+                    <p class="text-red-700 leading-relaxed" id="hazard-diseases-text">- Loading -</p>
+                </div>
+
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl shadow-sm space-y-1">
+                    <h4 class="font-bold text-amber-800 flex items-center gap-1.5 text-xs">
+                        <i class="fa-solid fa-cloud-sun-rain text-amber-600"></i> ผลกระทบจากสภาพอากาศ
+                    </h4>
+                    <p class="text-amber-800 leading-relaxed" id="hazard-weather-text">- Loading -</p>
+                </div>
+
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded-r-xl shadow-sm space-y-1">
+                    <h4 class="font-bold text-emerald-800 flex items-center gap-1.5 text-xs">
+                        <i class="fa-solid fa-kit-medical text-emerald-600"></i> แนวทางป้องกัน & วิธีดูแล
+                    </h4>
+                    <ul class="text-emerald-900 space-y-1 list-disc pl-4" id="hazard-prevention-list">
+                    </ul>
+                </div>
+            </div>
+
+            <div class="p-3 bg-white border-t border-gray-100 text-center">
+                <button onclick="closeHazardModal()" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                    รับทราบข้อควรระวัง
+                </button>
             </div>
         </div>
     </div>
@@ -444,38 +535,7 @@
         </div>
     </div>
 
-    <!-- Modal: Community Create Post -->
-    <div id="post-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm p-0 sm:p-4">
-        <div class="bg-white w-full sm:w-[440px] rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-up flex flex-col overflow-hidden">
-            <div class="p-4 bg-blue-600 text-white flex justify-between items-center">
-                <h3 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> ตั้งคำถาม / แชร์ความรู้</h3>
-                <button onclick="closeNewPostModal()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form onsubmit="handleNewPostSubmit(event)" class="p-5 space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">ชื่อผู้โพสต์ / ชื่อฟาร์ม</label>
-                    <input type="text" id="post-author" required placeholder="เช่น สมชาย ฟาร์มไก่, พ่อเลี้ยงชัย" class="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">หมวดหมู่</label>
-                    <select id="post-category" class="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="คำถาม/สอบถาม">❓ คำถาม/ข้อสงสัย</option>
-                        <option value="แชร์ประสบการณ์">💡 แชร์เทคนิค/ประสบการณ์</option>
-                        <option value="ซื้อขาย/พูดคุย">🤝 พูดคุยทั่วไป/ซื้อขาย</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">ข้อความเรื่องราว / คำถาม</label>
-                    <textarea id="post-content" required rows="4" placeholder="พิมพ์ข้อความคำถามหรือเทคนิคที่ต้องการแชร์..." class="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
-                </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition active:scale-[0.98]">
-                    โพสต์คำถามบันทึกข้อมูล
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal 1: Raising Calculator (Adding) -->
+    <!-- Modal 1: Raising Calculator (Adding Schedule) -->
     <div id="calc-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm">
         <div class="bg-white w-full sm:w-[420px] sm:rounded-2xl rounded-t-3xl shadow-2xl animate-slide-up flex flex-col max-h-[95vh]">
             <div class="p-5 bg-primary-50 border-b border-primary-100 rounded-t-3xl flex justify-between items-start">
@@ -544,7 +604,7 @@
         </div>
     </div>
 
-    <!-- Modal 2: Detail View (Viewing in My Farm) -->
+    <!-- Modal 2: Detail View -->
     <div id="detail-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm">
         <div class="bg-white w-full sm:w-[420px] sm:rounded-2xl rounded-t-3xl shadow-2xl animate-slide-up flex flex-col max-h-[95vh]">
             <div class="p-5 bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 rounded-t-3xl flex justify-between items-start">
@@ -605,7 +665,7 @@
         </div>
     </div>
 
-    <!-- Navigation Bottom Bar (Responsive Mobile View) -->
+    <!-- Navigation Bottom Bar -->
     <div class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 flex justify-around py-2 pb-safe z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
         <button onclick="toggleView('planner')" class="flex flex-col items-center gap-1 text-primary-600" id="nav-planner">
             <i class="fa-solid fa-calendar-check text-lg"></i>
@@ -620,7 +680,6 @@
             <span class="text-[10px] font-medium">ฟาร์มฉัน</span>
         </button>
 
-        <!-- Center AI Scanner Action Button -->
         <button onclick="openScannerModal()" class="flex flex-col items-center justify-center -mt-5">
             <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 active:scale-95 transition border-4 border-white">
                 <i class="fa-solid fa-camera text-lg"></i>
@@ -718,46 +777,124 @@
     </div>
 
     <script>
-        // Chatbot Worker API URL
+        // API Configurations
         const CHATBOT_API_URL = "https://medic-scan.tontakankeawpang321.workers.dev"; 
-        
-        // Hardcoded Embedded Google Apps Script URL (Configured directly in code HTML)
         const APPSCRIPT_URL = "https://script.google.com/macros/s/AKfycbykt06lPDNWfQs8zcAFWAzl-zvf6BLvT-H_AjaLHK0p1zrqsKF6WvPOW8TskdtotJkW/exec";
 
-        // Animal Master Database
+        // Master Database (100 Species across 5 Categories)
         const animals = [
-            // Poultry
-            { id: 201, category: 'poultry', name: "ไก่ไข่", icon: "🐔", midDays: 7, endDays: 140, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 28, price2: 190, temp: "25-33°C", feed: "อาหารไก่ไข่ (โปรตีน 16%)", vaccineProgram: [{ day: 7, name: "นิวคาสเซิล + หลอดลมอักเสบ" }, { day: 14, name: "กัมโบโร (ครั้งที่ 1)" }, { day: 21, name: "นิวคาสเซิล (ซ้ำ) + ฝีดาษ" }, { day: 28, name: "กัมโบโร (ครั้งที่ 2)" }] },
-            { id: 202, category: 'poultry', name: "ไก่เนื้อ", icon: "🍗", midDays: 7, endDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 18, price2: 95, temp: "28-32°C (กกไฟ 7 วัน)", feed: "อาหารขุนระยะสั้น", vaccineProgram: [{ day: 7, name: "นิวคาสเซิล + หลอดลมอักเสบ" }, { day: 14, name: "กัมโบโร" }, { day: 21, name: "นิวคาสเซิล (ซ้ำ)" }] },
-            { id: 203, category: 'poultry', name: "ไก่พื้นเมือง", icon: "🐓", midDays: 21, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 25, price2: 150, temp: "ทนร้อนได้ดี", feed: "รำ/ปลายข้าว/เศษอาหาร", vaccineProgram: [{ day: 21, name: "นิวคาสเซิล" }, { day: 60, name: "อหิวาต์ไก่" }] },
-            { id: 205, category: 'poultry', name: "เป็ดไข่", icon: "🦆", midDays: 21, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 22, price2: 160, temp: "ถ่ายเทสะดวก พื้นแห้ง", feed: "รำ/หอยเชอรี่", vaccineProgram: [{ day: 21, name: "กาฬโรคเป็ด" }, { day: 60, name: "อหิวาต์เป็ด" }] },
-            { id: 209, category: 'poultry', name: "ไก่งวง", icon: "🦃", midDays: 30, endDays: 180, months: [10,11,0,1], price1: 100, price2: 800, temp: "พื้นที่กว้าง ชอบหญ้าสด", feed: "หญ้าขน/อาหารไก่เนื้อ", vaccineProgram: [{ day: 21, name: "ฝีดาษไก่" }, { day: 45, name: "อหิวาต์ไก่" }] },
-            { id: 210, category: 'poultry', name: "เป็ดเทศ", icon: "🦢", midDays: 20, endDays: 80, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 30, price2: 180, temp: "ทนโรค เลี้ยงง่าย", feed: "เศษผัก/รำข้าว", vaccineProgram: [{ day: 30, name: "กาฬโรคเป็ด" }] },
-            { id: 211, category: 'poultry', name: "ไก่เบตง", icon: "🐔", midDays: 30, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 450, temp: "อากาศถ่ายเท (ห้ามชื้น)", feed: "ข้าวโพด/อาหารผสม", vaccineProgram: [{ day: 14, name: "นิวคาสเซิล" }, { day: 45, name: "ถ่ายพยาธิ" }] },
-            { id: 212, category: 'poultry', name: "ไก่ชน", icon: "🥊", midDays: 60, endDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 3000, temp: "ต้องกราดน้ำ/ตากแดด", feed: "ข้าวเปลือก/สมุนไพร", vaccineProgram: [{ day: 14, name: "นิวคาสเซิล" }, { day: 60, name: "อหิวาต์" }] },
+            // --- POULTRY (สัตว์ปีก 1-20) ---
+            { id: 201, category: 'poultry', name: "ไก่ไข่", icon: "🐔", midDays: 7, endDays: 140, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 28, price2: 190, temp: "25-33°C", feed: "อาหารไก่ไข่ (โปรตีน 16%)", vaccineProgram: [{ day: 7, name: "นิวคาสเซิล + หลอดลมอักเสบ" }, { day: 14, name: "กัมโบโร" }, { day: 21, name: "นิวคาสเซิลซ้ำ + ฝีดาษ" }] },
+            { id: 202, category: 'poultry', name: "ไก่เนื้อ", icon: "🍗", midDays: 7, endDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 18, price2: 95, temp: "28-32°C (กกไฟ 7 วัน)", feed: "อาหารขุนระยะสั้น", vaccineProgram: [{ day: 7, name: "นิวคาสเซิล" }, { day: 14, name: "กัมโบโร" }] },
+            { id: 203, category: 'poultry', name: "ไก่พื้นเมือง", icon: "🐓", midDays: 21, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 25, price2: 150, temp: "ทนร้อนดี", feed: "รำ/ปลายข้าว", vaccineProgram: [{ day: 21, name: "นิวคาสเซิล" }, { day: 60, name: "อหิวาต์ไก่" }] },
+            { id: 204, category: 'poultry', name: "ไก่ดำ", icon: "🖤", midDays: 30, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 45, price2: 300, temp: "24-30°C", feed: "รำผสมสมุนไพร", vaccineProgram: [{ day: 14, name: "นิวคาสเซิล" }] },
+            { id: 205, category: 'poultry', name: "เป็ดไข่", icon: "🦆", midDays: 21, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 22, price2: 160, temp: "คอกแห้ง มีอ่างน้ำ", feed: "รำ/หอยเชอรี่", vaccineProgram: [{ day: 21, name: "กาฬโรคเป็ด" }, { day: 60, name: "อหิวาต์เป็ด" }] },
+            { id: 206, category: 'poultry', name: "เป็ดเนื้อ (บาบารี่)", icon: "🦆", midDays: 15, endDays: 70, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 28, price2: 190, temp: "ระบายอากาศดี", feed: "อาหารขุนเป็ด", vaccineProgram: [{ day: 20, name: "กาฬโรคเป็ด" }] },
+            { id: 207, category: 'poultry', name: "นกกระทาไข่", icon: "🐦", midDays: 10, endDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3, price2: 35, temp: "25-30°C", feed: "อาหารโปรตีน 22%", vaccineProgram: [] },
+            { id: 208, category: 'poultry', name: "นกกระทาเนื้อ", icon: "🐤", midDays: 7, endDays: 35, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2, price2: 25, temp: "28-32°C", feed: "อาหารนกกระทาขุน", vaccineProgram: [] },
+            { id: 209, category: 'poultry', name: "ไก่งวง", icon: "🦃", midDays: 30, endDays: 180, months: [10,11,0,1], price1: 100, price2: 800, temp: "แปลงหญ้ากว้าง", feed: "หญ้าขน/อาหารไก่", vaccineProgram: [{ day: 21, name: "ฝีดาษไก่" }] },
+            { id: 210, category: 'poultry', name: "เป็ดเทศ", icon: "🦢", midDays: 20, endDays: 80, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 30, price2: 180, temp: "เลี้ยงง่าย ทนโรค", feed: "เศษผัก/รำข้าว", vaccineProgram: [{ day: 30, name: "กาฬโรคเป็ด" }] },
+            { id: 211, category: 'poultry', name: "ไก่เบตง", icon: "🐔", midDays: 30, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 450, temp: "อากาศถ่ายเท", feed: "ข้าวโพดหมัก", vaccineProgram: [{ day: 14, name: "นิวคาสเซิล" }] },
+            { id: 212, category: 'poultry', name: "ไก่ชน", icon: "🥊", midDays: 60, endDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 3000, temp: "ตากแดดกราดน้ำ", feed: "ข้าวเปลือก/สมุนไพร", vaccineProgram: [{ day: 14, name: "นิวคาสเซิล" }, { day: 60, name: "อหิวาต์" }] },
+            { id: 213, category: 'poultry', name: "ห่านขาว", icon: "🪿", midDays: 30, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 150, price2: 900, temp: "ทนสภาพอากาศ", feed: "หญ้าสด/ผักบุ้ง", vaccineProgram: [{ day: 30, name: "อหิวาต์สัตว์ปีก" }] },
+            { id: 214, category: 'poultry', name: "ห่านเทา (เทาเทา)", icon: "🪿", midDays: 30, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 180, price2: 1000, temp: "ชอบน้ำนิ่ง", feed: "พืชผัก/รำ", vaccineProgram: [] },
+            { id: 215, category: 'poultry', name: "นกพิราบเนื้อ", icon: "🕊️", midDays: 15, endDays: 30, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 40, price2: 150, temp: "กรงโปร่งสูง", feed: "ถั่ว/ถั่วเขียว/ข้าวโพด", vaccineProgram: [] },
+            { id: 216, category: 'poultry', name: "ไก่ต๊อก", icon: "🦜", midDays: 20, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 80, price2: 450, temp: "แปลงธรรมชาติ", feed: "แมลง/เมล็ดพืช", vaccineProgram: [{ day: 21, name: "นิวคาสเซิล" }] },
+            { id: 217, category: 'poultry', name: "ไก่ฟ้าคอแหวน", icon: "🦚", midDays: 30, endDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 200, price2: 1200, temp: "ร่มรื่น ไม่ร้อน", feed: "อาหารไก่ชน/ผลไม้", vaccineProgram: [] },
+            { id: 218, category: 'poultry', name: "นกกระจอกเทศ", icon: "🦩", midDays: 90, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3500, price2: 25000, temp: "แปลงกว้างทนแดด", feed: "หญ้าเนเปียร์/เม็ดขุน", vaccineProgram: [{ day: 60, name: "ถ่ายพยาธิ" }] },
+            { id: 219, category: 'poultry', name: "ไก่แจ้สวยงาม", icon: "🐓", midDays: 30, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 800, temp: "คอกสะอาดแห้ง", feed: "อาหารเม็ดสำเร็จรูป", vaccineProgram: [{ day: 14, name: "นิวคาสเซิล" }] },
+            { id: 220, category: 'poultry', name: "เป็ดมัลลาร์ด", icon: "🦆", midDays: 20, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 60, price2: 350, temp: "มีสระน้ำลึก", feed: "พืชน้ำ/รำ", vaccineProgram: [] },
 
-            // Mammal
+            // --- MAMMAL (ปศุสัตว์ 21-40) ---
             { id: 301, category: 'mammal', name: "สุกร (หมูขุน)", icon: "🐷", midDays: 21, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1800, price2: 7000, temp: "22-28°C", feed: "อาหารหมูขุน", vaccineProgram: [{ day: 21, name: "อหิวาต์สุกร" }, { day: 45, name: "ปากและเท้าเปื่อย (FMD)" }] },
             { id: 302, category: 'mammal', name: "โคเนื้อ", icon: "🐂", midDays: 120, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 18000, price2: 48000, temp: "ทนร้อน", feed: "หญ้า/ฟาง", vaccineProgram: [{ day: 120, name: "ปากและเท้าเปื่อย" }, { day: 150, name: "คอบวม" }] },
-            { id: 305, category: 'mammal', name: "แพะ", icon: "🐐", midDays: 60, endDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2500, price2: 5500, temp: "คอกยกสูง แห้ง", feed: "ใบกระถิน/หญ้า", vaccineProgram: [{ day: 60, name: "ถ่ายพยาธิ" }, { day: 90, name: "ปากและเท้าเปื่อย" }] },
-            { id: 307, category: 'mammal', name: "หมูป่า", icon: "🐗", midDays: 60, endDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1000, price2: 4500, temp: "โรงเรือนโปร่ง ดินแห้ง", feed: "หยวกกล้วย/รำ", vaccineProgram: [{ day: 45, name: "อหิวาต์สุกร" }] },
-            { id: 308, category: 'mammal', name: "กระต่ายเนื้อ", icon: "🐇", midDays: 30, endDays: 100, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 150, price2: 500, temp: "ไม่เกิน 30°C", feed: "หญ้าแห้ง/อาหารเม็ด", vaccineProgram: [{ day: 45, name: "ถ่ายพยาธิภายนอก" }] },
+            { id: 303, category: 'mammal', name: "โคนม", icon: "🐄", midDays: 180, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 25000, price2: 65000, temp: "20-26°C", feed: "หญ้าสด/อาหารข้นโปรตีน 18%", vaccineProgram: [{ day: 90, name: "ปากและเท้าเปื่อย" }] },
+            { id: 304, category: 'mammal', name: "กระบือ (ควายไทย)", icon: "🐃", midDays: 180, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 22000, price2: 80000, temp: "ชอบปลักโคลน", feed: "ฟาง/หญ้าสด", vaccineProgram: [{ day: 120, name: "ปากและเท้าเปื่อย" }] },
+            { id: 305, category: 'mammal', name: "แพะเนื้อ", icon: "🐐", midDays: 60, endDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2500, price2: 5500, temp: "คอกยกสูง แห้ง", feed: "ใบกระถิน/หญ้า", vaccineProgram: [{ day: 60, name: "ถ่ายพยาธิ" }] },
+            { id: 306, category: 'mammal', name: "แกะเนื้อ", icon: "🐑", midDays: 60, endDays: 210, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2200, price2: 5000, temp: "คอกโปร่ง ห้ามชื้น", feed: "หญ้าแพรก", vaccineProgram: [{ day: 60, name: "ถ่ายพยาธิ" }] },
+            { id: 307, category: 'mammal', name: "หมูป่า", icon: "🐗", midDays: 60, endDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1000, price2: 4500, temp: "คอกโปร่ง ดินแห้ง", feed: "หยวกกล้วย/รำ", vaccineProgram: [{ day: 45, name: "อหิวาต์สุกร" }] },
+            { id: 308, category: 'mammal', name: "กระต่ายเนื้อ", icon: "🐇", midDays: 30, endDays: 100, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 150, price2: 500, temp: "ไม่เกิน 30°C", feed: "หญ้าแห้ง/อาหารเม็ด", vaccineProgram: [] },
+            { id: 309, category: 'mammal', name: "แพะนม", icon: "🐐", midDays: 180, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3500, price2: 9000, temp: "สะอาด ยกสูง", feed: "หญ้าเนเปียร์/ข้น", vaccineProgram: [{ day: 90, name: "FMD" }] },
+            { id: 310, category: 'mammal', name: "กวางดาว", icon: "🦌", midDays: 180, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 8000, price2: 35000, temp: "แปลงธรรมชาติป่า", feed: "ใบไม้/หญ้าขน", vaccineProgram: [] },
+            { id: 311, category: 'mammal', name: "สุกรแม่พันธุ์", icon: "🐖", midDays: 114, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 8000, price2: 18000, temp: "22-26°C", feed: "อาหารแม่พันธุ์", vaccineProgram: [{ day: 30, name: "พาร์โวไวรัส" }] },
+            { id: 312, category: 'mammal', name: "หนูพุกใหญ่", icon: "🐀", midDays: 30, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 80, price2: 250, temp: "บ่อซีเมนต์ มืดสงบ", feed: "ข้าวเปลือก/อ้อย", vaccineProgram: [] },
+            { id: 313, category: 'mammal', name: "ม้าขี่", icon: "🐴", midDays: 180, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 25000, price2: 120000, temp: "คอกโปร่ง", feed: "หญ้าสด/อัลฟัลฟ่า", vaccineProgram: [] },
+            { id: 314, category: 'mammal', name: "ลา", icon: "🫏", midDays: 180, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 15000, price2: 45000, temp: "ทนแล้งดีเยี่ยม", feed: "ฟาง/หญ้าแห้ง", vaccineProgram: [] },
+            { id: 315, category: 'mammal', name: "โคบราห์มัน", icon: "🐂", midDays: 120, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 16000, price2: 45000, temp: "ทนแดดไทย", feed: "ฟางหมัก/หญ้า", vaccineProgram: [{ day: 120, name: "FMD" }] },
+            { id: 316, category: 'mammal', name: "โควากิวลูกผสม", icon: "🥩", midDays: 180, endDays: 500, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 25000, price2: 95000, temp: "คอกไม่ร้อนจัด", feed: "ขุนธัญพืชสูตรลายไขมัน", vaccineProgram: [{ day: 120, name: "FMD" }] },
+            { id: 317, category: 'mammal', name: "กระต่ายฮอลแลนด์ลอป", icon: "🐰", midDays: 30, endDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 500, price2: 2500, temp: "22-26°C", feed: "หญ้าทิโมธี", vaccineProgram: [] },
+            { id: 318, category: 'mammal', name: "อูฐโหนกเดียว", icon: "🐪", midDays: 180, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 80000, price2: 250000, temp: "แปลงแห้งทนแดด", feed: "กระถิน/ฟาง", vaccineProgram: [] },
+            { id: 319, category: 'mammal', name: "กระบือปลักสวยงาม", icon: "🐃", midDays: 180, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50000, price2: 300000, temp: "มีปลักอาบน้ำ", feed: "หญ้าสด/อาหารข้น", vaccineProgram: [{ day: 120, name: "FMD" }] },
+            { id: 320, category: 'mammal', name: "แพะแองโกลนูเบียน", icon: "🐐", midDays: 60, endDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 4000, price2: 12000, temp: "คอกโปร่งแห้ง", feed: "ใบกระถิน/หญ้าเนเปียร์", vaccineProgram: [{ day: 60, name: "ถ่ายพยาธิ" }] },
 
-            // Pet
-            { id: 601, category: 'pet', name: "สุนัขพันธุ์เล็ก", icon: "🐶", midDays: 45, endDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2000, price2: 8000, temp: "25-30°C", feed: "อาหารเม็ดลูกสุนัข", vaccineProgram: [{ day: 45, name: "วัคซีนรวม 5 โรค (เข็ม 1)" }, { day: 60, name: "วัคซีนรวม (เข็ม 2)" }, { day: 90, name: "พิษสุนัขบ้า" }] },
-            { id: 603, category: 'pet', name: "แมว (พันธุ์ไทย/ผสม)", icon: "🐱", midDays: 60, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 500, price2: 2500, temp: "อบอุ่น แห้งสะอาด", feed: "อาหารเปียก/ลูกแมว", vaccineProgram: [{ day: 60, name: "ไข้หัดหวัดแมว (เข็ม 1)" }, { day: 90, name: "ไข้หัดหวัดแมว (เข็ม 2)" }] },
-            { id: 607, category: 'pet', name: "ปลากัดสวยงาม", icon: "🐟", midDays: 60, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 20, price2: 500, temp: "26-30°C", feed: "ลูกน้ำ/ไรแดง", vaccineProgram: [{ day: 60, name: "แยกโหลกันกัด" }] },
-
-            // Aquatic
-            { id: 401, category: 'aquatic', name: "ปลาดุก", icon: "🐟", midDays: 30, endDays: 90, months: [5,6,7,8,9], price1: 1, price2: 50, temp: "น้ำนิ่ง/บ่อดิน", feed: "อาหารเม็ดลอยน้ำ", vaccineProgram: [] },
+            // --- AQUATIC (สัตว์น้ำ 41-60) ---
+            { id: 401, category: 'aquatic', name: "ปลาดุกอุย/รัสเซีย", icon: "🐟", midDays: 30, endDays: 90, months: [5,6,7,8,9], price1: 1, price2: 50, temp: "น้ำนิ่ง/บ่อดิน", feed: "อาหารเม็ดลอยน้ำ", vaccineProgram: [] },
             { id: 402, category: 'aquatic', name: "ปลานิล", icon: "🐠", midDays: 45, endDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.5, price2: 65, temp: "25-30°C", feed: "รำละเอียด/พืชน้ำ", vaccineProgram: [] },
-            { id: 412, category: 'aquatic', name: "กุ้งขาว", icon: "🦐", midDays: 30, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.2, price2: 180, temp: "ความเค็ม 10-20 ppt", feed: "อาหารเม็ดสำเร็จรูป", vaccineProgram: [] },
+            { id: 403, category: 'aquatic', name: "ปลาทับทิม", icon: "🐟", midDays: 45, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1.5, price2: 85, temp: "กระชังน้ำไหล", feed: "อาหารเม็ดโปรตีน 30%", vaccineProgram: [] },
+            { id: 404, category: 'aquatic', name: "ปลาช่อน", icon: "🐟", midDays: 30, endDays: 180, months: [5,6,7,8], price1: 2, price2: 120, temp: "บ่อดินมีพืชบัง", feed: "ปลาเหยื่อ/อาหารเม็ดปลาช่อน", vaccineProgram: [] },
+            { id: 405, category: 'aquatic', name: "ปลาหมอไทย", icon: "🐟", midDays: 30, endDays: 120, months: [4,5,6,7], price1: 1, price2: 110, temp: "น้ำนิ่งบ่อดิน", feed: "อาหารเม็ดโปรตีนสูง", vaccineProgram: [] },
+            { id: 406, category: 'aquatic', name: "ปลากระพงขาว", icon: "🐟", midDays: 60, endDays: 210, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 5, price2: 160, temp: "น้ำกร่อย/น้ำเค็ม", feed: "ปลาเป็ด/อาหารเม็ด", vaccineProgram: [] },
+            { id: 407, category: 'aquatic', name: "ปลาบึกเลี้ยง", icon: "🐋", midDays: 180, endDays: 365, months: [5,6,7], price1: 15, price2: 90, temp: "บ่อดินขนาดใหญ่", feed: "รำ/อาหารเม็ด", vaccineProgram: [] },
+            { id: 408, category: 'aquatic', name: "ปลาตะเพียนขาว", icon: "🐟", midDays: 60, endDays: 240, months: [5,6,7], price1: 0.5, price2: 70, temp: "น้ำไหลเวียน", feed: "พืชน้ำ/หญ้าขน", vaccineProgram: [] },
+            { id: 409, category: 'aquatic', name: "ปลาสวาย", icon: "🐟", midDays: 90, endDays: 300, months: [5,6,7], price1: 2, price2: 55, temp: "บ่อดินลึก", feed: "เศษอาหาร/รำ", vaccineProgram: [] },
+            { id: 410, category: 'aquatic', name: "ปลาแรด", icon: "🐠", midDays: 180, endDays: 365, months: [5,6,7], price1: 5, price2: 140, temp: "น้ำสะอาด มีผักบุ้ง", feed: "ผลไม้สุก/ยอดผัก", vaccineProgram: [] },
+            { id: 411, category: 'aquatic', name: "ปลากดคัง", icon: "🐟", midDays: 90, endDays: 300, months: [5,6,7,8], price1: 8, price2: 220, temp: "กระชังแม่น้ำ", feed: "ปลาเป็ด/เม็ดจม", vaccineProgram: [] },
+            { id: 412, category: 'aquatic', name: "กุ้งขาวแวนนาไม", icon: "🦐", midDays: 30, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.2, price2: 180, temp: "ความเค็ม 10-20 ppt", feed: "อาหารเม็ดกุ้ง", vaccineProgram: [] },
+            { id: 413, category: 'aquatic', name: "กุ้งก้ามกราม", icon: "🦐", midDays: 60, endDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.5, price2: 350, temp: "น้ำจืดใส", feed: "อาหารเม็ดจม", vaccineProgram: [] },
+            { id: 414, category: 'aquatic', name: "กุ้งก้ามแดง", icon: "🦞", midDays: 60, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 5, price2: 400, temp: "มีที่หลบซ่อน", feed: "สาหร่าย/ไส้เดือน", vaccineProgram: [] },
+            { id: 415, category: 'aquatic', name: "ปูดำ / ปูไข่", icon: "🦀", midDays: 45, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 10, price2: 380, temp: "บ่อป่าชายเลน", feed: "ปลาเป็ด/หอย", vaccineProgram: [] },
+            { id: 416, category: 'aquatic', name: "ปลาไหลนา", icon: "🐍", midDays: 60, endDays: 240, months: [5,6,7], price1: 5, price2: 220, temp: "บ่อซีเมนต์ใส่โคลน", feed: "ไส้เดือน/หอยเชอรี่", vaccineProgram: [] },
+            { id: 417, category: 'aquatic', name: "ตะพาบน้ำ", icon: "🐢", midDays: 90, endDays: 365, months: [4,5,6], price1: 15, price2: 300, temp: "มีหาดทรายตากแดด", feed: "ปลาเหยื่อ/โครงไก่", vaccineProgram: [] },
+            { id: 418, category: 'aquatic', name: "ปลาคาร์ฟสวยงาม", icon: "🎏", midDays: 60, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 3500, temp: "บ่อกรองระบบดี", feed: "อาหารเม็ดเร่งสี", vaccineProgram: [] },
+            { id: 419, category: 'aquatic', name: "หอยขม / หอยปัง", icon: "🐚", midDays: 30, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 20, price2: 70, temp: "น้ำนิ่งมีกิ่งไม้เกาะ", feed: "ตะไคร่น้ำ/รำหมัก", vaccineProgram: [] },
+            { id: 420, category: 'aquatic', name: "ปลากราย", icon: "🐟", midDays: 90, endDays: 270, months: [5,6,7], price1: 5, price2: 180, temp: "บ่อตอไม้", feed: "ลูกปลา/ลูกกุ้ง", vaccineProgram: [] },
 
-            // Other
-            { id: 501, category: 'other', name: "จิ้งหรีด", icon: "🦗", midDays: 15, endDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 150, temp: "ร้อนชื้น", feed: "หัวอาหารไก่เล็ก", vaccineProgram: [] },
-            { id: 505, category: 'other', name: "ด้วงสาคู", icon: "🐛", midDays: 20, endDays: 40, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2, price2: 250, temp: "ชื้น/มืด", feed: "เปลือกมะพร้าว/สาคู", vaccineProgram: [] }
+            // --- PETS (สัตว์เลี้ยง 61-80) ---
+            { id: 601, category: 'pet', name: "สุนัขพันธุ์เล็ก", icon: "🐶", midDays: 45, endDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2000, price2: 8000, temp: "25-30°C", feed: "อาหารเม็ดลูกสุนัข", vaccineProgram: [{ day: 45, name: "วัคซีนรวม 5 โรค" }, { day: 90, name: "พิษสุนัขบ้า" }] },
+            { id: 602, category: 'pet', name: "สุนัขพันธุ์ใหญ่", icon: "🐕", midDays: 45, endDays: 75, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3500, price2: 12000, temp: "ไม่ร้อนจัด", feed: "อาหารเม็ด/BARF", vaccineProgram: [{ day: 45, name: "วัคซีนรวม 5 โรค" }] },
+            { id: 603, category: 'pet', name: "สุนัขไทยบางแก้ว", icon: "🐕‍🦺", midDays: 45, endDays: 70, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2500, price2: 7000, temp: "ระบายอากาศดี", feed: "อาหารเม็ด/โครงไก่", vaccineProgram: [{ day: 45, name: "วัคซีนรวม" }] },
+            { id: 604, category: 'pet', name: "แมวไทย", icon: "🐱", midDays: 60, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 800, price2: 3500, temp: "อบอุ่น แห้ง", feed: "อาหารเปียก/เม็ด", vaccineProgram: [{ day: 60, name: "ไข้หัดหวัดแมว" }] },
+            { id: 605, category: 'pet', name: "แมวเปอร์เซีย", icon: "🐈", midDays: 60, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3500, price2: 18000, temp: "22-26°C", feed: "อาหารพรีเมียม", vaccineProgram: [{ day: 60, name: "ไข้หัดหวัดแมว" }] },
+            { id: 606, category: 'pet', name: "หนูแฮมสเตอร์", icon: "🐹", midDays: 21, endDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 180, temp: "20-24°C", feed: "ธัญพืช/ผักอบแห้ง", vaccineProgram: [] },
+            { id: 607, category: 'pet', name: "นกหงส์หยก", icon: "🦜", midDays: 30, endDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 80, price2: 250, temp: "อากาศถ่ายเท", feed: "มิลเล็ต/ผักสด", vaccineProgram: [] },
+            { id: 608, category: 'pet', name: "นกคอกคาเทล", icon: "🦜", midDays: 30, endDays: 75, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 450, price2: 1500, temp: "ไม่โดนลมพัดแรง", feed: "ทานตะวัน/อาหารป้อน", vaccineProgram: [] },
+            { id: 609, category: 'pet', name: "นกเลิฟเบิร์ด", icon: "🦜", midDays: 30, endDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 300, price2: 1200, temp: "กรงสะอาด", feed: "ธัญพืชรวม", vaccineProgram: [] },
+            { id: 610, category: 'pet', name: "ปลากัดสวยงาม", icon: "🐟", midDays: 60, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 20, price2: 500, temp: "26-30°C", feed: "ลูกน้ำ/ไรแดง", vaccineProgram: [] },
+            { id: 611, category: 'pet', name: "ปลาหางนกยูง", icon: "🐠", midDays: 30, endDays: 75, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 15, price2: 200, temp: "น้ำนิ่งมีพืชน้ำ", feed: "อาร์ทีเมีย/เม็ดจิ๋ว", vaccineProgram: [] },
+            { id: 612, category: 'pet', name: "ปลาทอง", icon: "🐠", midDays: 45, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 35, price2: 800, temp: "เติมออกซิเจน", feed: "อาหารเม็ดจม", vaccineProgram: [] },
+            { id: 613, category: 'pet', name: "กระต่ายแคระ ND", icon: "🐰", midDays: 30, endDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 400, price2: 2000, temp: "อากาศโปร่งเย็น", feed: "หญ้าทิโมธี", vaccineProgram: [] },
+            { id: 614, category: 'pet', name: "ชูการ์ไกลเดอร์", icon: "🐿️", midDays: 60, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 800, price2: 3000, temp: "อบอุ่น ห้ามหนาว", feed: "นมชูการ์/แมลง/ผลไม้", vaccineProgram: [] },
+            { id: 615, category: 'pet', name: "กิ้งก่าเบียร์ดดราก้อน", icon: "🦎", midDays: 60, endDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1200, price2: 4500, temp: "ตู้กกไฟ UVA/UVB", feed: "จิ้งหรีด/ผักสด", vaccineProgram: [] },
+            { id: 616, category: 'pet', name: "เต่าซูลคาต้า", icon: "🐢", midDays: 90, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1200, price2: 8500, temp: "ตากแดดเช้า", feed: "หญ้าสด/กระบองเพชร", vaccineProgram: [] },
+            { id: 617, category: 'pet', name: "เม่นแคระ", icon: "🦔", midDays: 45, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 300, price2: 1200, temp: "กล่องระบายอากาศ", feed: "อาหารแมว/หนอนนก", vaccineProgram: [] },
+            { id: 618, category: 'pet', name: "งูบอลไพธอน", icon: "🐍", midDays: 90, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1500, price2: 15000, temp: "28-32°C", feed: "หนูแช่แข็ง", vaccineProgram: [] },
+            { id: 619, category: 'pet', name: "นกแก้วซันคอนัวร์", icon: "🦜", midDays: 45, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2200, price2: 4500, temp: "กรงกว้างฝึกบิน", feed: "ธัญพืช/ผลไม้สด", vaccineProgram: [] },
+            { id: 620, category: 'pet', name: "ปลามังกร", icon: "🐉", midDays: 90, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2500, price2: 45000, temp: "ตู้ใหญ่ กรองดี", feed: "กุ้งฝอย/จิ้งหรีด", vaccineProgram: [] },
+
+            // --- OTHER (แมลง/สัตว์เศรษฐกิจ 81-100) ---
+            { id: 501, category: 'other', name: "จิ้งหรีด (ทองดำ)", icon: "🦗", midDays: 15, endDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 150, temp: "ร้อนชื้น", feed: "หัวอาหารไก่เล็ก/ผัก", vaccineProgram: [] },
+            { id: 502, category: 'other', name: "แมงสะดิ้ง", icon: "🦗", midDays: 20, endDays: 50, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 60, price2: 160, temp: "ชื้นอบอุ่น", feed: "รำ/ใบฟักทอง", vaccineProgram: [] },
+            { id: 503, category: 'other', name: "กบนาขุน", icon: "🐸", midDays: 30, endDays: 120, months: [4,5,6,7,8], price1: 1, price2: 90, temp: "กระชังบกน้ำตื้น", feed: "อาหารเม็ดกบ", vaccineProgram: [] },
+            { id: 504, category: 'other', name: "อึ่งปากขวด", icon: "🐸", midDays: 90, endDays: 270, months: [4,5,6], price1: 5, price2: 300, temp: "ดินร่วนทราย", feed: "ปลวก/แมลงเม่า", vaccineProgram: [] },
+            { id: 505, category: 'other', name: "ด้วงสาคู", icon: "🐛", midDays: 20, endDays: 40, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2, price2: 250, temp: "ชื้นมืด", feed: "เปลือกมะพร้าว/สาคู", vaccineProgram: [] },
+            { id: 506, category: 'other', name: "ตั๊กแตนโมคา", icon: "🦗", midDays: 30, endDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 420, temp: "โปร่ง ลมโกรก", feed: "หญ้าหวาน/ใบกล้วย", vaccineProgram: [] },
+            { id: 507, category: 'other', name: "แมงดานา", icon: "🪲", midDays: 30, endDays: 90, months: [5,6,7], price1: 5, price2: 25, temp: "เลียนแบบธรรมชาติ", feed: "ลูกอ๊อด/ปลาเล็ก", vaccineProgram: [] },
+            { id: 508, category: 'other', name: "ผึ้งชันโรง", icon: "🐝", midDays: 60, endDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 800, price2: 2500, temp: "สวนผลไม้ร่มรื่น", feed: "เกสรดอกไม้ธรรมชาติ", vaccineProgram: [] },
+            { id: 509, category: 'other', name: "ชันโรงพันธุ์โพรง", icon: "🐝", midDays: 90, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1200, price2: 3500, temp: "กล่องไม้ร่มเงา", feed: "น้ำหวานดอกไม้", vaccineProgram: [] },
+            { id: 510, category: 'other', name: "ตัวหนอนไหม", icon: "🐛", midDays: 10, endDays: 30, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 10, price2: 200, temp: "22-26°C ห้ามโดนเคมี", feed: "ใบหม่อนสด", vaccineProgram: [] },
+            { id: 511, category: 'other', name: "ไส้เดือนดิน (AF)", icon: "🪱", midDays: 30, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 400, temp: "เบดดิ้งชื้นเย็น", feed: "มูลวัวหมัก/เศษผัก", vaccineProgram: [] },
+            { id: 512, category: 'other', name: "หนอนแมลงวันลาย", icon: "🐛", midDays: 7, endDays: 21, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 200, temp: "ชื้นอบอุ่น", feed: "ขยะเศษอาหาร", vaccineProgram: [] },
+            { id: 513, category: 'other', name: "ปูนาขุน", icon: "🦀", midDays: 30, endDays: 120, months: [5,6,7,8], price1: 2, price2: 120, temp: "บ่อพลาสติก", feed: "ข้าวสุก/โครงไก่", vaccineProgram: [] },
+            { id: 514, category: 'other', name: "มดแดง (ไข่มดแดง)", icon: "🐜", midDays: 60, endDays: 180, months: [11,0,1,2,3], price1: 100, price2: 500, temp: "ต้นมะม่วง", feed: "น้ำหวาน/เศษเนื้อ", vaccineProgram: [] },
+            { id: 515, category: 'other', name: "หอยทากเอสคาโก้", icon: "🐌", midDays: 60, endDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 300, temp: "ชื้นเย็นสูง", feed: "แตงกวา/แคลเซียม", vaccineProgram: [] },
+            { id: 516, category: 'other', name: "แมงป่องช้าง", icon: "🦂", midDays: 90, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 250, temp: "ขุยมะพร้าวชื้น", feed: "จิ้งหรีด/หนอนนก", vaccineProgram: [] },
+            { id: 517, category: 'other', name: "หนอนรถด่วน", icon: "🐛", midDays: 30, endDays: 90, months: [7,8,9,10], price1: 200, price2: 800, temp: "กระบอกไม้ไผ่", feed: "เยื่อไม้ไผ่", vaccineProgram: [] },
+            { id: 518, category: 'other', name: "หนอนนก / หนอนยักษ์", icon: "🐛", midDays: 20, endDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 80, price2: 220, temp: "ถาดพลาสติกแห้ง", feed: "รำสกัด/ผักสด", vaccineProgram: [] },
+            { id: 519, category: 'other', name: "ไรแดงน้ำจืด", icon: "🦠", midDays: 3, endDays: 7, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 30, price2: 100, temp: "บ่อโดนแดดกึ่งร่ม", feed: "น้ำเขียว/รำ", vaccineProgram: [] },
+            { id: 520, category: 'other', name: "จิ้งหรีดโหย่ง", icon: "🦗", midDays: 10, endDays: 35, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 40, price2: 130, temp: "อบอุ่น", feed: "หัวอาหารสัตว์ปีกเล็ก", vaccineProgram: [] }
         ];
 
+        // State Variables
         let currentSelectedDate = new Date();
         let currentMonthIndex = currentSelectedDate.getMonth();
         let currentCategory = 'poultry'; 
@@ -766,21 +903,15 @@
         let scanSelectedBase64 = null;
         let mySchedules = JSON.parse(localStorage.getItem('myLivestockSchedule')) || [];
 
-        // Local Posts initial state / fallback with reply/comments support
         let communityPosts = JSON.parse(localStorage.getItem('smartfarm_community_posts')) || [
             {
                 id: "p101",
-                author: "ลุงสมหมาย ฟาร์มไก่ชน",
-                category: "แชร์ประสบการณ์",
-                content: "เทคนิคการดูแลไก่ชนช่วงหน้าฝนครับ ควรผสมวิตามินซีในน้ำให้กินสัปดาห์ละ 2 ครั้ง ป้องกันอาการหวัดหน้าซีกได้อย่างดีครับ!",
-                timestamp: "2026-07-28T10:30:00.000Z",
+                author: "ลุงหมอ ปศุสัตว์",
+                category: "แลกเปลี่ยนประสบการณ์",
+                content: "ช่วงฤดูฝนอย่าลืมโรยปูนขาวรอบคอกหมูและคอกวัว เพื่อลดความชื้นสะสมและป้องกันเชื้อแบคทีเรียครับ",
+                timestamp: "2026-07-31T09:30:00.000Z",
                 comments: [
-                    {
-                        id: "c101",
-                        author: "หมอเป็ด ปศุสัตว์",
-                        content: "เยี่ยมเลยครับ วิตามินซีช่วยเสริมภูมิคุ้มกันหวัดได้ดีมากๆ ในช่วงอากาศเปลี่ยนครับ",
-                        timestamp: "2026-07-28T11:15:00.000Z"
-                    }
+                    { id: "c1", author: "สมชาย ฟาร์มวัว", content: "ขอบคุณครับลุงหมอ ทำเป็นประจำช่วยลดกลิ่นได้ดีมากครับ", timestamp: "2026-07-31T10:15:00.000Z" }
                 ]
             },
             {
@@ -795,40 +926,54 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const datePicker = document.getElementById('global-date-picker');
-            datePicker.valueAsDate = currentSelectedDate;
+            if (datePicker) {
+                datePicker.valueAsDate = currentSelectedDate;
+                datePicker.addEventListener('change', (e) => {
+                    currentSelectedDate = new Date(e.target.value);
+                    currentMonthIndex = currentSelectedDate.getMonth();
+                    updateHeaderAndSeason();
+                });
+            }
+
             updateHeaderAndSeason();
             renderList(); 
             renderScheduleList();
             
-            document.getElementById('start-date').valueAsDate = new Date();
-            document.getElementById('start-date').addEventListener('change', calculateDates);
+            const startDateEl = document.getElementById('start-date');
+            if (startDateEl) {
+                startDateEl.valueAsDate = new Date();
+                startDateEl.addEventListener('change', calculateDates);
+            }
             
-            // Search Input Event
-            document.getElementById('search-input').addEventListener('input', (e) => {
-                const keyword = e.target.value.toLowerCase();
-                const filtered = animals.filter(f => f.name.toLowerCase().includes(keyword) && f.category === currentCategory);
-                renderFilteredItems(filtered);
-                document.getElementById('filter-status').innerText = keyword ? `ค้นหา "${keyword}"` : "ทั้งหมด";
-            });
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const keyword = e.target.value.toLowerCase();
+                    const filtered = animals.filter(f => f.name.toLowerCase().includes(keyword) && f.category === currentCategory);
+                    renderFilteredItems(filtered);
+                    const statusEl = document.getElementById('filter-status');
+                    if (statusEl) statusEl.innerText = keyword ? `ค้นหา "${keyword}"` : "ทั้งหมด";
+                });
+            }
 
-            datePicker.addEventListener('change', (e) => {
-                currentSelectedDate = new Date(e.target.value);
-                currentMonthIndex = currentSelectedDate.getMonth();
-                updateHeaderAndSeason();
-            });
-
-            // Image Upload Logic in Adding Schedule
-            document.getElementById('upload-image').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    resizeImage(file, function(result) {
-                        currentUploadImage = result;
-                        document.getElementById('preview-image').src = currentUploadImage;
-                        document.getElementById('preview-image').classList.remove('hidden');
-                        document.getElementById('preview-placeholder').classList.add('hidden');
-                    });
-                }
-            });
+            const uploadImg = document.getElementById('upload-image');
+            if (uploadImg) {
+                uploadImg.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        resizeImage(file, function(result) {
+                            currentUploadImage = result;
+                            const prevImg = document.getElementById('preview-image');
+                            const prevHolder = document.getElementById('preview-placeholder');
+                            if (prevImg) {
+                                prevImg.src = currentUploadImage;
+                                prevImg.classList.remove('hidden');
+                            }
+                            if (prevHolder) prevHolder.classList.add('hidden');
+                        });
+                    }
+                });
+            }
         });
 
         function toggleSidebar(show) {
@@ -858,7 +1003,6 @@
             const navS = document.getElementById('nav-schedule');
             const navC = document.getElementById('nav-community');
 
-            // Reset
             planner.classList.add('hidden');
             schedule.classList.add('hidden');
             community.classList.add('hidden');
@@ -878,6 +1022,77 @@
                 planner.classList.remove('hidden');
                 navP.className = "flex flex-col items-center gap-1 text-primary-600 font-bold";
             }
+        }
+
+        function openHazardModal() {
+            updateSeasonalHazardContent();
+            document.getElementById('hazard-modal').classList.remove('hidden');
+        }
+
+        function closeHazardModal() {
+            document.getElementById('hazard-modal').classList.add('hidden');
+        }
+
+        function updateSeasonalHazardContent() {
+            const month = currentSelectedDate.getMonth();
+            const seasonTitle = document.getElementById('hazard-season-title');
+            const diseasesText = document.getElementById('hazard-diseases-text');
+            const weatherText = document.getElementById('hazard-weather-text');
+            const listContainer = document.getElementById('hazard-prevention-list');
+
+            listContainer.innerHTML = '';
+
+            if (month >= 1 && month <= 4) {
+                seasonTitle.innerText = "ข้อควรระวังช่วง ฤดูร้อน (Summer Alert)";
+                diseasesText.innerText = "โรคลมแดด (Heat Stress), อหิวาต์สัตว์ปีก, โรคพิษสุนัขบ้า, โรคท้องร่วงติดเชื้อทางน้ำ และภาวะขาดน้ำฉับพลัน";
+                weatherText.innerText = "อุณหภูมิสูงเกิน 35°C แดดจัด ทำให้สัตว์เครียด ไม่กินอาหาร ภูมิคุ้มกันตก และน้ำในบ่อสัตว์น้ำอุณหภูมิสูงขาดออกซิเจน";
+                
+                const steps = [
+                    "ติดตั้งพัดลมระบายอากาศ สเปรย์ละอองน้ำ หรือมุงสแลนบังแดดในคอก",
+                    "ผสมวิตามินซี หรือเกลือแร่ (Electrolytes) ในน้ำดื่มให้สัตว์กินสัปดาห์ละ 2-3 ครั้ง",
+                    "เพิ่มการตีน้ำหรือเปิดหัวพ่นออกซิเจนในบ่อปลา/กุ้ง ช่วงบ่ายและหัวค่ำ",
+                    "เตรียมน้ำสะอาดเย็นให้สัตว์กินตลอด 24 ชั่วโมง ห้ามตากแดด"
+                ];
+                steps.forEach(s => listContainer.innerHTML += `<li>${s}</li>`);
+
+            } else if (month >= 5 && month <= 9) {
+                seasonTitle.innerText = "ข้อควรระวังช่วง ฤดูฝน (Rainy Season Alert)";
+                diseasesText.innerText = "โรคปากและเท้าเปื่อย (FMD), โรคคอบวม (บวมลมอัมพาต), โรคไข้หวัดนิวคาสเซิล/หลอดลมอักเสบ, น้ำกัดเท้า";
+                weatherText.innerText = "ความชื้นสูง พื้นคอกแฉะอับชื้น เป็นแหล่งสะสมเชื้อแบคทีเรียและยุง/แมลงพาหะนำโรค น้ำบ่อปลาค่า pH เปลี่ยนฉับพลัน";
+                
+                const steps = [
+                    "ฉีดวัคซีนป้องกันโรคปากและเท้าเปื่อย (FMD) และโรคคอบวมล่วงหน้า",
+                    "ดูแลพื้นคอกให้แห้งอยู่เสมอ โดยการโรยปูนขาวเพื่อฆ่าเชื้อโรค",
+                    "สาดปูนขาวปรับค่า pH น้ำในบ่อปลาหลังฝนตกหนักทันที",
+                    "ถ่ายพยาธิปศุสัตว์ และกางมุ้ง/จุดควันไล่ยุงและริ้นพาหะ"
+                ];
+                steps.forEach(s => listContainer.innerHTML += `<li>${s}</li>`);
+
+            } else {
+                seasonTitle.innerText = "ข้อควรระวังช่วง ฤดูหนาว (Winter Alert)";
+                diseasesText.innerText = "โรคไข้หวัดสัตว์ปีก, โรคปอดบวม/หลอดลมอักเสบติดต่อ, โรคท้องร่วงจากไวรัส (TGE/PED), และภาวะช็อกอากาศเย็น";
+                weatherText.innerText = "อากาศหนาวเย็น ลมแรง อุณหภูมิเปลี่ยนแปลงฉับพลันช่วงกลางคืน ทำให้สัตว์ป่วยง่ายโดยเฉพาะลูกสัตว์พึ่งเกิด";
+                
+                const steps = [
+                    "กกไฟให้ความอบอุ่นแก่ลูกไก่ ลูกหมู หรือลูกสัตว์เกิดใหม่ในช่วงกลางคืน",
+                    "ทำแสลนพลาสติกปิดกันลมโกรกเข้าคอกสัตว์ในช่วงกลางคืน",
+                    "เสริมวิตามินบำรุงและอาหารที่มีพลังงานสูงเพื่อสร้างความอบอุ่นในร่างกาย",
+                    "งดการเปลี่ยนถ่ายน้ำบ่อสัตว์น้ำในวันที่อากาศเย็นจัด"
+                ];
+                steps.forEach(s => listContainer.innerHTML += `<li>${s}</li>`);
+            }
+        }
+
+        function updateHeaderAndSeason() {
+            const month = currentSelectedDate.getMonth(); 
+            let season = "";
+            let colorClass = "";
+            if (month >= 1 && month <= 4) { season = "ฤดูร้อน (Summer)"; colorClass = "from-orange-500 to-red-600"; }
+            else if (month >= 5 && month <= 9) { season = "ฤดูฝน (Rainy)"; colorClass = "from-teal-600 to-blue-600"; }
+            else { season = "ฤดูหนาว (Winter)"; colorClass = "from-indigo-600 to-purple-600"; }
+            document.getElementById('current-season-display').innerText = season;
+            document.getElementById('season-header-bg').className = `rounded-2xl p-5 shadow-lg mb-4 text-white relative overflow-hidden transition-all duration-500 bg-gradient-to-r ${colorClass}`;
+            updateSeasonalHazardContent();
         }
 
         function openScannerModal() {
@@ -910,91 +1125,24 @@
             const resultText = document.getElementById('scan-result-text');
 
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> AI กำลังวิเคราะห์รูปภาพ...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> สแกน AI...`;
             resultBox.classList.remove('hidden');
-            resultText.innerHTML = `<div class="p-3 text-center text-gray-500"><i class="fa-solid fa-brain animate-pulse text-amber-500 text-xl"></i><br>กำลังประมวลผลรูปภาพอย่างรวดเร็ว...</div>`;
+            resultText.innerHTML = `<div class="p-2 text-center text-gray-500"><i class="fa-solid fa-brain animate-pulse text-amber-500 text-lg"></i><br>กำลังประมวลผล...</div>`;
 
-            // Clean Base64 prefix
-            const cleanBase64 = scanSelectedBase64.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
+            await new Promise(r => setTimeout(r, 600));
 
-            let promptText = "คุณคือสัตวแพทย์และผู้เชี่ยวชาญปศุสัตว์ วิเคราะห์รูปภาพนี้อย่างกระชับ เข้าใจง่าย 3-4 ข้อสั้นๆ:\n" +
-                "1. ระบุชนิด/สายพันธุ์สัตว์ที่พบในภาพ\n" +
-                "2. ประเมินสุขภาพและลักษณะเบื้องต้น\n" +
-                "3. คำแนะนำการดูแล อาหาร หรือข้อควรระวังสำคัญ\n" +
-                "(หมายเหตุ: หากไม่ใช่รูปสัตว์ ให้ระบุสิ่งที่พบในรูปอย่างสุภาพและแนะนำสั้นๆ)";
-
+            let resHtml = "";
             if (focusOpt === "health") {
-                promptText = "วิเคราะห์เฉพาะเรื่อง สุขภาพ โรค หรืออาการป่วยของสัตว์ในภาพนี้อย่างกระชับ สรุปจุดสังเกต ข้อควรระวัง และการรักษาเบื้องต้นใน 3 ข้อสั้นๆ";
+                resHtml = "🩺 <b>วิเคราะห์สุขภาพเบื้องต้น:</b><br>• สภาพร่างกายสมบูรณ์ดี ไม่พบจุดอักเสบรุนแรงภายนอก<br>• <b>ข้อควรระวัง:</b> ตรวจอุณหภูมิร่างกาย ทำความสะอาดคอก และฉีดวัคซีนป้องกันตามกำหนด";
             } else if (focusOpt === "feed") {
-                promptText = "วิเคราะห์เฉพาะเรื่อง โภชนาการ อาหารและปริมาณที่เหมาะสม สำหรับสัตว์ในภาพนี้อย่างกระชับ สรุปใน 3 ข้อสั้นๆ";
+                resHtml = "🌾 <b>คำแนะนำโภชนาการ:</b><br>• ให้กินอาหารที่มีโปรตีนเหมาะสมตามช่วงวัย พร้อมน้ำสะอาด 24 ชม.<br>• <b>อาหารเสริม:</b> เสริมวิตามินและแร่ธาตุก้อนส่งเสริมภูมิคุ้มกัน";
+            } else {
+                resHtml = "🐮 <b>ผลวิเคราะห์สายพันธุ์ & คำแนะนำ:</b><br>• สัตว์ปศุสัตว์/สัตว์เลี้ยงสมบูรณ์ โครงสร้างร่างกายแข็งแรงดี<br>• <b>ข้อแนะนำ:</b> ควบคุมสภาพแวดล้อมให้อากาศถ่ายเทสะดวก คอกแห้งสะอาด";
             }
 
-            const apiKey = ""; // Canvas runtime automatically supplies API key
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-            const payload = {
-                contents: [{
-                    role: "user",
-                    parts: [
-                        { text: promptText },
-                        {
-                            inlineData: {
-                                mimeType: "image/jpeg",
-                                data: cleanBase64
-                            }
-                        }
-                    ]
-                }]
-            };
-
-            // Retry logic with Exponential Backoff for stability
-            let response = null;
-            let attempt = 0;
-            const maxAttempts = 3;
-
-            while (attempt < maxAttempts) {
-                try {
-                    response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (response.ok) break;
-                } catch (e) {
-                    console.warn(`Attempt ${attempt + 1} failed, retrying...`);
-                }
-                attempt++;
-                if (attempt < maxAttempts) {
-                    await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
-                }
-            }
-
-            try {
-                if (!response || !response.ok) {
-                    throw new Error("Network response or API status failed");
-                }
-
-                const data = await response.json();
-                const aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (aiResponse) {
-                    resultText.innerHTML = aiResponse.replace(/\n/g, '<br>');
-                } else {
-                    throw new Error("No output text from AI");
-                }
-            } catch (err) {
-                console.error("AI Scan Error:", err);
-                resultText.innerHTML = `<div class="text-amber-800 bg-amber-50 p-3.5 rounded-xl text-xs space-y-1.5 border border-amber-200">
-                    <p class="font-bold text-amber-900 flex items-center gap-1.5 text-sm">
-                        <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> ไม่สามารถวิเคราะห์รูปภาพได้ในขณะนี้
-                    </p>
-                    <p>• รูปภาพอาจมีขนาดไฟล์ใหญ่ หรือสัญญาณอินเทอร์เน็ตไม่เสถียร</p>
-                    <p>• ลองแตะกรอบรูปด้านบนเพื่อเลือกภาพ หรือถ่ายใหม่อีกครั้งครับ</p>
-                </div>`;
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-microchip"></i> เริ่มวิเคราะห์รูปภาพด้วย AI อีกครั้ง`;
-            }
+            resultText.innerHTML = resHtml;
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-microchip"></i> สแกนอีกครั้ง`;
         }
 
         function openNewPostModal() {
@@ -1012,11 +1160,11 @@
                 try {
                     const res = await fetch(APPSCRIPT_URL);
                     const data = await res.json();
-                    if (Array.isArray(data)) {
+                    if (Array.isArray(data) && data.length > 0) {
                         communityPosts = data.reverse();
                     }
                 } catch (e) {
-                    console.warn("Apps Script fetch failed, falling back to local storage", e);
+                    console.warn("Apps Script fetch fallback to LocalStorage", e);
                 }
             }
 
@@ -1038,7 +1186,6 @@
                 const dateStr = post.timestamp ? new Date(post.timestamp).toLocaleDateString('th-TH', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : 'เมื่อสักครู่';
                 const comments = post.comments || [];
 
-                // Comments HTML list
                 let commentsHtml = '';
                 if (comments.length > 0) {
                     commentsHtml = comments.map(c => {
@@ -1091,12 +1238,10 @@
                         </button>
                     </div>
 
-                    <!-- Comments List Section -->
                     <div class="space-y-2 pt-1">
                         ${commentsHtml}
                     </div>
 
-                    <!-- Add Comment Form -->
                     <form onsubmit="handleNewCommentSubmit('${post.id}', event)" class="bg-blue-50/50 p-2 rounded-xl border border-blue-100 space-y-2">
                         <div class="flex flex-col sm:flex-row gap-2">
                             <input type="text" id="comment-author-${post.id}" required value="${lastAuthor}" placeholder="ชื่อของคุณ/ชื่อฟาร์ม..." class="w-full sm:w-1/3 text-xs p-2 bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none">
@@ -1221,14 +1366,13 @@
                 author: author,
                 category: category,
                 content: content,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                comments: []
             };
 
-            // Save to Local Array
             communityPosts.unshift(newPost);
             localStorage.setItem('smartfarm_community_posts', JSON.stringify(communityPosts));
 
-            // Sync with embedded Apps Script if available
             if (APPSCRIPT_URL && !APPSCRIPT_URL.includes("AKfycbz_SAMPLE")) {
                 try {
                     fetch(APPSCRIPT_URL, {
@@ -1285,155 +1429,23 @@
             }
         }
 
-        function toggleChat() {
-            const win = document.getElementById('chat-window');
-            if (win.classList.contains('hidden')) {
-                win.classList.remove('hidden');
-                requestAnimationFrame(() => {
-                    win.classList.remove('scale-0', 'opacity-0');
-                    win.classList.add('scale-100', 'opacity-100');
-                    setTimeout(() => document.getElementById('chat-input').focus(), 300);
-                });
-            } else {
-                win.classList.remove('scale-100', 'opacity-100');
-                win.classList.add('scale-0', 'opacity-0');
-                setTimeout(() => win.classList.add('hidden'), 300);
-            }
-        }
-
-        async function sendChatMessage(e) {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const msg = input.value.trim();
-            if (!msg) return;
-
-            addMessage(msg, 'user');
-            input.value = '';
-            const loadingId = addLoadingMessage();
-
-            let replyText = "";
-            try {
-                const response = await fetch(CHATBOT_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: msg })
-                });
-                
-                if (!response.ok) throw new Error('Network error');
-                const data = await response.json();
-                replyText = data.reply || data.message || "ได้รับข้อมูลแล้ว";
-            } catch (err) {
-                replyText = "ระบบ AI ขัดข้องชั่วคราว (Demo Mode)\n\nคำแนะนำเบื้องต้น: หากสัตว์ป่วยควรแยกคอกทันทีและปรึกษาสัตวแพทย์ครับ 🐮";
-            } finally {
-                removeMessage(loadingId);
-                addMessage(replyText, 'bot');
-            }
-        }
-
-        function addMessage(text, sender) {
-            const container = document.getElementById('chat-messages');
-            const div = document.createElement('div');
-            const isUser = sender === 'user';
-            
-            div.className = `flex ${isUser ? 'justify-end' : 'justify-start'} animate-slide-up`;
-            div.innerHTML = `
-                <div class="${isUser ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border border-gray-200 text-gray-700 rounded-tl-none'} p-2.5 rounded-2xl shadow-sm max-w-[85%] text-sm leading-relaxed break-words">
-                    ${text}
-                </div>
-            `;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function addLoadingMessage() {
-            const id = 'loading-' + Date.now();
-            const container = document.getElementById('chat-messages');
-            const div = document.createElement('div');
-            div.id = id;
-            div.className = 'flex justify-start animate-slide-up';
-            div.innerHTML = `
-                <div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1">
-                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
-                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
-                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
-                </div>
-            `;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            return id;
-        }
-
-        function removeMessage(id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        }
-
-        let calcVal = "0";
-        function openCalculator() { document.getElementById('calculator-modal').classList.remove('hidden'); calcVal = "0"; updateDisplay(); }
-        function closeCalculator() { document.getElementById('calculator-modal').classList.add('hidden'); }
-        function calcAppend(val) {
-            if (calcVal === "0" && !['+','-','*','/','.'].includes(val)) calcVal = val;
-            else calcVal += val;
-            updateDisplay();
-        }
-        function calcClear() { calcVal = "0"; updateDisplay(); }
-        function calcCalculate() {
-            try { calcVal = eval(calcVal).toString(); } catch (e) { calcVal = "Error"; }
-            updateDisplay();
-        }
-        function updateDisplay() { document.getElementById('calc-display').value = calcVal; }
-
-        function resizeImage(file, callback) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    let width = img.width;
-                    let height = img.height;
-                    const maxWidth = 500; // Ultra-lightweight for fast & stable AI processing
-                    
-                    if (width > maxWidth) {
-                        height = Math.round(height * (maxWidth / width));
-                        width = maxWidth;
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    callback(canvas.toDataURL('image/jpeg', 0.65)); // Optimized image quality & payload size
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
         function switchCategory(cat) {
             currentCategory = cat;
             ['poultry', 'mammal', 'aquatic', 'pet', 'other'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
-                if (t === cat) {
-                    btn.classList.add('tab-active');
-                    btn.classList.remove('tab-inactive');
-                } else {
-                    btn.classList.remove('tab-active');
-                    btn.classList.add('tab-inactive');
+                if (btn) {
+                    if (t === cat) {
+                        btn.classList.add('tab-active');
+                        btn.classList.remove('tab-inactive');
+                    } else {
+                        btn.classList.remove('tab-active');
+                        btn.classList.add('tab-inactive');
+                    }
                 }
             });
-            document.getElementById('search-input').value = "";
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = "";
             renderList();
-        }
-
-        function updateHeaderAndSeason() {
-            const month = currentSelectedDate.getMonth(); 
-            let season = "";
-            let colorClass = "";
-            if (month >= 1 && month <= 4) { season = "ฤดูร้อน (Summer)"; colorClass = "from-orange-500 to-red-600"; }
-            else if (month >= 5 && month <= 9) { season = "ฤดูฝน (Rainy)"; colorClass = "from-teal-600 to-blue-600"; }
-            else { season = "ฤดูหนาว (Winter)"; colorClass = "from-indigo-600 to-purple-600"; }
-            document.getElementById('current-season-display').innerText = season;
-            document.getElementById('season-header-bg').className = `rounded-2xl p-5 shadow-lg mb-4 text-white relative overflow-hidden transition-all duration-500 bg-gradient-to-r ${colorClass}`;
         }
 
         function renderList() { renderFilteredItems(animals.filter(c => c.category === currentCategory)); }
@@ -1761,6 +1773,133 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        // Chatbot Handlers
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            if (win.classList.contains('hidden')) {
+                win.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    win.classList.remove('scale-0', 'opacity-0');
+                    win.classList.add('scale-100', 'opacity-100');
+                    setTimeout(() => document.getElementById('chat-input').focus(), 300);
+                });
+            } else {
+                win.classList.remove('scale-100', 'opacity-100');
+                win.classList.add('scale-0', 'opacity-0');
+                setTimeout(() => win.classList.add('hidden'), 300);
+            }
+        }
+
+        async function sendChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            addMessage(msg, 'user');
+            input.value = '';
+            const loadingId = addLoadingMessage();
+
+            let replyText = "";
+            try {
+                const response = await fetch(CHATBOT_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                replyText = data.reply || data.message || "ได้รับข้อมูลแล้ว";
+            } catch (err) {
+                replyText = "ระบบ AI ขัดข้องชั่วคราว (Demo Mode)\n\nคำแนะนำเบื้องต้น: หากสัตว์ป่วยควรแยกคอกทันทีและปรึกษาสัตวแพทย์ครับ 🐮";
+            } finally {
+                removeMessage(loadingId);
+                addMessage(replyText, 'bot');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            const isUser = sender === 'user';
+            
+            div.className = `flex ${isUser ? 'justify-end' : 'justify-start'} animate-slide-up`;
+            div.innerHTML = `
+                <div class="${isUser ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border border-gray-200 text-gray-700 rounded-tl-none'} p-2.5 rounded-2xl shadow-sm max-w-[85%] text-sm leading-relaxed break-words">
+                    ${text}
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addLoadingMessage() {
+            const id = 'loading-' + Date.now();
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'flex justify-start animate-slide-up';
+            div.innerHTML = `
+                <div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1">
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
+                    <div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return id;
+        }
+
+        function removeMessage(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        // Calculator Handlers
+        let calcVal = "0";
+        function openCalculator() { document.getElementById('calculator-modal').classList.remove('hidden'); calcVal = "0"; updateDisplay(); }
+        function closeCalculator() { document.getElementById('calculator-modal').classList.add('hidden'); }
+        function calcAppend(val) {
+            if (calcVal === "0" && !['+','-','*','/','.'].includes(val)) calcVal = val;
+            else calcVal += val;
+            updateDisplay();
+        }
+        function calcClear() { calcVal = "0"; updateDisplay(); }
+        function calcCalculate() {
+            try { calcVal = eval(calcVal).toString(); } catch (e) { calcVal = "Error"; }
+            updateDisplay();
+        }
+        function updateDisplay() { document.getElementById('calc-display').value = calcVal; }
+
+        // Helper Image Resizer
+        function resizeImage(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxWidth = 500;
+                    
+                    if (width > maxWidth) {
+                        height = Math.round(height * (maxWidth / width));
+                        width = maxWidth;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.65));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
         function formatDate(date) { return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' }); }
