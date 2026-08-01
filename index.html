@@ -209,7 +209,7 @@
         </div>
 
         <div class="p-4 border-t border-gray-100 text-center text-xs text-gray-400">
-            Smart Farm Planner v2.6 AI & Google Sheets
+            Smart Farm Planner v2.8 AI Powered
         </div>
     </div>
 
@@ -777,9 +777,10 @@
     </div>
 
     <script>
-        // API Configurations
-        const CHATBOT_API_URL = "https://medic-scan.tontakankeawpang321.workers.dev"; 
+        // API Configurations (Both Scanner and Chatbot use the worker API)
         const APPSCRIPT_URL = "https://script.google.com/macros/s/AKfycbykt06lPDNWfQs8zcAFWAzl-zvf6BLvT-H_AjaLHK0p1zrqsKF6WvPOW8TskdtotJkW/exec";
+        const SCAN_AI_API_URL = "https://scanzoo.tontakankeawpang321.workers.dev";
+        const CHATBOT_API_URL = "https://scanzoo.tontakankeawpang321.workers.dev";
 
         // Master Database (100 Species across 5 Categories)
         const animals = [
@@ -800,7 +801,7 @@
             { id: 214, category: 'poultry', name: "ห่านเทา (เทาเทา)", icon: "🪿", midDays: 30, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 180, price2: 1000, temp: "ชอบน้ำนิ่ง", feed: "พืชผัก/รำ", vaccineProgram: [] },
             { id: 215, category: 'poultry', name: "นกพิราบเนื้อ", icon: "🕊️", midDays: 15, endDays: 30, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 40, price2: 150, temp: "กรงโปร่งสูง", feed: "ถั่ว/ถั่วเขียว/ข้าวโพด", vaccineProgram: [] },
             { id: 216, category: 'poultry', name: "ไก่ต๊อก", icon: "🦜", midDays: 20, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 80, price2: 450, temp: "แปลงธรรมชาติ", feed: "แมลง/เมล็ดพืช", vaccineProgram: [{ day: 21, name: "นิวคาสเซิล" }] },
-            { id: 217, category: 'poultry', name: "ไก่ฟ้าคอแหวน", icon: "🦚", midDays: 30, endDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 200, price2: 1200, temp: "ร่มรื่น ไม่ร้อน", feed: "อาหารไก่ชน/ผลไม้", vaccineProgram: [] },
+            { id: 217, category: 'poultry', name: "ไก่ฟ้าคอแหวน", icon: "𦦚", midDays: 30, endDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 200, price2: 1200, temp: "ร่มรื่น ไม่ร้อน", feed: "อาหารไก่ชน/ผลไม้", vaccineProgram: [] },
             { id: 218, category: 'poultry', name: "นกกระจอกเทศ", icon: "🦩", midDays: 90, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3500, price2: 25000, temp: "แปลงกว้างทนแดด", feed: "หญ้าเนเปียร์/เม็ดขุน", vaccineProgram: [{ day: 60, name: "ถ่ายพยาธิ" }] },
             { id: 219, category: 'poultry', name: "ไก่แจ้สวยงาม", icon: "🐓", midDays: 30, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 800, temp: "คอกสะอาดแห้ง", feed: "อาหารเม็ดสำเร็จรูป", vaccineProgram: [{ day: 14, name: "นิวคาสเซิล" }] },
             { id: 220, category: 'poultry', name: "เป็ดมัลลาร์ด", icon: "🦆", midDays: 20, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 60, price2: 350, temp: "มีสระน้ำลึก", feed: "พืชน้ำ/รำ", vaccineProgram: [] },
@@ -1127,22 +1128,31 @@
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> สแกน AI...`;
             resultBox.classList.remove('hidden');
-            resultText.innerHTML = `<div class="p-2 text-center text-gray-500"><i class="fa-solid fa-brain animate-pulse text-amber-500 text-lg"></i><br>กำลังประมวลผล...</div>`;
+            resultText.innerHTML = `<div class="p-2 text-center text-gray-500"><i class="fa-solid fa-brain animate-pulse text-amber-500 text-lg"></i><br>กำลังส่งภาพวิเคราะห์ผ่าน AI Worker...</div>`;
 
-            await new Promise(r => setTimeout(r, 600));
+            try {
+                const response = await fetch(SCAN_AI_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image: scanSelectedBase64,
+                        focus: focusOpt,
+                        prompt: focusOpt === "health" ? "ตรวจสุขภาพเบื้องต้นจากรูปสัตว์" : (focusOpt === "feed" ? "แนะนำโภชนาการและอาหารสำหรับสัตว์ในรูป" : "วิเคราะห์สายพันธุ์และคำแนะนำการเลี้ยงสัตว์ในรูป")
+                    })
+                });
 
-            let resHtml = "";
-            if (focusOpt === "health") {
-                resHtml = "🩺 <b>วิเคราะห์สุขภาพเบื้องต้น:</b><br>• สภาพร่างกายสมบูรณ์ดี ไม่พบจุดอักเสบรุนแรงภายนอก<br>• <b>ข้อควรระวัง:</b> ตรวจอุณหภูมิร่างกาย ทำความสะอาดคอก และฉีดวัคซีนป้องกันตามกำหนด";
-            } else if (focusOpt === "feed") {
-                resHtml = "🌾 <b>คำแนะนำโภชนาการ:</b><br>• ให้กินอาหารที่มีโปรตีนเหมาะสมตามช่วงวัย พร้อมน้ำสะอาด 24 ชม.<br>• <b>อาหารเสริม:</b> เสริมวิตามินและแร่ธาตุก้อนส่งเสริมภูมิคุ้มกัน";
-            } else {
-                resHtml = "🐮 <b>ผลวิเคราะห์สายพันธุ์ & คำแนะนำ:</b><br>• สัตว์ปศุสัตว์/สัตว์เลี้ยงสมบูรณ์ โครงสร้างร่างกายแข็งแรงดี<br>• <b>ข้อแนะนำ:</b> ควบคุมสภาพแวดล้อมให้อากาศถ่ายเทสะดวก คอกแห้งสะอาด";
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                const replyText = data.reply || data.result || data.text || data.message || data.analysis || "สแกนสำเร็จ";
+
+                resultText.innerHTML = replyText.replace(/\n/g, '<br>');
+            } catch (err) {
+                console.error("AI Scan Error:", err);
+                resultText.innerHTML = `<span class="text-red-500 font-medium"><i class="fa-solid fa-triangle-exclamation"></i> ไม่สามารถเชื่อมต่อกับ AI สแกนได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง</span>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-microchip"></i> สแกนอีกครั้ง`;
             }
-
-            resultText.innerHTML = resHtml;
-            btn.disabled = false;
-            btn.innerHTML = `<i class="fa-solid fa-microchip"></i> สแกนอีกครั้ง`;
         }
 
         function openNewPostModal() {
@@ -1807,14 +1817,15 @@
                 const response = await fetch(CHATBOT_API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: msg })
+                    body: JSON.stringify({ message: msg, prompt: msg })
                 });
                 
                 if (!response.ok) throw new Error('Network error');
                 const data = await response.json();
-                replyText = data.reply || data.message || "ได้รับข้อมูลแล้ว";
+                replyText = data.reply || data.message || data.result || data.text || "ได้รับข้อมูลแล้ว";
             } catch (err) {
-                replyText = "ระบบ AI ขัดข้องชั่วคราว (Demo Mode)\n\nคำแนะนำเบื้องต้น: หากสัตว์ป่วยควรแยกคอกทันทีและปรึกษาสัตวแพทย์ครับ 🐮";
+                console.error("Chatbot Error:", err);
+                replyText = "ระบบ AI ขัดข้องชั่วคราว\n\nคำแนะนำเบื้องต้น: หากสัตว์ป่วยควรแยกคอกทันทีและปรึกษาสัตวแพทย์ครับ 🐮";
             } finally {
                 removeMessage(loadingId);
                 addMessage(replyText, 'bot');
