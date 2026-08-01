@@ -912,49 +912,69 @@
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> AI กำลังวิเคราะห์รูปภาพ...`;
             resultBox.classList.remove('hidden');
-            resultText.innerHTML = `<div class="p-3 text-center text-gray-500"><i class="fa-solid fa-brain animate-pulse text-amber-500 text-xl"></i><br>กำลังประมวลผลสายพันธุ์และสุขภาพสัตว์...</div>`;
+            resultText.innerHTML = `<div class="p-3 text-center text-gray-500"><i class="fa-solid fa-brain animate-pulse text-amber-500 text-xl"></i><br>กำลังประมวลผลรูปภาพอย่างรวดเร็ว...</div>`;
 
+            // Clean Base64 prefix
             const cleanBase64 = scanSelectedBase64.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
 
-            let promptText = "คุณคือสัตวแพทย์และผู้เชี่ยวชาญด้านปศุสัตว์ วิเคราะห์รูปภาพสัตว์นี้ให้เกษตรกรเป็นภาษาไทยด้วยความเป็นกันเอง:\n" +
-                "1. ระบุสายพันธุ์/ชนิดของสัตว์ในรูป\n" +
-                "2. ประเมินสภาพร่างกายและสุขภาพเบื้องต้น\n" +
-                "3. แนะนำอาหาร สภาพแวดล้อม และข้อควรระวังสำคัญในการเลี้ยงดู";
+            let promptText = "คุณคือสัตวแพทย์และผู้เชี่ยวชาญปศุสัตว์ วิเคราะห์รูปภาพนี้อย่างกระชับ เข้าใจง่าย 3-4 ข้อสั้นๆ:\n" +
+                "1. ระบุชนิด/สายพันธุ์สัตว์ที่พบในภาพ\n" +
+                "2. ประเมินสุขภาพและลักษณะเบื้องต้น\n" +
+                "3. คำแนะนำการดูแล อาหาร หรือข้อควรระวังสำคัญ\n" +
+                "(หมายเหตุ: หากไม่ใช่รูปสัตว์ ให้ระบุสิ่งที่พบในรูปอย่างสุภาพและแนะนำสั้นๆ)";
 
             if (focusOpt === "health") {
-                promptText = "วิเคราะห์เฉพาะเน้นเรื่อง สุขภาพ โรค และอาการป่วยของสัตว์ในภาพนี้เป็นภาษาไทย ระบุจุดสังเกต อาการที่ต้องระวัง และแนวทางการรักษาเบื้องต้นให้ชัดเจน";
+                promptText = "วิเคราะห์เฉพาะเรื่อง สุขภาพ โรค หรืออาการป่วยของสัตว์ในภาพนี้อย่างกระชับ สรุปจุดสังเกต ข้อควรระวัง และการรักษาเบื้องต้นใน 3 ข้อสั้นๆ";
             } else if (focusOpt === "feed") {
-                promptText = "วิเคราะห์เฉพาะเน้นเรื่อง การโภชนาการ อาหาร สารอาหาร และปริมาณที่เหมาะสมสำหรับสัตว์ชนิดนี้ในภาพเป็นภาษาไทย";
+                promptText = "วิเคราะห์เฉพาะเรื่อง โภชนาการ อาหารและปริมาณที่เหมาะสม สำหรับสัตว์ในภาพนี้อย่างกระชับ สรุปใน 3 ข้อสั้นๆ";
+            }
+
+            const apiKey = ""; // Canvas runtime automatically supplies API key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{
+                    role: "user",
+                    parts: [
+                        { text: promptText },
+                        {
+                            inlineData: {
+                                mimeType: "image/jpeg",
+                                data: cleanBase64
+                            }
+                        }
+                    ]
+                }]
+            };
+
+            // Retry logic with Exponential Backoff for stability
+            let response = null;
+            let attempt = 0;
+            const maxAttempts = 3;
+
+            while (attempt < maxAttempts) {
+                try {
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) break;
+                } catch (e) {
+                    console.warn(`Attempt ${attempt + 1} failed, retrying...`);
+                }
+                attempt++;
+                if (attempt < maxAttempts) {
+                    await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
+                }
             }
 
             try {
-                const apiKey = ""; // Canvas runtime automatically supplies API key
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                if (!response || !response.ok) {
+                    throw new Error("Network response or API status failed");
+                }
 
-                const payload = {
-                    contents: [{
-                        role: "user",
-                        parts: [
-                            { text: promptText },
-                            {
-                                inlineData: {
-                                    mimeType: "image/jpeg",
-                                    data: cleanBase64
-                                }
-                            }
-                        ]
-                    }]
-                };
-
-                const res = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!res.ok) throw new Error("API Error");
-
-                const data = await res.json();
+                const data = await response.json();
                 const aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
                 if (aiResponse) {
@@ -963,8 +983,14 @@
                     throw new Error("No output text from AI");
                 }
             } catch (err) {
-                console.error(err);
-                resultText.innerHTML = `<div class="text-red-500">❌ เกิดข้อผิดพลาดในการวิเคราะห์ ไม่สามารถเชื่อมต่อระบบ AI ได้ชั่วคราว</div>`;
+                console.error("AI Scan Error:", err);
+                resultText.innerHTML = `<div class="text-amber-800 bg-amber-50 p-3.5 rounded-xl text-xs space-y-1.5 border border-amber-200">
+                    <p class="font-bold text-amber-900 flex items-center gap-1.5 text-sm">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> ไม่สามารถวิเคราะห์รูปภาพได้ในขณะนี้
+                    </p>
+                    <p>• รูปภาพอาจมีขนาดไฟล์ใหญ่ หรือสัญญาณอินเทอร์เน็ตไม่เสถียร</p>
+                    <p>• ลองแตะกรอบรูปด้านบนเพื่อเลือกภาพ หรือถ่ายใหม่อีกครั้งครับ</p>
+                </div>`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = `<i class="fa-solid fa-microchip"></i> เริ่มวิเคราะห์รูปภาพด้วย AI อีกครั้ง`;
@@ -1366,7 +1392,7 @@
                     const ctx = canvas.getContext('2d');
                     let width = img.width;
                     let height = img.height;
-                    const maxWidth = 800; 
+                    const maxWidth = 500; // Ultra-lightweight for fast & stable AI processing
                     
                     if (width > maxWidth) {
                         height = Math.round(height * (maxWidth / width));
@@ -1376,7 +1402,7 @@
                     canvas.width = width;
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
-                    callback(canvas.toDataURL('image/jpeg', 0.8));
+                    callback(canvas.toDataURL('image/jpeg', 0.65)); // Optimized image quality & payload size
                 };
                 img.src = e.target.result;
             };
