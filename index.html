@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Farm Planner 🚜</title>
+    <title>Smart Farm Planner 🚜 - AI & Community</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
         tailwind.config = {
@@ -90,30 +92,39 @@
         
         /* Calculator Button Styles */
         .calc-btn {
-            @apply bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg shadow-sm active:bg-gray-300 transition text-lg;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            font-weight: 700;
+            padding: 0.75rem 0;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            font-size: 1.125rem;
+            transition: all 0.15s ease;
         }
+        .calc-btn:active { background-color: #e5e7eb; }
+        
         .calc-btn-op {
-            @apply bg-orange-100 hover:bg-orange-200 text-orange-600 font-bold py-3 rounded-lg shadow-sm active:bg-orange-300 transition text-lg;
+            background-color: #ffedd5;
+            color: #ea580c;
+            font-weight: 700;
+            padding: 0.75rem 0;
+            border-radius: 0.5rem;
+            font-size: 1.125rem;
+            transition: all 0.15s ease;
         }
-        .calc-btn-eq {
-            @apply bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md active:bg-primary-800 transition text-xl;
-        }
+        .calc-btn-op:active { background-color: #fed7aa; }
 
-        /* Chatbot Animations */
-        .chat-open {
-            animation: chatOpen 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .calc-btn-eq {
+            background-color: #ea580c;
+            color: white;
+            font-weight: 700;
+            padding: 0.75rem 0;
+            border-radius: 0.5rem;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.3);
         }
-        .chat-close {
-            animation: chatClose 0.2s ease-in forwards;
-        }
-        @keyframes chatOpen {
-            from { opacity: 0; transform: translateY(20px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes chatClose {
-            from { opacity: 1; transform: translateY(0) scale(1); }
-            to { opacity: 0; transform: translateY(20px) scale(0.9); }
-        }
+        .calc-btn-eq:active { background-color: #c2410c; }
+
         .typing-dot {
             animation: typing 1.4s infinite ease-in-out both;
         }
@@ -123,36 +134,91 @@
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
         }
+
+        #sidebar-overlay {
+            transition: opacity 0.3s ease;
+        }
+        #sidebar-drawer {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
     </style>
 </head>
-<body class="text-gray-700 pb-24">
+<body class="text-gray-700 pb-28">
 
     <!-- Navbar -->
-    <nav class="bg-gradient-to-r from-primary-700 to-primary-600 text-white p-3 shadow-md sticky top-0 z-50">
+    <nav class="bg-gradient-to-r from-primary-700 to-primary-600 text-white p-3 shadow-md sticky top-0 z-40">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-lg font-bold flex items-center gap-2">
-                <i class="fa-solid fa-cow text-yellow-300"></i> Smart Farm Planner
-            </h1>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar(true)" class="w-9 h-9 rounded-lg bg-white/10 active:bg-white/20 flex items-center justify-center transition border border-white/20">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <h1 class="text-lg font-bold flex items-center gap-2 cursor-pointer" onclick="toggleView('planner')">
+                    <i class="fa-solid fa-cow text-yellow-300"></i> Smart Farm
+                </h1>
+            </div>
             <div class="flex gap-2">
+                <!-- AI Scanner Button Quick Access -->
+                <button onclick="openScannerModal()" class="bg-amber-400 text-gray-900 active:bg-amber-500 font-bold px-2.5 py-1.5 rounded-lg text-xs transition flex items-center gap-1 shadow-md">
+                    <i class="fa-solid fa-camera"></i> สแกน AI
+                </button>
                 <!-- Calculator Toggle Button -->
                 <button onclick="openCalculator()" class="bg-white/10 active:bg-white/20 w-9 h-9 rounded-lg flex items-center justify-center transition border border-white/20 shadow-sm" title="เครื่องคิดเลข">
                     <i class="fa-solid fa-calculator text-yellow-300 text-lg"></i>
-                </button>
-
-                <!-- My Farm Button -->
-                 <button onclick="toggleView('schedule')" class="bg-white/20 active:bg-white/30 px-3 py-1.5 rounded-lg text-sm transition flex items-center gap-1">
-                    <i class="fa-solid fa-clipboard-list"></i> ฟาร์มของฉัน (<span id="schedule-count">0</span>)
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- Sidebar Drawer Menu -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0" onclick="toggleSidebar(false)"></div>
+    <div id="sidebar-drawer" class="fixed top-0 left-0 h-full w-[280px] bg-white z-50 shadow-2xl -translate-x-full flex flex-col">
+        <div class="p-5 bg-gradient-to-r from-primary-700 to-primary-600 text-white flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-2xl">
+                    🌾
+                </div>
+                <div>
+                    <h3 class="font-bold text-base leading-tight">Smart Farm Planner</h3>
+                    <p class="text-xs text-white/80">ระบบจัดการฟาร์มอัจฉริยะ</p>
+                </div>
+            </div>
+            <button onclick="toggleSidebar(false)" class="text-white/80 hover:text-white p-1">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-4 flex-grow overflow-y-auto space-y-1">
+            <button onclick="toggleView('planner'); toggleSidebar(false);" class="w-full text-left p-3 rounded-xl hover:bg-orange-50 font-medium text-gray-700 flex items-center gap-3 transition">
+                <i class="fa-solid fa-calendar-check text-primary-600 w-6"></i> วางแผนการเลี้ยง
+            </button>
+            <button onclick="toggleView('schedule'); toggleSidebar(false);" class="w-full text-left p-3 rounded-xl hover:bg-orange-50 font-medium text-gray-700 flex items-center gap-3 transition">
+                <i class="fa-solid fa-warehouse text-primary-600 w-6"></i> ฟาร์มของฉัน (<span class="schedule-count-badge">0</span>)
+            </button>
+            <button onclick="openScannerModal(); toggleSidebar(false);" class="w-full text-left p-3 rounded-xl hover:bg-amber-50 font-medium text-gray-700 flex items-center gap-3 transition">
+                <i class="fa-solid fa-camera-retro text-amber-500 w-6"></i> AI สแกนวิเคราะห์สัตว์
+            </button>
+            <button onclick="toggleView('community'); toggleSidebar(false);" class="w-full text-left p-3 rounded-xl hover:bg-blue-50 font-medium text-gray-700 flex items-center gap-3 transition">
+                <i class="fa-solid fa-users text-blue-600 w-6"></i> ชุมชนเกษตรกร
+            </button>
+            <button onclick="openMarketModal(); toggleSidebar(false);" class="w-full text-left p-3 rounded-xl hover:bg-sky-50 font-medium text-gray-700 flex items-center gap-3 transition">
+                <i class="fa-solid fa-shop text-sky-600 w-6"></i> เช็กราคาตลาด (AI)
+            </button>
+            <button onclick="openCalculator(); toggleSidebar(false);" class="w-full text-left p-3 rounded-xl hover:bg-gray-100 font-medium text-gray-700 flex items-center gap-3 transition">
+                <i class="fa-solid fa-calculator text-gray-500 w-6"></i> เครื่องคิดเลข
+            </button>
+        </div>
+
+        <div class="p-4 border-t border-gray-100 text-center text-xs text-gray-400">
+            Smart Farm Planner v2.6 AI & Google Sheets
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
     <div class="container mx-auto px-3 py-4 max-w-lg">
         
-        <!-- View: Planning Selection -->
+        <!-- VIEW 1: Planning Selection -->
         <div id="planner-view">
-            <!-- Header -->
+            <!-- Season Header -->
             <div class="bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-5 shadow-lg mb-4 text-white relative overflow-hidden transition-all duration-500" id="season-header-bg">
                 <i class="fa-solid fa-temperature-three-quarters text-6xl absolute -right-2 -top-2 opacity-10"></i>
                 <div class="relative z-10">
@@ -167,7 +233,21 @@
                 </div>
             </div>
 
-            <!-- Tab Switcher (Scrollable) -->
+            <!-- AI Quick Scanner Banner -->
+            <div onclick="openScannerModal()" class="mb-4 bg-gradient-to-r from-amber-500 to-orange-500 p-3.5 rounded-2xl text-white shadow-md flex items-center justify-between cursor-pointer active:scale-[0.98] transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-2xl">
+                        📸
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">สแกนสัตว์ด้วย AI Intelligent Scan</h4>
+                        <p class="text-xs text-amber-100">ถ่ายรูป/อัปโหลด เพื่อวิเคราะห์โรค อาหาร และสายพันธุ์</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-sm opacity-80"></i>
+            </div>
+
+            <!-- Category Switcher Tabs -->
             <div class="flex overflow-x-auto gap-2 mb-4 relative z-10 hide-scroll pb-2">
                 <button onclick="switchCategory('poultry')" id="tab-poultry" class="min-w-[80px] py-2.5 text-[10px] sm:text-xs font-bold rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-1 tab-active flex-shrink-0">
                     <i class="fa-solid fa-dove text-lg mb-1"></i> สัตว์ปีก
@@ -186,8 +266,8 @@
                 </button>
             </div>
 
-            <!-- Search -->
-            <div class="bg-white rounded-xl p-3 shadow-sm mb-4 border border-gray-100 sticky top-[60px] z-40">
+            <!-- Search Field -->
+            <div class="bg-white rounded-xl p-3 shadow-sm mb-4 border border-gray-100 sticky top-[60px] z-30">
                 <div class="flex gap-2">
                     <div class="relative flex-grow">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
@@ -200,11 +280,11 @@
                 </div>
             </div>
 
-            <!-- List -->
+            <!-- List of Animals -->
             <div class="grid grid-cols-1 gap-3 pb-8" id="main-list"></div>
         </div>
 
-        <!-- View: My Schedule -->
+        <!-- VIEW 2: My Schedule (My Farm) -->
         <div id="schedule-view" class="hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
@@ -227,19 +307,101 @@
             </div>
         </div>
 
+        <!-- VIEW 3: Community Section (พูดคุย/แลกเปลี่ยนความรู้) -->
+        <div id="community-view" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-users text-blue-600"></i> ชุมชนเกษตรกร
+                    </h2>
+                    <p class="text-xs text-gray-500">พูดคุย แลกเปลี่ยนความรู้ และถามคำถามใกล้ตัว</p>
+                </div>
+                <button onclick="openNewPostModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1 transition">
+                    <i class="fa-solid fa-pen-to-square"></i> โพสต์คำถาม
+                </button>
+            </div>
+
+            <!-- Apps Script Integration Status Banner -->
+            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between text-xs text-blue-800">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-table text-blue-500 text-sm"></i>
+                    <span>ระบบซิงค์ข้อมูลกระดานข่าว (Google Sheets Direct Script)</span>
+                </div>
+            </div>
+
+            <!-- Search Posts -->
+            <div class="mb-4 relative">
+                <input type="text" id="community-search" oninput="filterCommunityPosts()" placeholder="ค้นหาบทสนทนา หรือหัวข้อ..." class="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+
+            <!-- Posts Feed Container -->
+            <div id="community-posts-container" class="space-y-4 pb-12">
+                <div class="text-center py-8 text-gray-400">
+                    <i class="fa-solid fa-spinner animate-spin text-2xl text-blue-500 mb-2"></i>
+                    <p class="text-sm">กำลังโหลดบทสนทนา...</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Modal: Delete Confirmation (New Custom Dialog) -->
-    <div id="delete-modal" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white w-full max-w-[300px] rounded-3xl shadow-2xl animate-pop overflow-hidden p-6 text-center">
-            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-trash-can text-red-500 text-2xl"></i>
+    <!-- Modal: AI Animal Scanner -->
+    <div id="scanner-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm p-0 sm:p-4">
+        <div class="bg-white w-full sm:w-[460px] rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-up flex flex-col max-h-[92vh] overflow-hidden">
+            <div class="p-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white flex justify-between items-center flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                    <h3 class="font-bold text-lg">AI สแกนวิเคราะห์รูปสัตว์</h3>
+                </div>
+                <button onclick="closeScannerModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">ลบรายการนี้?</h3>
-            <p class="text-sm text-gray-500 mb-6 leading-relaxed">ข้อมูลการเลี้ยงและประวัติวัคซีนจะหายไปถาวร</p>
-            <div class="flex gap-3">
-                <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition text-sm active:bg-gray-100">เก็บไว้</button>
-                <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 shadow-lg shadow-red-200 transition text-sm active:scale-95">ลบทิ้ง</button>
+
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-grow space-y-4">
+                <div class="border-2 border-dashed border-amber-300 bg-amber-50/50 rounded-2xl p-5 text-center relative cursor-pointer hover:bg-amber-50 transition" onclick="document.getElementById('scan-image-input').click()">
+                    <input type="file" id="scan-image-input" accept="image/*" capture="environment" class="hidden" onchange="handleScanImageSelect(event)">
+                    
+                    <div id="scan-preview-container" class="hidden relative rounded-xl overflow-hidden shadow-md max-h-56 mx-auto">
+                        <img id="scan-preview-img" src="" class="w-full object-cover">
+                        <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded-md backdrop-blur-sm">
+                            <i class="fa-solid fa-arrows-rotate"></i> แตะเพื่อเปลี่ยนรูป
+                        </div>
+                    </div>
+
+                    <div id="scan-upload-placeholder" class="py-4">
+                        <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3 text-amber-600 text-2xl shadow-inner">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 text-sm">ถ่ายภาพ หรือ อัปโหลดรูปภาพสัตว์</h4>
+                        <p class="text-xs text-gray-500 mt-1">รองรับไก่ หมู วัว กุ้ง ปลา หรือสัตว์เลี้ยงทั่วไป</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">สิ่งที่ต้องการให้ AI เน้นวิเคราะห์:</label>
+                    <select id="scan-focus-option" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="general">🔍 วิเคราะห์สายพันธุ์ ข้อมูลการเลี้ยง และคำแนะนำรวม</option>
+                        <option value="health">🩺 ตรวจสอบอาการป่วย/สุขภาพ และคำแนะนำการรักษา</option>
+                        <option value="feed">🌾 แนะนำอาหารและการให้อาหารที่เหมาะสม</option>
+                    </select>
+                </div>
+
+                <button id="btn-run-scan" onclick="analyzeAnimalImage()" disabled class="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl shadow-lg shadow-amber-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-microchip"></i> เริ่มวิเคราะห์รูปภาพด้วย AI
+                </button>
+
+                <div id="scan-result-box" class="hidden bg-slate-50 border border-amber-200 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-gray-200 pb-2">
+                        <span class="text-xs font-bold text-amber-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-robot"></i> ผลการวิเคราะห์จาก Gemini AI
+                        </span>
+                        <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium">เรียบร้อย</span>
+                    </div>
+                    <div id="scan-result-text" class="text-sm text-gray-800 leading-relaxed whitespace-pre-line font-light">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -282,11 +444,40 @@
         </div>
     </div>
 
+    <!-- Modal: Community Create Post -->
+    <div id="post-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm p-0 sm:p-4">
+        <div class="bg-white w-full sm:w-[440px] rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-up flex flex-col overflow-hidden">
+            <div class="p-4 bg-blue-600 text-white flex justify-between items-center">
+                <h3 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> ตั้งคำถาม / แชร์ความรู้</h3>
+                <button onclick="closeNewPostModal()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleNewPostSubmit(event)" class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">ชื่อผู้โพสต์ / ชื่อฟาร์ม</label>
+                    <input type="text" id="post-author" required placeholder="เช่น สมชาย ฟาร์มไก่, พ่อเลี้ยงชัย" class="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">หมวดหมู่</label>
+                    <select id="post-category" class="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="คำถาม/สอบถาม">❓ คำถาม/ข้อสงสัย</option>
+                        <option value="แชร์ประสบการณ์">💡 แชร์เทคนิค/ประสบการณ์</option>
+                        <option value="ซื้อขาย/พูดคุย">🤝 พูดคุยทั่วไป/ซื้อขาย</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">ข้อความเรื่องราว / คำถาม</label>
+                    <textarea id="post-content" required rows="4" placeholder="พิมพ์ข้อความคำถามหรือเทคนิคที่ต้องการแชร์..." class="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition active:scale-[0.98]">
+                    โพสต์คำถามบันทึกข้อมูล
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal 1: Raising Calculator (Adding) -->
     <div id="calc-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm">
         <div class="bg-white w-full sm:w-[420px] sm:rounded-2xl rounded-t-3xl shadow-2xl animate-slide-up flex flex-col max-h-[95vh]">
-            
-            <!-- Modal Header -->
             <div class="p-5 bg-primary-50 border-b border-primary-100 rounded-t-3xl flex justify-between items-start">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-3xl" id="modal-icon-container">
@@ -305,10 +496,7 @@
                 </button>
             </div>
 
-            <!-- Modal Body (Simplified) -->
             <div class="p-5 overflow-y-auto custom-scrollbar">
-                
-                <!-- Image Upload (Restored) -->
                 <div class="mb-4">
                     <label class="block text-sm font-bold text-gray-700 mb-2">
                         <i class="fa-regular fa-image mr-1"></i> เพิ่มรูปแปลง/สัตว์
@@ -327,7 +515,6 @@
                     </div>
                 </div>
 
-                <!-- Input Date -->
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-gray-700 mb-2">
                         <i class="fa-regular fa-calendar-check mr-1"></i> วันที่เริ่มเลี้ยง (ลงสัตว์)
@@ -335,7 +522,6 @@
                     <input type="date" id="start-date" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-lg text-center bg-gray-50 text-gray-800 shadow-inner">
                 </div>
 
-                <!-- Timeline Preview (Compact) -->
                 <div class="relative pl-6 border-l-2 border-dashed border-gray-300 space-y-6 pb-2">
                     <div class="relative">
                         <div class="absolute -left-[31px] top-1 bg-green-500 w-4 h-4 rounded-full border-4 border-white shadow-sm"></div>
@@ -348,10 +534,8 @@
                         <p class="font-bold text-primary-700 text-lg" id="preview-end-date">-</p>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Modal Footer -->
             <div class="p-4 border-t border-gray-100 bg-gray-50 rounded-b-3xl sm:rounded-b-2xl z-20">
                 <button onclick="saveSchedule()" class="w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-500/30 active:scale-[0.98] transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-check-circle"></i> บันทึกรายการ
@@ -363,18 +547,14 @@
     <!-- Modal 2: Detail View (Viewing in My Farm) -->
     <div id="detail-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm">
         <div class="bg-white w-full sm:w-[420px] sm:rounded-2xl rounded-t-3xl shadow-2xl animate-slide-up flex flex-col max-h-[95vh]">
-            
-            <!-- Modal Header -->
             <div class="p-5 bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 rounded-t-3xl flex justify-between items-start">
                 <div class="flex items-center gap-4 w-full">
-                    <!-- Icon Container (Clickable for Image Change) -->
                     <div id="detail-icon-container" class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-3xl text-primary-600 overflow-hidden flex-shrink-0 border border-gray-100 p-2 cursor-pointer hover:opacity-80 transition relative group" onclick="document.getElementById('detail-image-upload').click()">
                         <span id="detail-icon">🐔</span>
                         <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
                             <i class="fa-solid fa-camera text-white text-xs"></i>
                         </div>
                     </div>
-                    <!-- Hidden input for changing image -->
                     <input type="file" id="detail-image-upload" class="hidden" accept="image/*" onchange="updateScheduleImage(this)">
                     
                     <div class="flex-grow">
@@ -387,10 +567,8 @@
                 </button>
             </div>
 
-            <!-- Modal Body (Rich Info) -->
             <div class="p-5 overflow-y-auto custom-scrollbar bg-slate-50">
                 <p class="text-[10px] text-center text-gray-400 mb-2"><i class="fa-regular fa-image"></i> แตะที่รูปด้านบนเพื่อเปลี่ยนรูป</p>
-                <!-- Specs Card -->
                 <div class="bg-white border border-gray-200 rounded-xl p-4 mb-4 shadow-sm">
                     <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-circle-info text-primary-500"></i> ข้อมูลการเลี้ยง
@@ -413,7 +591,6 @@
                     </div>
                 </div>
 
-                <!-- Vaccine Program Card -->
                 <div class="bg-white border border-blue-200 rounded-xl p-0 mb-4 shadow-sm overflow-hidden">
                     <div class="bg-blue-50 p-3 border-b border-blue-100 flex justify-between items-center">
                         <h4 class="text-sm font-bold text-blue-800 flex items-center gap-2">
@@ -422,29 +599,42 @@
                         <span class="text-[10px] text-blue-400 font-normal">คำนวณตามวันเริ่ม</span>
                     </div>
                     <div id="detail-vaccine-list" class="divide-y divide-gray-100">
-                        <!-- Injected via JS -->
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- Navigation Bottom Bar (Reverted) -->
-    <div class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-sm border-t border-gray-200 flex justify-around py-3 pb-safe z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.03)] md:hidden">
+    <!-- Navigation Bottom Bar (Responsive Mobile View) -->
+    <div class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 flex justify-around py-2 pb-safe z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
         <button onclick="toggleView('planner')" class="flex flex-col items-center gap-1 text-primary-600" id="nav-planner">
-            <i class="fa-solid fa-calendar-check text-xl"></i>
+            <i class="fa-solid fa-calendar-check text-lg"></i>
             <span class="text-[10px] font-medium">วางแผน</span>
         </button>
+
         <button onclick="toggleView('schedule')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-primary-600 transition" id="nav-schedule">
             <div class="relative">
-                <i class="fa-solid fa-clipboard-list text-xl"></i>
-                <span id="nav-badge" class="absolute -top-1 -right-2 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden border-2 border-white">0</span>
+                <i class="fa-solid fa-clipboard-list text-lg"></i>
+                <span id="nav-badge" class="schedule-count-badge absolute -top-1 -right-2 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full hidden border-2 border-white">0</span>
             </div>
             <span class="text-[10px] font-medium">ฟาร์มฉัน</span>
         </button>
+
+        <!-- Center AI Scanner Action Button -->
+        <button onclick="openScannerModal()" class="flex flex-col items-center justify-center -mt-5">
+            <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 active:scale-95 transition border-4 border-white">
+                <i class="fa-solid fa-camera text-lg"></i>
+            </div>
+            <span class="text-[10px] font-bold text-amber-600 mt-0.5">แสกน AI</span>
+        </button>
+
+        <button onclick="toggleView('community')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-600 transition" id="nav-community">
+            <i class="fa-solid fa-users text-lg"></i>
+            <span class="text-[10px] font-medium">ชุมชน</span>
+        </button>
+
         <button onclick="openMarketModal()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-secondary-600 transition">
-            <i class="fa-solid fa-shop text-xl"></i>
+            <i class="fa-solid fa-shop text-lg"></i>
             <span class="text-[10px] font-medium">ราคาตลาด</span>
         </button>
     </div>
@@ -452,7 +642,6 @@
     <!-- Market Modal -->
     <div id="market-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center px-0 sm:px-4 backdrop-blur-sm">
         <div class="bg-white w-full h-full sm:h-[600px] sm:max-w-lg sm:rounded-2xl flex flex-col animate-pop relative overflow-hidden">
-            <!-- Header -->
             <div class="p-4 bg-secondary-600 text-white flex justify-between items-center shadow-md z-10">
                 <div>
                     <h3 class="text-lg font-bold flex items-center gap-2">
@@ -465,12 +654,10 @@
                 </button>
             </div>
             
-            <!-- Table Area -->
             <div class="flex-grow overflow-y-auto bg-slate-50 relative">
                 <div id="loading-indicator" class="hidden flex flex-col items-center justify-center h-full absolute inset-0 bg-white/80 z-20">
                     <i class="fa-solid fa-microchip text-4xl animate-bounce mb-2 text-secondary-500"></i>
                     <p class="animate-pulse font-bold text-secondary-600">AI กำลังวิเคราะห์ราคาตลาด...</p>
-                    <p class="text-xs text-gray-400">Connecting to mute-unit-1629...</p>
                 </div>
 
                 <div id="error-message" class="hidden flex flex-col items-center justify-center h-48 text-red-400 p-4 text-center">
@@ -481,20 +668,18 @@
                 <table class="w-full market-table bg-white text-left hidden" id="market-table-content">
                     <thead>
                         <tr>
-                            <th class="w-2/5 pl-4">รายการทั้งหมด</th>
-                            <th>ราคาเริ่มต้น<br><span class="text-[10px] font-normal text-gray-400">(บาท)</span></th>
-                            <th>ราคาขาย<br><span class="text-[10px] font-normal text-gray-400">(บาท)</span></th>
-                            <th class="text-center pr-4">แนวโน้ม</th>
+                            <th class="w-2/5 pl-4 py-2 text-xs">รายการทั้งหมด</th>
+                            <th class="text-xs py-2">ราคาซื้อ<br><span class="text-[9px] font-normal text-gray-400">(บาท)</span></th>
+                            <th class="text-xs py-2">ราคาขาย<br><span class="text-[9px] font-normal text-gray-400">(บาท)</span></th>
+                            <th class="text-center pr-4 py-2 text-xs">แนวโน้ม</th>
                         </tr>
                     </thead>
                     <tbody id="market-tbody"></tbody>
                 </table>
             </div>
             
-            <!-- Footer Action -->
             <div class="p-4 bg-white border-t border-gray-200">
                 <button onclick="updateMarketData()" class="w-full bg-gradient-to-r from-secondary-600 to-blue-600 hover:from-secondary-700 hover:to-blue-700 text-white py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transition active:scale-95 font-bold relative overflow-hidden group">
-                    <span class="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700 skew-x-12"></span>
                     <i class="fa-solid fa-wand-magic-sparkles"></i> อัพเดทราคาทุกหมวด (AI)
                 </button>
             </div>
@@ -502,13 +687,12 @@
     </div>
 
     <!-- Chatbot Floating Button -->
-    <button onclick="toggleChat()" class="fixed bottom-24 right-4 md:bottom-8 md:right-8 w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg text-white flex items-center justify-center text-2xl z-50 hover:scale-110 transition animate-bounce-slow" id="chat-fab">
+    <button onclick="toggleChat()" class="fixed bottom-20 right-4 md:bottom-8 md:right-8 w-13 h-13 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg text-white flex items-center justify-center text-xl z-40 hover:scale-110 transition animate-bounce-slow" id="chat-fab">
         <i class="fa-solid fa-comments"></i>
     </button>
 
     <!-- Chatbot Window -->
-    <div id="chat-window" class="fixed bottom-40 right-4 md:bottom-24 md:right-8 w-[85vw] md:w-[320px] h-[50vh] md:h-[450px] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col z-50 hidden origin-bottom-right transition-all duration-300 transform scale-0 opacity-0">
-        <!-- Header -->
+    <div id="chat-window" class="fixed bottom-36 right-4 md:bottom-24 md:right-8 w-[88vw] md:w-[320px] h-[48vh] md:h-[420px] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col z-50 hidden origin-bottom-right transition-all duration-300 transform scale-0 opacity-0">
         <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-3 rounded-t-2xl text-white flex justify-between items-center flex-shrink-0">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-robot bg-white/20 p-1.5 rounded-full"></i>
@@ -516,15 +700,13 @@
             </div>
             <button onclick="toggleChat()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <!-- Messages -->
         <div id="chat-messages" class="flex-grow overflow-y-auto p-3 space-y-3 bg-slate-50 text-sm">
             <div class="flex justify-start">
                 <div class="bg-white border border-gray-200 text-gray-700 p-2.5 rounded-2xl rounded-tl-none shadow-sm max-w-[85%] leading-relaxed">
-                    สวัสดีครับ! มีเรื่องการเลี้ยงสัตว์ให้ช่วยไหมครับ? 🐮
+                    สวัสดีครับ! สอบถามเรื่องโรค อาหาร การดูแลสัตว์เลี้ยงได้เลยครับ 🐮
                 </div>
             </div>
         </div>
-        <!-- Input -->
         <div class="p-3 border-t border-gray-100 bg-white rounded-b-2xl flex-shrink-0">
             <form onsubmit="sendChatMessage(event)" class="flex gap-2">
                 <input type="text" id="chat-input" class="flex-grow bg-gray-100 border-0 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ถามมาได้เลย..." autocomplete="off">
@@ -536,14 +718,551 @@
     </div>
 
     <script>
-        // --- Chatbot Logic ---
-        const CHATBOT_API_URL = "https://patitinepuk-zoo.tontakankeawpang321.workers.dev"; // ปรับ URL เป็นตัวเดียวกับ Backend หลัก
+        // Chatbot Worker API URL
+        const CHATBOT_API_URL = "https://patitinepuk-zoo.tontakankeawpang321.workers.dev"; 
+        
+        // Hardcoded Embedded Google Apps Script URL (Configured directly in code HTML)
+        const APPSCRIPT_URL = "https://script.google.com/macros/s/AKfycbykt06lPDNWfQs8zcAFWAzl-zvf6BLvT-H_AjaLHK0p1zrqsKF6WvPOW8TskdtotJkW/exec";
+
+        // Animal Master Database
+        const animals = [
+            // Poultry
+            { id: 201, category: 'poultry', name: "ไก่ไข่", icon: "🐔", midDays: 7, endDays: 140, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 28, price2: 190, temp: "25-33°C", feed: "อาหารไก่ไข่ (โปรตีน 16%)", vaccineProgram: [{ day: 7, name: "นิวคาสเซิล + หลอดลมอักเสบ" }, { day: 14, name: "กัมโบโร (ครั้งที่ 1)" }, { day: 21, name: "นิวคาสเซิล (ซ้ำ) + ฝีดาษ" }, { day: 28, name: "กัมโบโร (ครั้งที่ 2)" }] },
+            { id: 202, category: 'poultry', name: "ไก่เนื้อ", icon: "🍗", midDays: 7, endDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 18, price2: 95, temp: "28-32°C (กกไฟ 7 วัน)", feed: "อาหารขุนระยะสั้น", vaccineProgram: [{ day: 7, name: "นิวคาสเซิล + หลอดลมอักเสบ" }, { day: 14, name: "กัมโบโร" }, { day: 21, name: "นิวคาสเซิล (ซ้ำ)" }] },
+            { id: 203, category: 'poultry', name: "ไก่พื้นเมือง", icon: "🐓", midDays: 21, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 25, price2: 150, temp: "ทนร้อนได้ดี", feed: "รำ/ปลายข้าว/เศษอาหาร", vaccineProgram: [{ day: 21, name: "นิวคาสเซิล" }, { day: 60, name: "อหิวาต์ไก่" }] },
+            { id: 205, category: 'poultry', name: "เป็ดไข่", icon: "🦆", midDays: 21, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 22, price2: 160, temp: "ถ่ายเทสะดวก พื้นแห้ง", feed: "รำ/หอยเชอรี่", vaccineProgram: [{ day: 21, name: "กาฬโรคเป็ด" }, { day: 60, name: "อหิวาต์เป็ด" }] },
+            { id: 209, category: 'poultry', name: "ไก่งวง", icon: "🦃", midDays: 30, endDays: 180, months: [10,11,0,1], price1: 100, price2: 800, temp: "พื้นที่กว้าง ชอบหญ้าสด", feed: "หญ้าขน/อาหารไก่เนื้อ", vaccineProgram: [{ day: 21, name: "ฝีดาษไก่" }, { day: 45, name: "อหิวาต์ไก่" }] },
+            { id: 210, category: 'poultry', name: "เป็ดเทศ", icon: "🦢", midDays: 20, endDays: 80, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 30, price2: 180, temp: "ทนโรค เลี้ยงง่าย", feed: "เศษผัก/รำข้าว", vaccineProgram: [{ day: 30, name: "กาฬโรคเป็ด" }] },
+            { id: 211, category: 'poultry', name: "ไก่เบตง", icon: "🐔", midDays: 30, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 450, temp: "อากาศถ่ายเท (ห้ามชื้น)", feed: "ข้าวโพด/อาหารผสม", vaccineProgram: [{ day: 14, name: "นิวคาสเซิล" }, { day: 45, name: "ถ่ายพยาธิ" }] },
+            { id: 212, category: 'poultry', name: "ไก่ชน", icon: "🥊", midDays: 60, endDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 3000, temp: "ต้องกราดน้ำ/ตากแดด", feed: "ข้าวเปลือก/สมุนไพร", vaccineProgram: [{ day: 14, name: "นิวคาสเซิล" }, { day: 60, name: "อหิวาต์" }] },
+
+            // Mammal
+            { id: 301, category: 'mammal', name: "สุกร (หมูขุน)", icon: "🐷", midDays: 21, endDays: 150, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1800, price2: 7000, temp: "22-28°C", feed: "อาหารหมูขุน", vaccineProgram: [{ day: 21, name: "อหิวาต์สุกร" }, { day: 45, name: "ปากและเท้าเปื่อย (FMD)" }] },
+            { id: 302, category: 'mammal', name: "โคเนื้อ", icon: "🐂", midDays: 120, endDays: 365, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 18000, price2: 48000, temp: "ทนร้อน", feed: "หญ้า/ฟาง", vaccineProgram: [{ day: 120, name: "ปากและเท้าเปื่อย" }, { day: 150, name: "คอบวม" }] },
+            { id: 305, category: 'mammal', name: "แพะ", icon: "🐐", midDays: 60, endDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2500, price2: 5500, temp: "คอกยกสูง แห้ง", feed: "ใบกระถิน/หญ้า", vaccineProgram: [{ day: 60, name: "ถ่ายพยาธิ" }, { day: 90, name: "ปากและเท้าเปื่อย" }] },
+            { id: 307, category: 'mammal', name: "หมูป่า", icon: "🐗", midDays: 60, endDays: 240, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1000, price2: 4500, temp: "โรงเรือนโปร่ง ดินแห้ง", feed: "หยวกกล้วย/รำ", vaccineProgram: [{ day: 45, name: "อหิวาต์สุกร" }] },
+            { id: 308, category: 'mammal', name: "กระต่ายเนื้อ", icon: "🐇", midDays: 30, endDays: 100, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 150, price2: 500, temp: "ไม่เกิน 30°C", feed: "หญ้าแห้ง/อาหารเม็ด", vaccineProgram: [{ day: 45, name: "ถ่ายพยาธิภายนอก" }] },
+
+            // Pet
+            { id: 601, category: 'pet', name: "สุนัขพันธุ์เล็ก", icon: "🐶", midDays: 45, endDays: 60, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2000, price2: 8000, temp: "25-30°C", feed: "อาหารเม็ดลูกสุนัข", vaccineProgram: [{ day: 45, name: "วัคซีนรวม 5 โรค (เข็ม 1)" }, { day: 60, name: "วัคซีนรวม (เข็ม 2)" }, { day: 90, name: "พิษสุนัขบ้า" }] },
+            { id: 603, category: 'pet', name: "แมว (พันธุ์ไทย/ผสม)", icon: "🐱", midDays: 60, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 500, price2: 2500, temp: "อบอุ่น แห้งสะอาด", feed: "อาหารเปียก/ลูกแมว", vaccineProgram: [{ day: 60, name: "ไข้หัดหวัดแมว (เข็ม 1)" }, { day: 90, name: "ไข้หัดหวัดแมว (เข็ม 2)" }] },
+            { id: 607, category: 'pet', name: "ปลากัดสวยงาม", icon: "🐟", midDays: 60, endDays: 120, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 20, price2: 500, temp: "26-30°C", feed: "ลูกน้ำ/ไรแดง", vaccineProgram: [{ day: 60, name: "แยกโหลกันกัด" }] },
+
+            // Aquatic
+            { id: 401, category: 'aquatic', name: "ปลาดุก", icon: "🐟", midDays: 30, endDays: 90, months: [5,6,7,8,9], price1: 1, price2: 50, temp: "น้ำนิ่ง/บ่อดิน", feed: "อาหารเม็ดลอยน้ำ", vaccineProgram: [] },
+            { id: 402, category: 'aquatic', name: "ปลานิล", icon: "🐠", midDays: 45, endDays: 180, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.5, price2: 65, temp: "25-30°C", feed: "รำละเอียด/พืชน้ำ", vaccineProgram: [] },
+            { id: 412, category: 'aquatic', name: "กุ้งขาว", icon: "🦐", midDays: 30, endDays: 90, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.2, price2: 180, temp: "ความเค็ม 10-20 ppt", feed: "อาหารเม็ดสำเร็จรูป", vaccineProgram: [] },
+
+            // Other
+            { id: 501, category: 'other', name: "จิ้งหรีด", icon: "🦗", midDays: 15, endDays: 45, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 150, temp: "ร้อนชื้น", feed: "หัวอาหารไก่เล็ก", vaccineProgram: [] },
+            { id: 505, category: 'other', name: "ด้วงสาคู", icon: "🐛", midDays: 20, endDays: 40, months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2, price2: 250, temp: "ชื้น/มืด", feed: "เปลือกมะพร้าว/สาคู", vaccineProgram: [] }
+        ];
+
+        let currentSelectedDate = new Date();
+        let currentMonthIndex = currentSelectedDate.getMonth();
+        let currentCategory = 'poultry'; 
+        let currentItem = null; 
+        let currentUploadImage = null; 
+        let scanSelectedBase64 = null;
+        let mySchedules = JSON.parse(localStorage.getItem('myLivestockSchedule')) || [];
+
+        // Local Posts initial state / fallback with reply/comments support
+        let communityPosts = JSON.parse(localStorage.getItem('smartfarm_community_posts')) || [
+            {
+                id: "p101",
+                author: "ลุงสมหมาย ฟาร์มไก่ชน",
+                category: "แชร์ประสบการณ์",
+                content: "เทคนิคการดูแลไก่ชนช่วงหน้าฝนครับ ควรผสมวิตามินซีในน้ำให้กินสัปดาห์ละ 2 ครั้ง ป้องกันอาการหวัดหน้าซีกได้อย่างดีครับ!",
+                timestamp: "2026-07-28T10:30:00.000Z",
+                comments: [
+                    {
+                        id: "c101",
+                        author: "หมอเป็ด ปศุสัตว์",
+                        content: "เยี่ยมเลยครับ วิตามินซีช่วยเสริมภูมิคุ้มกันหวัดได้ดีมากๆ ในช่วงอากาศเปลี่ยนครับ",
+                        timestamp: "2026-07-28T11:15:00.000Z"
+                    }
+                ]
+            },
+            {
+                id: "p102",
+                author: "เกษตรกรมือใหม่ ชะอำ",
+                category: "คำถาม/สอบถาม",
+                content: "สอบถามผู้รู้ครับ ปลาดุกในบ่อซีเมนต์มีอาการลอยหัวช่วงเช้าตรู่ ควรแก้ไขอย่างไรดีครับ?",
+                timestamp: "2026-07-30T14:15:00.000Z",
+                comments: []
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const datePicker = document.getElementById('global-date-picker');
+            datePicker.valueAsDate = currentSelectedDate;
+            updateHeaderAndSeason();
+            renderList(); 
+            renderScheduleList();
+            
+            document.getElementById('start-date').valueAsDate = new Date();
+            document.getElementById('start-date').addEventListener('change', calculateDates);
+            
+            // Search Input Event
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                const keyword = e.target.value.toLowerCase();
+                const filtered = animals.filter(f => f.name.toLowerCase().includes(keyword) && f.category === currentCategory);
+                renderFilteredItems(filtered);
+                document.getElementById('filter-status').innerText = keyword ? `ค้นหา "${keyword}"` : "ทั้งหมด";
+            });
+
+            datePicker.addEventListener('change', (e) => {
+                currentSelectedDate = new Date(e.target.value);
+                currentMonthIndex = currentSelectedDate.getMonth();
+                updateHeaderAndSeason();
+            });
+
+            // Image Upload Logic in Adding Schedule
+            document.getElementById('upload-image').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    resizeImage(file, function(result) {
+                        currentUploadImage = result;
+                        document.getElementById('preview-image').src = currentUploadImage;
+                        document.getElementById('preview-image').classList.remove('hidden');
+                        document.getElementById('preview-placeholder').classList.add('hidden');
+                    });
+                }
+            });
+        });
+
+        function toggleSidebar(show) {
+            const overlay = document.getElementById('sidebar-overlay');
+            const drawer = document.getElementById('sidebar-drawer');
+            if (show) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.remove('opacity-0');
+                    drawer.classList.remove('-translate-x-full');
+                }, 10);
+            } else {
+                overlay.classList.add('opacity-0');
+                drawer.classList.add('-translate-x-full');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function toggleView(view) {
+            const planner = document.getElementById('planner-view');
+            const schedule = document.getElementById('schedule-view');
+            const community = document.getElementById('community-view');
+            
+            const navP = document.getElementById('nav-planner');
+            const navS = document.getElementById('nav-schedule');
+            const navC = document.getElementById('nav-community');
+
+            // Reset
+            planner.classList.add('hidden');
+            schedule.classList.add('hidden');
+            community.classList.add('hidden');
+
+            navP.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-primary-600 transition";
+            navS.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-primary-600 transition";
+            navC.className = "flex flex-col items-center gap-1 text-gray-400 hover:text-blue-600 transition";
+
+            if (view === 'schedule') {
+                schedule.classList.remove('hidden');
+                navS.className = "flex flex-col items-center gap-1 text-primary-600 font-bold";
+            } else if (view === 'community') {
+                community.classList.remove('hidden');
+                navC.className = "flex flex-col items-center gap-1 text-blue-600 font-bold";
+                loadCommunityPosts();
+            } else {
+                planner.classList.remove('hidden');
+                navP.className = "flex flex-col items-center gap-1 text-primary-600 font-bold";
+            }
+        }
+
+        function openScannerModal() {
+            document.getElementById('scanner-modal').classList.remove('hidden');
+        }
+        function closeScannerModal() {
+            document.getElementById('scanner-modal').classList.add('hidden');
+        }
+
+        function handleScanImageSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            resizeImage(file, function(base64) {
+                scanSelectedBase64 = base64;
+                document.getElementById('scan-preview-img').src = base64;
+                document.getElementById('scan-preview-container').classList.remove('hidden');
+                document.getElementById('scan-upload-placeholder').classList.add('hidden');
+                document.getElementById('btn-run-scan').disabled = false;
+                document.getElementById('scan-result-box').classList.add('hidden');
+            });
+        }
+
+        async function analyzeAnimalImage() {
+            if (!scanSelectedBase64) return;
+
+            const focusOpt = document.getElementById('scan-focus-option').value;
+            const btn = document.getElementById('btn-run-scan');
+            const resultBox = document.getElementById('scan-result-box');
+            const resultText = document.getElementById('scan-result-text');
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> AI กำลังวิเคราะห์รูปภาพ...`;
+            resultBox.classList.remove('hidden');
+            resultText.innerHTML = `<div class="p-3 text-center text-gray-500"><i class="fa-solid fa-brain animate-pulse text-amber-500 text-xl"></i><br>กำลังประมวลผลสายพันธุ์และสุขภาพสัตว์...</div>`;
+
+            const cleanBase64 = scanSelectedBase64.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
+
+            let promptText = "คุณคือสัตวแพทย์และผู้เชี่ยวชาญด้านปศุสัตว์ วิเคราะห์รูปภาพสัตว์นี้ให้เกษตรกรเป็นภาษาไทยด้วยความเป็นกันเอง:\n" +
+                "1. ระบุสายพันธุ์/ชนิดของสัตว์ในรูป\n" +
+                "2. ประเมินสภาพร่างกายและสุขภาพเบื้องต้น\n" +
+                "3. แนะนำอาหาร สภาพแวดล้อม และข้อควรระวังสำคัญในการเลี้ยงดู";
+
+            if (focusOpt === "health") {
+                promptText = "วิเคราะห์เฉพาะเน้นเรื่อง สุขภาพ โรค และอาการป่วยของสัตว์ในภาพนี้เป็นภาษาไทย ระบุจุดสังเกต อาการที่ต้องระวัง และแนวทางการรักษาเบื้องต้นให้ชัดเจน";
+            } else if (focusOpt === "feed") {
+                promptText = "วิเคราะห์เฉพาะเน้นเรื่อง การโภชนาการ อาหาร สารอาหาร และปริมาณที่เหมาะสมสำหรับสัตว์ชนิดนี้ในภาพเป็นภาษาไทย";
+            }
+
+            try {
+                const apiKey = ""; // Canvas runtime automatically supplies API key
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{
+                        role: "user",
+                        parts: [
+                            { text: promptText },
+                            {
+                                inlineData: {
+                                    mimeType: "image/jpeg",
+                                    data: cleanBase64
+                                }
+                            }
+                        ]
+                    }]
+                };
+
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error("API Error");
+
+                const data = await res.json();
+                const aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (aiResponse) {
+                    resultText.innerHTML = aiResponse.replace(/\n/g, '<br>');
+                } else {
+                    throw new Error("No output text from AI");
+                }
+            } catch (err) {
+                console.error(err);
+                resultText.innerHTML = `<div class="text-red-500">❌ เกิดข้อผิดพลาดในการวิเคราะห์ ไม่สามารถเชื่อมต่อระบบ AI ได้ชั่วคราว</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-microchip"></i> เริ่มวิเคราะห์รูปภาพด้วย AI อีกครั้ง`;
+            }
+        }
+
+        function openNewPostModal() {
+            document.getElementById('post-modal').classList.remove('hidden');
+        }
+        function closeNewPostModal() {
+            document.getElementById('post-modal').classList.add('hidden');
+        }
+
+        async function loadCommunityPosts() {
+            const container = document.getElementById('community-posts-container');
+            
+            if (APPSCRIPT_URL && !APPSCRIPT_URL.includes("AKfycbz_SAMPLE")) {
+                container.innerHTML = `<div class="text-center py-8 text-gray-400"><i class="fa-solid fa-spinner animate-spin text-2xl text-blue-500 mb-2"></i><p class="text-sm">กำลังดึงข้อมูลจาก Google Sheets...</p></div>`;
+                try {
+                    const res = await fetch(APPSCRIPT_URL);
+                    const data = await res.json();
+                    if (Array.isArray(data)) {
+                        communityPosts = data.reverse();
+                    }
+                } catch (e) {
+                    console.warn("Apps Script fetch failed, falling back to local storage", e);
+                }
+            }
+
+            renderCommunityPosts(communityPosts);
+        }
+
+        function renderCommunityPosts(posts) {
+            const container = document.getElementById('community-posts-container');
+            container.innerHTML = '';
+
+            if (!posts || posts.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-gray-400 bg-white rounded-2xl border border-gray-100"><i class="fa-solid fa-comments text-3xl mb-2 opacity-30"></i><p class="text-sm">ยังไม่มีคำถามหรือบทสนทนา</p></div>`;
+                return;
+            }
+
+            const lastAuthor = localStorage.getItem('smartfarm_last_commenter') || '';
+
+            posts.forEach(post => {
+                const dateStr = post.timestamp ? new Date(post.timestamp).toLocaleDateString('th-TH', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : 'เมื่อสักครู่';
+                const comments = post.comments || [];
+
+                // Comments HTML list
+                let commentsHtml = '';
+                if (comments.length > 0) {
+                    commentsHtml = comments.map(c => {
+                        const cDate = c.timestamp ? new Date(c.timestamp).toLocaleDateString('th-TH', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
+                        return `
+                            <div class="bg-gray-50 border border-gray-100 rounded-xl p-2.5 text-xs space-y-1 relative group">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-gray-800 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-reply text-blue-500 text-[10px]"></i> ${c.author || 'ผู้ตอบ'}
+                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] text-gray-400">${cDate}</span>
+                                        <button onclick="deleteComment('${post.id}', '${c.id}')" class="text-red-400 hover:text-red-600 text-[10px] p-0.5" title="ลบความคิดเห็น">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 font-light pl-3 border-l-2 border-blue-200">${c.content}</p>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    commentsHtml = `<p class="text-[11px] text-gray-400 italic text-center py-1">ยังไม่มีความคิดเห็น เป็นคนแรกที่ตอบกลับ!</p>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm">
+                                ${post.author ? post.author.charAt(0) : 'U'}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm">${post.author || 'ผู้โพสต์'}</h4>
+                                <span class="text-[10px] text-gray-400">${dateStr}</span>
+                            </div>
+                        </div>
+                        <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium border border-blue-100">${post.category || 'ทั่วไป'}</span>
+                    </div>
+
+                    <p class="text-xs text-gray-700 leading-relaxed font-light">${post.content}</p>
+
+                    <div class="pt-2 border-t border-gray-100 flex justify-between items-center text-xs">
+                        <span class="text-gray-500 font-medium flex items-center gap-1.5 text-[11px]">
+                            <i class="fa-regular fa-comments text-blue-500"></i> ความคิดเห็น (${comments.length})
+                        </span>
+                        <button onclick="deleteCommunityPost('${post.id}')" class="text-xs text-red-400 hover:text-red-600 flex items-center gap-1 font-medium transition">
+                            <i class="fa-solid fa-trash-can"></i> ลบโพสต์
+                        </button>
+                    </div>
+
+                    <!-- Comments List Section -->
+                    <div class="space-y-2 pt-1">
+                        ${commentsHtml}
+                    </div>
+
+                    <!-- Add Comment Form -->
+                    <form onsubmit="handleNewCommentSubmit('${post.id}', event)" class="bg-blue-50/50 p-2 rounded-xl border border-blue-100 space-y-2">
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="comment-author-${post.id}" required value="${lastAuthor}" placeholder="ชื่อของคุณ/ชื่อฟาร์ม..." class="w-full sm:w-1/3 text-xs p-2 bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none">
+                            <input type="text" id="comment-text-${post.id}" required placeholder="เขียนตอบกลับ / แสดงความคิดเห็น..." class="w-full sm:flex-1 text-xs p-2 bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs px-3 py-2 rounded-lg font-bold flex items-center justify-center gap-1 transition shadow-sm">
+                                <i class="fa-solid fa-paper-plane text-[10px]"></i> ตอบกลับ
+                            </button>
+                        </div>
+                    </form>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterCommunityPosts() {
+            const kw = document.getElementById('community-search').value.toLowerCase();
+            const filtered = communityPosts.filter(p => p.content.toLowerCase().includes(kw) || p.author.toLowerCase().includes(kw));
+            renderCommunityPosts(filtered);
+        }
+
+        async function handleNewCommentSubmit(postId, e) {
+            e.preventDefault();
+            const authorInput = document.getElementById(`comment-author-${postId}`);
+            const contentInput = document.getElementById(`comment-text-${postId}`);
+
+            const author = authorInput.value.trim();
+            const content = contentInput.value.trim();
+
+            if (!author || !content) return;
+
+            const post = communityPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            if (!post.comments) post.comments = [];
+
+            const newComment = {
+                id: 'c_' + Date.now(),
+                author: author,
+                content: content,
+                timestamp: new Date().toISOString()
+            };
+
+            post.comments.push(newComment);
+            localStorage.setItem('smartfarm_community_posts', JSON.stringify(communityPosts));
+            localStorage.setItem('smartfarm_last_commenter', author);
+
+            if (APPSCRIPT_URL && !APPSCRIPT_URL.includes("AKfycbz_SAMPLE")) {
+                try {
+                    fetch(APPSCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'addComment', postId: postId, comment: newComment })
+                    });
+                } catch(err) { console.error(err); }
+            }
+
+            renderCommunityPosts(communityPosts);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'ตอบกลับเรียบร้อย',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+
+        async function deleteComment(postId, commentId) {
+            const result = await Swal.fire({
+                title: 'ยืนยันลบความคิดเห็น?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'ลบทิ้ง',
+                cancelButtonText: 'ยกเลิก',
+                customClass: { popup: 'rounded-2xl' }
+            });
+
+            if (result.isConfirmed) {
+                const post = communityPosts.find(p => p.id === postId);
+                if (post && post.comments) {
+                    post.comments = post.comments.filter(c => c.id !== commentId);
+                    localStorage.setItem('smartfarm_community_posts', JSON.stringify(communityPosts));
+
+                    if (APPSCRIPT_URL && !APPSCRIPT_URL.includes("AKfycbz_SAMPLE")) {
+                        try {
+                            fetch(APPSCRIPT_URL, {
+                                method: 'POST',
+                                mode: 'no-cors',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'deleteComment', postId: postId, commentId: commentId })
+                            });
+                        } catch(err) { console.error(err); }
+                    }
+
+                    renderCommunityPosts(communityPosts);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'ลบความคิดเห็นเรียบร้อย',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        }
+
+        async function handleNewPostSubmit(e) {
+            e.preventDefault();
+            const author = document.getElementById('post-author').value.trim();
+            const category = document.getElementById('post-category').value;
+            const content = document.getElementById('post-content').value.trim();
+
+            if (!author || !content) return;
+
+            const newPost = {
+                id: 'p_' + Date.now(),
+                author: author,
+                category: category,
+                content: content,
+                timestamp: new Date().toISOString()
+            };
+
+            // Save to Local Array
+            communityPosts.unshift(newPost);
+            localStorage.setItem('smartfarm_community_posts', JSON.stringify(communityPosts));
+
+            // Sync with embedded Apps Script if available
+            if (APPSCRIPT_URL && !APPSCRIPT_URL.includes("AKfycbz_SAMPLE")) {
+                try {
+                    fetch(APPSCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newPost)
+                    });
+                } catch(err) { console.error(err); }
+            }
+
+            closeNewPostModal();
+            document.getElementById('post-content').value = '';
+            renderCommunityPosts(communityPosts);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'โพสต์ข้อความสำเร็จ',
+                text: 'บันทึกคำถามของคุณลงในระบบชุมชนเรียบร้อยแล้ว',
+                confirmButtonColor: '#0ea5e9'
+            });
+        }
+
+        async function deleteCommunityPost(id) {
+            const result = await Swal.fire({
+                title: 'ยืนยันลบโพสต์นี้?',
+                text: 'ข้อความจะถูกลบออกจากระบบ',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'ลบทิ้ง',
+                cancelButtonText: 'ยกเลิก',
+                customClass: { popup: 'rounded-2xl' }
+            });
+
+            if (result.isConfirmed) {
+                communityPosts = communityPosts.filter(p => p.id != id);
+                localStorage.setItem('smartfarm_community_posts', JSON.stringify(communityPosts));
+
+                if (APPSCRIPT_URL && !APPSCRIPT_URL.includes("AKfycbz_SAMPLE")) {
+                    try {
+                        fetch(APPSCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'delete', id: id })
+                        });
+                    } catch(err) { console.error(err); }
+                }
+
+                renderCommunityPosts(communityPosts);
+                Swal.fire({ icon: 'success', title: 'ลบโพสต์เรียบร้อย', confirmButtonColor: '#ea580c' });
+            }
+        }
 
         function toggleChat() {
             const win = document.getElementById('chat-window');
             if (win.classList.contains('hidden')) {
                 win.classList.remove('hidden');
-                // Use a small timeout to allow display:block to apply before animating opacity
                 requestAnimationFrame(() => {
                     win.classList.remove('scale-0', 'opacity-0');
                     win.classList.add('scale-100', 'opacity-100');
@@ -562,34 +1281,24 @@
             const msg = input.value.trim();
             if (!msg) return;
 
-            // 1. Add User Message
             addMessage(msg, 'user');
             input.value = '';
-
-            // 2. Add Loading Indicator
             const loadingId = addLoadingMessage();
 
             let replyText = "";
-
             try {
-                // 3. Try Fetch from Worker
                 const response = await fetch(CHATBOT_API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: msg })
                 });
                 
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) throw new Error('Network error');
                 const data = await response.json();
                 replyText = data.reply || data.message || "ได้รับข้อมูลแล้ว";
-
             } catch (err) {
-                // 4. Fallback if Fetch Fails (Network Error / Invalid URL)
-                console.warn("Chatbot API unreachable, using fallback.");
-                await new Promise(r => setTimeout(r, 1000)); // Fake delay
-                replyText = "ระบบ AI ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ในขณะนี้ (Demo Mode) \n\nคำแนะนำเบื้องต้น: หากสัตว์มีอาการป่วย ควรแยกออกจากฝูงและปรึกษาสัตวแพทย์ครับ 🐮";
+                replyText = "ระบบ AI ขัดข้องชั่วคราว (Demo Mode)\n\nคำแนะนำเบื้องต้น: หากสัตว์ป่วยควรแยกคอกทันทีและปรึกษาสัตวแพทย์ครับ 🐮";
             } finally {
-                // 5. Remove Loading & Show Response (Real or Fallback)
                 removeMessage(loadingId);
                 addMessage(replyText, 'bot');
             }
@@ -633,8 +1342,6 @@
             if (el) el.remove();
         }
 
-
-        // --- Calculator Logic ---
         let calcVal = "0";
         function openCalculator() { document.getElementById('calculator-modal').classList.remove('hidden'); calcVal = "0"; updateDisplay(); }
         function closeCalculator() { document.getElementById('calculator-modal').classList.add('hidden'); }
@@ -650,362 +1357,6 @@
         }
         function updateDisplay() { document.getElementById('calc-display').value = calcVal; }
 
-
-        // --- ข้อมูลสัตว์เลี้ยงและโปรแกรมวัคซีน (Comprehensive List) ---
-        const animals = [
-            // --- Poultry (สัตว์ปีก) ---
-            { 
-                id: 201, category: 'poultry', name: "ไก่ไข่", icon: "🐔", 
-                midDays: 7, endDays: 140, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 28, price2: 190, 
-                temp: "25-33°C", feed: "อาหารไก่ไข่ (โปรตีน 16%)", 
-                vaccineProgram: [
-                    { day: 7, name: "นิวคาสเซิล + หลอดลมอักเสบ (ตา/จมูก)" },
-                    { day: 14, name: "กัมโบโร (ครั้งที่ 1)" },
-                    { day: 21, name: "นิวคาสเซิล (ซ้ำ) + ฝีดาษ" },
-                    { day: 28, name: "กัมโบโร (ครั้งที่ 2)" }
-                ]
-            },
-            { 
-                id: 202, category: 'poultry', name: "ไก่เนื้อ", icon: "🍗", 
-                midDays: 7, endDays: 45, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 18, price2: 95,
-                temp: "28-32°C (กกไฟ 7 วัน)", feed: "อาหารขุนระยะสั้น", 
-                vaccineProgram: [
-                    { day: 7, name: "นิวคาสเซิล + หลอดลมอักเสบ" },
-                    { day: 14, name: "กัมโบโร (น้ำดื่ม)" },
-                    { day: 21, name: "นิวคาสเซิล (ซ้ำ)" }
-                ]
-            },
-            { 
-                id: 203, category: 'poultry', name: "ไก่พื้นเมือง", icon: "🐓", 
-                midDays: 21, endDays: 120, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 25, price2: 150,
-                temp: "ทนร้อนได้ดี", feed: "รำ/ปลายข้าว/เศษอาหาร", 
-                vaccineProgram: [
-                    { day: 21, name: "นิวคาสเซิล (หยอดจมูก)" },
-                    { day: 60, name: "อหิวาต์ไก่ (ฉีดกล้ามเนื้อ)" }
-                ]
-            },
-            { 
-                id: 205, category: 'poultry', name: "เป็ดไข่", icon: "🦆", 
-                midDays: 21, endDays: 150, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 22, price2: 160,
-                temp: "ถ่ายเทสะดวก พื้นแห้ง", feed: "รำ/หอยเชอรี่", 
-                vaccineProgram: [
-                    { day: 21, name: "กาฬโรคเป็ด (ฉีดเข้ากล้ามเนื้อ)" },
-                    { day: 60, name: "อหิวาต์เป็ด (ฉีดเข้ากล้ามเนื้อ)" }
-                ]
-            },
-            { 
-                id: 209, category: 'poultry', name: "ไก่งวง", icon: "🦃", 
-                midDays: 30, endDays: 180, 
-                months: [10,11,0,1], price1: 100, price2: 800,
-                temp: "พื้นที่กว้าง ชอบหญ้าสด", feed: "หญ้าขน/อาหารไก่เนื้อ", 
-                vaccineProgram: [
-                    { day: 21, name: "ฝีดาษไก่" },
-                    { day: 45, name: "อหิวาต์ไก่" }
-                ]
-            },
-            { 
-                id: 210, category: 'poultry', name: "เป็ดเทศ", icon: "🦢", 
-                midDays: 20, endDays: 80, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 30, price2: 180,
-                temp: "ทนโรค เลี้ยงง่าย", feed: "เศษผัก/รำข้าว", 
-                vaccineProgram: [
-                    { day: 30, name: "กาฬโรคเป็ด" }
-                ]
-            },
-            { 
-                id: 211, category: 'poultry', name: "ไก่เบตง", icon: "🐔", 
-                midDays: 30, endDays: 150, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 450,
-                temp: "อากาศถ่ายเท (ห้ามชื้น)", feed: "ข้าวโพด/อาหารผสม", 
-                vaccineProgram: [
-                    { day: 14, name: "นิวคาสเซิล" },
-                    { day: 45, name: "ถ่ายพยาธิ" }
-                ]
-            },
-            { 
-                id: 212, category: 'poultry', name: "ไก่ชน", icon: "🥊", 
-                midDays: 60, endDays: 240, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 3000,
-                temp: "ต้องกราดน้ำ/ตากแดด", feed: "ข้าวเปลือก/สมุนไพร", 
-                vaccineProgram: [
-                    { day: 14, name: "นิวคาสเซิล" },
-                    { day: 60, name: "อหิวาต์" }
-                ]
-            },
-
-            // --- Mammal (ปศุสัตว์) ---
-            { 
-                id: 301, category: 'mammal', name: "สุกร (หมูขุน)", icon: "🐷", 
-                midDays: 21, endDays: 150, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1800, price2: 7000,
-                temp: "22-28°C", feed: "อาหารหมูขุน", 
-                vaccineProgram: [
-                    { day: 21, name: "อหิวาต์สุกร (ครั้งที่ 1)" },
-                    { day: 45, name: "ปากและเท้าเปื่อย (FMD)" },
-                    { day: 60, name: "อหิวาต์สุกร (ซ้ำ)" }
-                ]
-            },
-            { 
-                id: 302, category: 'mammal', name: "โคเนื้อ", icon: "🐂", 
-                midDays: 120, endDays: 365, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 18000, price2: 48000,
-                temp: "ทนร้อน", feed: "หญ้า/ฟาง", 
-                vaccineProgram: [
-                    { day: 120, name: "ปากและเท้าเปื่อย (ทุก 6 เดือน)" },
-                    { day: 150, name: "คอบวม (ปีละ 1 ครั้ง)" },
-                    { day: 180, name: "ถ่ายพยาธิ" }
-                ]
-            },
-            { 
-                id: 305, category: 'mammal', name: "แพะ", icon: "🐐", 
-                midDays: 60, endDays: 240, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2500, price2: 5500,
-                temp: "คอกยกสูง แห้ง", feed: "ใบกระถิน/หญ้า", 
-                vaccineProgram: [
-                    { day: 60, name: "ถ่ายพยาธิ (ทุก 3 เดือน)" },
-                    { day: 90, name: "ปากและเท้าเปื่อย (FMD)" }
-                ]
-            },
-            { 
-                id: 307, category: 'mammal', name: "หมูป่า", icon: "🐗", 
-                midDays: 60, endDays: 240, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 1000, price2: 4500,
-                temp: "โรงเรือนโปร่ง ดินแห้ง", feed: "หยวกกล้วย/รำ", 
-                vaccineProgram: [
-                    { day: 45, name: "อหิวาต์สุกร" },
-                    { day: 60, name: "ถ่ายพยาธิ" }
-                ]
-            },
-            { 
-                id: 308, category: 'mammal', name: "กระต่ายเนื้อ", icon: "🐇", 
-                midDays: 30, endDays: 100, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 150, price2: 500,
-                temp: "อากาศเย็น (ไม่เกิน 30°C)", feed: "หญ้าแห้ง/อาหารเม็ด", 
-                vaccineProgram: [
-                    { day: 45, name: "ถ่ายพยาธิภายนอก (ไร)" }
-                ]
-            },
-            { 
-                id: 309, category: 'mammal', name: "แพะนม", icon: "🐐", 
-                midDays: 180, endDays: 365, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3000, price2: 8000,
-                temp: "สะอาด แห้ง", feed: "อาหารข้นโปรตีนสูง/หญ้า", 
-                vaccineProgram: [
-                    { day: 90, name: "FMD + ตรวจโรคแท้ง" }
-                ]
-            },
-
-            // --- Pets (สัตว์เลี้ยงสวยงาม) ---
-            { 
-                id: 601, category: 'pet', name: "สุนัขพันธุ์เล็ก", icon: "🐶", 
-                midDays: 45, endDays: 60, // days to sale
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2000, price2: 8000,
-                temp: "25-30°C (ระบายอากาศดี)", feed: "อาหารเม็ดสูตรลูกสุนัข", 
-                vaccineProgram: [
-                    { day: 45, name: "วัคซีนรวม 5 โรค (เข็มที่ 1)" },
-                    { day: 60, name: "วัคซีนรวม 5 โรค (เข็มที่ 2)" },
-                    { day: 90, name: "พิษสุนัขบ้า" }
-                ]
-            },
-            { 
-                id: 602, category: 'pet', name: "สุนัขพันธุ์ใหญ่", icon: "🐕", 
-                midDays: 45, endDays: 75, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3000, price2: 12000,
-                temp: "พื้นที่กว้าง ไม่ร้อนจัด", feed: "อาหารเม็ด/บาร์ฟ (BARF)", 
-                vaccineProgram: [
-                    { day: 45, name: "วัคซีนรวม 5 โรค (เข็มที่ 1)" },
-                    { day: 60, name: "วัคซีนรวม 5 โรค (เข็มที่ 2)" },
-                    { day: 90, name: "พิษสุนัขบ้า" }
-                ]
-            },
-            { 
-                id: 603, category: 'pet', name: "แมว (พันธุ์ไทย/ผสม)", icon: "🐱", 
-                midDays: 60, endDays: 90, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 500, price2: 2500,
-                temp: "อบอุ่น แห้งสะอาด", feed: "อาหารเปียก/เม็ดลูกแมว", 
-                vaccineProgram: [
-                    { day: 60, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 1)" },
-                    { day: 90, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 2) + พิษสุนัขบ้า" }
-                ]
-            },
-            { 
-                id: 604, category: 'pet', name: "แมว (พันธุ์ต่างประเทศ)", icon: "🐈", 
-                midDays: 60, endDays: 90, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 3000, price2: 15000,
-                temp: "22-26°C (แอร์)", feed: "อาหารเกรดพรีเมียม", 
-                vaccineProgram: [
-                    { day: 60, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 1)" },
-                    { day: 90, name: "วัคซีนไข้หัดหวัดแมว (เข็มที่ 2) + พิษสุนัขบ้า" }
-                ]
-            },
-            { 
-                id: 605, category: 'pet', name: "หนูแฮมสเตอร์", icon: "🐹", 
-                midDays: 21, endDays: 45, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 150,
-                temp: "20-24°C (ห้ามร้อน)", feed: "ธัญพืช/ผักอบแห้ง", 
-                vaccineProgram: [] // No standard vaccine
-            },
-            { 
-                id: 606, category: 'pet', name: "นกหงส์หยก", icon: "🦜", 
-                midDays: 30, endDays: 60, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 80, price2: 200,
-                temp: "อากาศถ่ายเทดี", feed: "เมล็ดมิลเล็ต/ผัก", 
-                vaccineProgram: []
-            },
-            { 
-                id: 607, category: 'pet', name: "ปลากัดสวยงาม", icon: "🐟", 
-                midDays: 60, endDays: 120, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 20, price2: 500,
-                temp: "26-30°C (น้ำนิ่ง)", feed: "ลูกน้ำ/ไรแดง/อาหารเม็ด", 
-                vaccineProgram: [
-                    { day: 60, name: "แยกโหล (กันกัดกัน)" },
-                    { day: 90, name: "หมักใบหูกวาง (เร่งสี/สมานแผล)" }
-                ]
-            },
-
-            // --- Aquatic (สัตว์น้ำ) - No Vaccines ---
-            { 
-                id: 401, category: 'aquatic', name: "ปลาดุก", icon: "🐟", 
-                midDays: 30, endDays: 90, 
-                months: [5,6,7,8,9], price1: 1, price2: 50,
-                temp: "น้ำนิ่ง/บ่อดิน", feed: "อาหารเม็ดลอยน้ำ"
-            },
-            { 
-                id: 402, category: 'aquatic', name: "ปลานิล", icon: "🐠", 
-                midDays: 45, endDays: 180, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.5, price2: 65,
-                temp: "25-30°C", feed: "รำละเอียด/พืชน้ำ"
-            },
-            { 
-                id: 408, category: 'aquatic', name: "ปลาตะเพียน", icon: "🐟", 
-                midDays: 60, endDays: 240, 
-                months: [5,6,7], price1: 0.5, price2: 80,
-                temp: "น้ำไหลเวียน", feed: "พืชน้ำ/หญ้าขน"
-            },
-            { 
-                id: 409, category: 'aquatic', name: "ปลาหมอไทย", icon: "🐟", 
-                midDays: 30, endDays: 120, 
-                months: [4,5,6,7], price1: 1, price2: 120,
-                temp: "ทนน้ำน้อยได้", feed: "อาหารเม็ดไฮเกรด"
-            },
-            { 
-                id: 410, category: 'aquatic', name: "ปลาสวาย", icon: "🐋", 
-                midDays: 90, endDays: 300, 
-                months: [5,6,7], price1: 2, price2: 100,
-                temp: "บ่อดินลึก", feed: "เศษอาหาร/รำ"
-            },
-            { 
-                id: 411, category: 'aquatic', name: "ปลาแรด", icon: "🐠", 
-                midDays: 180, endDays: 365, 
-                months: [5,6,7], price1: 5, price2: 250,
-                temp: "น้ำสะอาด มีผักบุ้ง", feed: "ผลไม้สุก/ยอดผัก"
-            },
-            { 
-                id: 412, category: 'aquatic', name: "กุ้งขาว", icon: "🦐", 
-                midDays: 30, endDays: 90, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 0.2, price2: 180,
-                temp: "ความเค็ม 10-20 ppt", feed: "อาหารเม็ดสำเร็จรูป"
-            },
-            { 
-                id: 413, category: 'aquatic', name: "กุ้งก้ามแดง", icon: "🦞", 
-                midDays: 60, endDays: 150, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 5, price2: 400,
-                temp: "น้ำจืด (มีที่หลบซ่อน)", feed: "สาหร่าย/ไส้เดือน"
-            },
-            { 
-                id: 414, category: 'aquatic', name: "ปลาไหลนา", icon: "🐍", 
-                midDays: 60, endDays: 240, 
-                months: [5,6,7], price1: 5, price2: 200,
-                temp: "บ่อซีเมนต์ใส่โคลน", feed: "ไส้เดือน/หอยเชอรี่"
-            },
-            { 
-                id: 415, category: 'aquatic', name: "ตะพาบน้ำ", icon: "🐢", 
-                midDays: 90, endDays: 365, 
-                months: [4,5,6], price1: 15, price2: 300,
-                temp: "น้ำสะอาด มีแดดส่อง", feed: "ปลาเหยื่อ/โครงไก่"
-            },
-
-            // --- Other (แมลง/สัตว์เศรษฐกิจใหม่) - No Vaccines ---
-            { 
-                id: 501, category: 'other', name: "จิ้งหรีด", icon: "🦗", 
-                midDays: 15, endDays: 45, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 50, price2: 150,
-                temp: "ร้อนชื้น", feed: "หัวอาหารไก่เล็ก"
-            },
-            { 
-                id: 505, category: 'other', name: "ด้วงสาคู", icon: "🐛", 
-                midDays: 20, endDays: 40, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 2, price2: 250,
-                temp: "ชื้น/มืด", feed: "เปลือกมะพร้าว/สาคู"
-            },
-            { 
-                id: 506, category: 'other', name: "ตั๊กแตน", icon: "🦗", 
-                midDays: 30, endDays: 60, 
-                months: [0,1,2,3,4,5,6,7,8,9,10,11], price1: 100, price2: 400,
-                temp: "โปร่ง ลมโกรก", feed: "หญ้าหวาน/ใบกล้วย"
-            },
-            { 
-                id: 507, category: 'other', name: "แมงดานา", icon: "🪲", 
-                midDays: 30, endDays: 90, 
-                months: [5,6,7], price1: 5, price2: 20,
-                temp: "เลียนแบบธรรมชาติ", feed: "ลูกอ๊อด/ปลาเล็ก"
-            },
-            { 
-                id: 508, category: 'other', name: "อึ่งปากขวด", icon: "🐸", 
-                midDays: 90, endDays: 270, 
-                months: [4,5,6], price1: 5, price2: 300,
-                temp: "ดินร่วนปนทราย", feed: "ปลวก/แมลงเม่า"
-            }
-        ];
-
-        const monthNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-        let currentSelectedDate = new Date();
-        let currentMonthIndex = currentSelectedDate.getMonth();
-        let currentCategory = 'poultry'; 
-        let currentItem = null; 
-        let currentUploadImage = null; // Store base64 image
-        let mySchedules = JSON.parse(localStorage.getItem('myLivestockSchedule')) || [];
-        let itemToDeleteId = null; // Store ID for delete modal
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const datePicker = document.getElementById('global-date-picker');
-            datePicker.valueAsDate = currentSelectedDate;
-            updateHeaderAndSeason();
-            renderList(); 
-            renderScheduleList();
-            document.getElementById('start-date').valueAsDate = new Date();
-            document.getElementById('start-date').addEventListener('change', calculateDates);
-            document.getElementById('search-input').addEventListener('input', (e) => {
-                const keyword = e.target.value.toLowerCase();
-                const filtered = animals.filter(f => f.name.toLowerCase().includes(keyword) && f.category === currentCategory);
-                renderFilteredItems(filtered);
-                document.getElementById('filter-status').innerText = keyword ? `ค้นหา "${keyword}"` : "ทั้งหมด";
-            });
-            datePicker.addEventListener('change', (e) => {
-                currentSelectedDate = new Date(e.target.value);
-                currentMonthIndex = currentSelectedDate.getMonth();
-                updateHeaderAndSeason();
-            });
-
-            // Image Upload Logic
-            document.getElementById('upload-image').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    resizeImage(file, function(result) {
-                        currentUploadImage = result;
-                        document.getElementById('preview-image').src = currentUploadImage;
-                        document.getElementById('preview-image').classList.remove('hidden');
-                        document.getElementById('preview-placeholder').classList.add('hidden');
-                    });
-                }
-            });
-        });
-
-        // Helper to resize image
         function resizeImage(file, callback) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -1015,7 +1366,7 @@
                     const ctx = canvas.getContext('2d');
                     let width = img.width;
                     let height = img.height;
-                    const maxWidth = 800; // Resize to max 800px width
+                    const maxWidth = 800; 
                     
                     if (width > maxWidth) {
                         height = Math.round(height * (maxWidth / width));
@@ -1025,42 +1376,18 @@
                     canvas.width = width;
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
-                    callback(canvas.toDataURL('image/jpeg', 0.8)); // Compress quality
+                    callback(canvas.toDataURL('image/jpeg', 0.8));
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // Update image in Detail Modal
-        function updateScheduleImage(input) {
-            const file = input.files[0];
-            const currentDetailId = document.getElementById('detail-title').dataset.id;
-            
-            if (file && currentDetailId) {
-                resizeImage(file, function(result) {
-                    // Update in array
-                    const index = mySchedules.findIndex(s => s.id == currentDetailId);
-                    if(index !== -1) {
-                        mySchedules[index].image = result;
-                        localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
-                        
-                        // Update UI immediately
-                        document.getElementById('detail-icon-container').innerHTML = `<img src="${result}" class="w-full h-full object-cover">`;
-                        document.getElementById('detail-icon-container').classList.remove('p-2');
-                        
-                        // Refresh list view behind modal
-                        renderScheduleList();
-                    }
-                });
-            }
-        }
-
         function switchCategory(cat) {
             currentCategory = cat;
             ['poultry', 'mammal', 'aquatic', 'pet', 'other'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
-                if(t === cat) {
+                if (t === cat) {
                     btn.classList.add('tab-active');
                     btn.classList.remove('tab-inactive');
                 } else {
@@ -1083,17 +1410,12 @@
             document.getElementById('season-header-bg').className = `rounded-2xl p-5 shadow-lg mb-4 text-white relative overflow-hidden transition-all duration-500 bg-gradient-to-r ${colorClass}`;
         }
 
-        function filterCurrentMonth() {
-            renderFilteredItems(animals.filter(f => f.category === currentCategory && f.months.includes(currentMonthIndex)));
-            document.getElementById('filter-status').innerText = `แนะนำเดือน ${monthNames[currentMonthIndex]}`;
-        }
-
         function renderList() { renderFilteredItems(animals.filter(c => c.category === currentCategory)); }
 
         function renderFilteredItems(listToRender) {
             const container = document.getElementById('main-list');
             container.innerHTML = '';
-            if(listToRender.length === 0) {
+            if (listToRender.length === 0) {
                 container.innerHTML = `<div class="p-8 text-center text-gray-400 bg-white rounded-xl border-2 border-dashed border-gray-200"><i class="fa-solid fa-paw text-3xl mb-2 opacity-50"></i><br>ไม่พบข้อมูล</div>`;
                 return;
             }
@@ -1127,11 +1449,8 @@
             });
         }
 
-        // --- Planning Modal (Simplified - No Image) ---
         function openCalcModal(item) {
             currentItem = item;
-            
-            // Reset Image Upload
             currentUploadImage = null;
             document.getElementById('upload-image').value = '';
             document.getElementById('preview-image').src = '';
@@ -1160,7 +1479,6 @@
         function calculateDates() {
             if(!currentItem) return;
             const start = new Date(document.getElementById('start-date').value);
-            // Mid is just a visual reference now, logic simplified
             const end = new Date(start); end.setDate(start.getDate() + currentItem.endDays);
             document.getElementById('preview-start-date').innerText = formatDate(start);
             document.getElementById('preview-end-date').innerText = formatDate(end);
@@ -1172,37 +1490,38 @@
             const mid = new Date(start); mid.setDate(start.getDate() + currentItem.midDays);
             const end = new Date(start); end.setDate(start.getDate() + currentItem.endDays);
             
-            // Save vaccineProgram from currentItem to the schedule
             const newSchedule = {
                 id: Date.now(),
                 itemId: currentItem.id, category: currentItem.category,
                 name: currentItem.name, icon: currentItem.icon,
-                image: currentUploadImage || null, // Save image if uploaded
+                image: currentUploadImage || null,
                 startDate: start.toISOString(), midDate: mid.toISOString(), endDate: end.toISOString(),
-                vaccineProgram: currentItem.vaccineProgram // Save full program
+                vaccineProgram: currentItem.vaccineProgram 
             };
             mySchedules.unshift(newSchedule); 
             localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
             closeCalcModal();
             renderScheduleList();
             toggleView('schedule'); 
+
+            Swal.fire({
+                icon: 'success',
+                title: 'บันทึกในฟาร์มเรียบร้อย',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
 
-        // --- Detail Modal (My Farm) ---
         function openDetailModal(id) {
-            const item = mySchedules.find(s => s.id == id); // loose equality for string/number id
+            const item = mySchedules.find(s => s.id == id);
             if(!item) return;
 
-            // Find static animal data for Temp/Feed (using itemId)
             const animalData = animals.find(a => a.id == item.itemId);
-            
-            // Store ID for image update
             document.getElementById('detail-title').dataset.id = item.id;
 
-            // Handle Icon vs Image in Detail View
             if (item.image) {
                 document.getElementById('detail-icon-container').innerHTML = `<img src="${item.image}" class="w-full h-full object-cover">`;
-                document.getElementById('detail-icon-container').classList.remove('p-2'); // Remove padding for full image
+                document.getElementById('detail-icon-container').classList.remove('p-2');
             } else {
                 document.getElementById('detail-icon-container').innerHTML = `<span id="detail-icon">${item.icon}</span>`;
                 document.getElementById('detail-icon-container').classList.add('p-2');
@@ -1212,20 +1531,16 @@
             const startDate = new Date(item.startDate);
             document.getElementById('detail-date-label').innerText = `เริ่มเลี้ยง: ${formatDate(startDate)}`;
             
-            // Specs
             document.getElementById('detail-temp').innerText = animalData ? animalData.temp : "-";
             document.getElementById('detail-feed').innerText = animalData ? animalData.feed : "-";
 
-            // Vaccine Program Calculation
             const vList = document.getElementById('detail-vaccine-list');
             vList.innerHTML = '';
             
-            // Use saved program or fallback to animalData
             const program = item.vaccineProgram || (animalData ? animalData.vaccineProgram : []);
 
             if (program && program.length > 0) {
                 program.forEach(v => {
-                    // Calculate actual date
                     const vacDate = new Date(startDate);
                     vacDate.setDate(startDate.getDate() + v.day);
                     
@@ -1249,19 +1564,36 @@
             document.getElementById('detail-modal').classList.remove('hidden');
         }
 
-        function closeDetailModal() {
-            document.getElementById('detail-modal').classList.add('hidden');
+        function closeDetailModal() { document.getElementById('detail-modal').classList.add('hidden'); }
+
+        function updateScheduleImage(input) {
+            const file = input.files[0];
+            const currentDetailId = document.getElementById('detail-title').dataset.id;
+            
+            if (file && currentDetailId) {
+                resizeImage(file, function(result) {
+                    const index = mySchedules.findIndex(s => s.id == currentDetailId);
+                    if(index !== -1) {
+                        mySchedules[index].image = result;
+                        localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
+                        document.getElementById('detail-icon-container').innerHTML = `<img src="${result}" class="w-full h-full object-cover">`;
+                        document.getElementById('detail-icon-container').classList.remove('p-2');
+                        renderScheduleList();
+                    }
+                });
+            }
         }
 
         function renderScheduleList() {
             const list = document.getElementById('schedule-list');
             const emptyState = document.getElementById('empty-schedule');
-            document.querySelectorAll('#schedule-count, #nav-badge').forEach(el => {
+            
+            document.querySelectorAll('.schedule-count-badge').forEach(el => {
                 el.innerText = mySchedules.length;
                 if(el.id === 'nav-badge') el.classList.toggle('hidden', mySchedules.length === 0);
             });
             
-            if(mySchedules.length === 0) {
+            if (mySchedules.length === 0) {
                 list.innerHTML = '';
                 emptyState.classList.remove('hidden');
                 return;
@@ -1279,7 +1611,6 @@
                 if(item.category === 'other') barColor = "bg-emerald-500";
                 if(item.category === 'pet') barColor = "bg-pink-500";
                 
-                // Image or Icon Logic
                 let visualContent = `<span class="text-3xl bg-gray-50 w-12 h-12 flex items-center justify-center rounded-xl shadow-inner">${item.icon}</span>`;
                 if(item.image) {
                     visualContent = `<img src="${item.image}" class="w-12 h-12 rounded-xl shadow-inner object-cover bg-gray-50">`;
@@ -1287,9 +1618,7 @@
 
                 const div = document.createElement('div');
                 div.className = 'bg-white rounded-2xl p-4 shadow-sm border border-gray-100 relative overflow-hidden group cursor-pointer transition hover:shadow-md';
-                // Add onclick to open details, but ensure delete button doesn't trigger it
                 div.onclick = (e) => {
-                    // Prevent if click target is the delete button or its child
                     if (e.target.closest('.delete-btn')) return;
                     openDetailModal(item.id);
                 };
@@ -1320,39 +1649,37 @@
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 ${barColor}"></div>
                 `;
                 
-                // Bind delete event manually to prevent bubbling issues and ensure execution
                 const delBtn = div.querySelector('.delete-btn');
                 delBtn.onclick = (e) => {
                     e.stopPropagation();
-                    openDeleteModal(item.id);
+                    deleteScheduleItem(item.id);
                 };
 
                 list.appendChild(div);
             });
         }
 
-        // --- Delete Modal Functions ---
-        function openDeleteModal(id) {
-            itemToDeleteId = id;
-            document.getElementById('delete-modal').classList.remove('hidden');
-        }
+        async function deleteScheduleItem(id) {
+            const result = await Swal.fire({
+                title: 'ลบรายการนี้?',
+                text: 'ข้อมูลการเลี้ยงและประวัติวัคซีนจะหายไปถาวร',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'ลบทิ้ง',
+                cancelButtonText: 'ยกเลิก',
+                customClass: { popup: 'rounded-2xl' }
+            });
 
-        function closeDeleteModal() {
-            itemToDeleteId = null;
-            document.getElementById('delete-modal').classList.add('hidden');
-        }
-
-        function confirmDelete() {
-            if (itemToDeleteId) {
-                // Use loose equality (!=) to handle string/number mismatches
-                mySchedules = mySchedules.filter(item => item.id != itemToDeleteId);
+            if (result.isConfirmed) {
+                mySchedules = mySchedules.filter(item => item.id != id);
                 localStorage.setItem('myLivestockSchedule', JSON.stringify(mySchedules));
                 renderScheduleList();
-                closeDeleteModal();
+                Swal.fire({ icon: 'success', title: 'ลบเรียบร้อย', confirmButtonColor: '#ea580c' });
             }
         }
 
-        // --- Market Logic ---
         function openMarketModal() { document.getElementById('market-modal').classList.remove('hidden'); }
         function closeMarketModal() { 
             document.getElementById('market-modal').classList.add('hidden'); 
@@ -1363,27 +1690,17 @@
         async function updateMarketData() {
             const loading = document.getElementById('loading-indicator');
             const table = document.getElementById('market-table-content');
-            table.classList.add('hidden'); document.getElementById('error-message').classList.add('hidden'); loading.classList.remove('hidden');
-            const backendUrl = 'https://mute-unit-1629.tontakankeawp';
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000);
-                const response = await fetch(backendUrl + '/api/market-prices', { 
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ category: 'all', items: animals.map(a => a.name) }),
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                if (!response.ok) throw new Error('Backend Error');
+            table.classList.add('hidden'); 
+            document.getElementById('error-message').classList.add('hidden'); 
+            loading.classList.remove('hidden');
+            
+            setTimeout(() => {
                 renderMarketTable(true);
-            } catch (error) { setTimeout(() => { renderMarketTable(true); }, 1500); } 
-            finally {
-                setTimeout(() => {
-                    loading.classList.add('hidden'); table.classList.remove('hidden');
-                    const now = new Date();
-                    document.getElementById('market-last-update').innerText = `อัพเดท (AI): วันนี้ ${now.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'})}`;
-                }, 1500);
-            }
+                loading.classList.add('hidden'); 
+                table.classList.remove('hidden');
+                const now = new Date();
+                document.getElementById('market-last-update').innerText = `อัพเดท (AI): วันนี้ ${now.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'})}`;
+            }, 1200);
         }
 
         function renderMarketTable(randomize) {
@@ -1395,7 +1712,7 @@
                     p1 = Math.round(p1 * (1 + variation)); p2 = Math.round(p2 * (1 + variation));
                     if(variation > 0.05) trend = 'up'; else if(variation < -0.05) trend = 'down';
                 }
-                let trendHtml = trend === 'up' ? '<span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs font-bold"><i class="fa-solid fa-arrow-up"></i> สูงขึ้น</span>' : (trend === 'down' ? '<span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs font-bold"><i class="fa-solid fa-arrow-down"></i> ลดลง</span>' : '<span class="bg-gray-100 text-gray-400 px-2 py-0.5 rounded text-xs">-</span>');
+                let trendHtml = trend === 'up' ? '<span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-arrow-up"></i> สูงขึ้น</span>' : (trend === 'down' ? '<span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-arrow-down"></i> ลดลง</span>' : '<span class="bg-gray-100 text-gray-400 px-2 py-0.5 rounded text-xs">-</span>');
                 let catTag = 'อื่นๆ';
                 let catColor = 'text-emerald-600 bg-emerald-100';
                 
@@ -1406,31 +1723,20 @@
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="pl-4">
+                    <td class="pl-4 py-2">
                         <div class="flex flex-col justify-center">
-                            <div class="flex items-center gap-2"><span class="text-lg">${item.icon}</span><span class="font-bold text-gray-700 text-sm">${item.name}</span></div>
-                            <div class="mt-0.5 ml-7"><span class="text-[9px] ${catColor} px-1 rounded ml-1">${catTag}</span></div>
+                            <div class="flex items-center gap-2"><span class="text-base">${item.icon}</span><span class="font-bold text-gray-700 text-xs">${item.name}</span></div>
+                            <div class="mt-0.5 ml-6"><span class="text-[9px] ${catColor} px-1 rounded">${catTag}</span></div>
                         </div>
                     </td>
-                    <td class="font-mono text-gray-600 align-top pt-3">${p1 > 0 ? p1 : '-'}</td>
-                    <td class="font-mono text-gray-600 font-bold align-top pt-3">${p2 > 0 ? p2 : '-'}</td>
+                    <td class="font-mono text-xs text-gray-600 align-top pt-3">${p1 > 0 ? p1 : '-'}</td>
+                    <td class="font-mono text-xs text-gray-600 font-bold align-top pt-3">${p2 > 0 ? p2 : '-'}</td>
                     <td class="text-center pr-4 align-top pt-3">${trendHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function toggleView(view) {
-            const planner = document.getElementById('planner-view'), schedule = document.getElementById('schedule-view');
-            const navP = document.getElementById('nav-planner'), navS = document.getElementById('nav-schedule');
-            if(view === 'schedule') {
-                planner.classList.add('hidden'); schedule.classList.remove('hidden');
-                navS.classList.replace('text-gray-400', 'text-primary-600'); navP.classList.replace('text-primary-600', 'text-gray-400');
-            } else {
-                schedule.classList.add('hidden'); planner.classList.remove('hidden');
-                navP.classList.replace('text-gray-400', 'text-primary-600'); navS.classList.replace('text-primary-600', 'text-gray-400');
-            }
-        }
         function formatDate(date) { return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' }); }
         function formatDateShort(date) { return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }); }
     </script>
